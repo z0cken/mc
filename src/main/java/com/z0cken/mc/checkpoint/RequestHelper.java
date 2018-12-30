@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 public class RequestHelper {
 
-    private static final String baseUrl = "https://pr0gramm.com/api/";
+    private static final String BASE_URL = "https://pr0gramm.com/api/";
     private static Configuration cfg = PCS_Checkpoint.getInstance().getConfig().getSection("bot");
     private static String username = cfg.getString("username");
     private static String password = cfg.getString("password");
@@ -22,11 +22,11 @@ public class RequestHelper {
 
     private static void login() {
 
-        String url = "user/login";
+        String path = "user/login";
         HttpResponse<JsonNode> response;
 
         try {
-            response = Unirest.post(baseUrl + url).header("content-type", "application/x-www-form-urlencoded").field("name", username).field("password", password).asJson();
+            response = Unirest.post(BASE_URL + path).header("content-type", "application/x-www-form-urlencoded").field("name", username).field("password", password).asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
             return;
@@ -52,11 +52,11 @@ public class RequestHelper {
 
         long newTime = (int) (System.currentTimeMillis() / 1000L);
 
-        String url = "inbox/messages";
+        String path = "inbox/messages";
         HttpResponse<JsonNode> response;
 
         try {
-            response = Unirest.get(baseUrl + url).header("accept", "application/json").header("cookie", cookie).asJson();
+            response = Unirest.get(BASE_URL + path).header("accept", "application/json").header("cookie", cookie).asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
             return;
@@ -92,8 +92,8 @@ public class RequestHelper {
 
     public static boolean isBanned(String name) throws UnirestException {
 
-        String request = "profile/info?name=" + name;
-        JsonNode jsonBody = Unirest.get(baseUrl).header("accept", "application/json").asJson().getBody();
+        String path = "profile/info?name=" + name;
+        JsonNode jsonBody = Unirest.get(BASE_URL + path).header("accept", "application/json").asJson().getBody();
         JSONObject json = jsonBody.getObject();
 
         return 1 == json.getJSONObject("user").getInt("banned");

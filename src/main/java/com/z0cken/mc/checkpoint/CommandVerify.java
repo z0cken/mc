@@ -33,7 +33,7 @@ public class CommandVerify extends Command {
                 player.sendMessage(builder.digest(cfg.getString("denied-isverified")));
 
             } else {
-                String md5Hex = DigestUtils.md5Hex(player.getUniqueId().toString() + SALT);
+                String md5Hex = "mc-" + DigestUtils.md5Hex(player.getUniqueId().toString() + SALT);
                 DatabaseHelper.insertPending(player.getUniqueId(), md5Hex);
 
                 TextComponent button = new TextComponent( md5Hex );
