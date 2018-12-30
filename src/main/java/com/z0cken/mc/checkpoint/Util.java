@@ -30,7 +30,7 @@ public class Util {
 
     static class MessageBuilder {
 
-        private static  ChatColor accent = ChatColor.getByChar(PCS_Checkpoint.getInstance().getConfig().getString("messages.accent-color").charAt(0));
+        private static ChatColor accent = ChatColor.getByChar(PCS_Checkpoint.getInstance().getConfig().getString("messages.accent-color").charAt(0));
         private String name;
         private Integer invites;
 
@@ -38,6 +38,8 @@ public class Util {
             this.name = name;
             this.invites = invites;
         }
+
+        MessageBuilder() {}
 
         String digest(String s) {
             if(accent != null) s = s.replace("{A}", accent.toString());

@@ -14,6 +14,10 @@ import java.util.UUID;
 
 public class CommandInvite extends Command {
 
+    /*
+     * TODO /invite list
+     */
+
     private Configuration cfg;
 
     @SuppressWarnings("WeakerAccess")
@@ -27,7 +31,7 @@ public class CommandInvite extends Command {
     public void execute(CommandSender commandSender, String[] args) {
         if (commandSender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) commandSender;
-            Util.MessageBuilder builder = new Util.MessageBuilder(null, null);
+            Util.MessageBuilder builder = new Util.MessageBuilder();
             boolean isMember = PCS_Checkpoint.getInstance().getPersona(player) != null;
 
             if (isMember) {

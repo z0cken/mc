@@ -1,6 +1,5 @@
 package com.z0cken.mc.checkpoint;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -35,9 +34,9 @@ public class PCS_Checkpoint extends Plugin implements Listener {
     private Configuration config;
 
     /*
-     * TODO Dynamic UI
      * TODO Async REST & SQL ?
      * TODO Admin Commands
+     * TODO Give invites
      */
 
     @Override
@@ -52,7 +51,7 @@ public class PCS_Checkpoint extends Plugin implements Listener {
 
         new DatabaseHelper();
 
-        getProxy().getScheduler().schedule(this, RequestHelper::checkVerifications, 0 , config.getInt("bot-interval"), TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, RequestHelper::checkVerifications, 0 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
     @Override
@@ -60,7 +59,8 @@ public class PCS_Checkpoint extends Plugin implements Listener {
         //Discards potential other unsaved invocations of Configuration#set
         //Prevents runtime changes by user to be overwritten
         loadConfig();
-        config.set("lastCheck", RequestHelper.lastCheck);
+
+        config.set("bot.timestamp", RequestHelper.timestamp);
 
         try {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, new File(getDataFolder(), "config.yml"));
@@ -77,9 +77,9 @@ public class PCS_Checkpoint extends Plugin implements Listener {
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if(!(verified.containsKey(event.getPlayer()) || guests.contains(event.getPlayer())) && !event.getTarget().getName().equals("hub")) {
+        if(!(verified.containsKey(event.getPlayer()) || guests.contains(event.getPlayer())) && !event.getTarget().getName().equals(config.getString("hub-world"))) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage("§c§l>_ §7Bitte nutze §c§l/checkpoint §7um deinen Account zu bestätigen!");
+            event.getPlayer().sendMessage(new Util.MessageBuilder().digest(config.getString("messages.verify.switch")));
 
         }
     }

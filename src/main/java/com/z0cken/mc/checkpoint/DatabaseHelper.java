@@ -1,5 +1,6 @@
 package com.z0cken.mc.checkpoint;
 
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 import java.sql.*;
@@ -75,7 +76,7 @@ public class DatabaseHelper {
         if(valid) {
             //Double verification alert
             if(usernameExists(name)) {
-                PCS_Checkpoint.getInstance().getLogger().warning(name + "tried to checkpoint " + uuid + " but is already linked!");
+                PCS_Checkpoint.getInstance().getLogger().warning(name + "tried to verify " + uuid + " but is already linked!");
                 return;
             }
 
@@ -87,11 +88,15 @@ public class DatabaseHelper {
                 e.printStackTrace();
             }
             PCS_Checkpoint.getInstance().checkPlayer(uuid);
+            ProxiedPlayer player = PCS_Checkpoint.getInstance().getProxy().getPlayer(uuid);
+            if(player != null) {
+                player.sendMessage(new Util.MessageBuilder().digest(PCS_Checkpoint.getInstance().getConfig().getString("messages.verify.success")));
+            }
         }
     }
 
     private static boolean usernameExists(String name) {
-        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT uuid FROM verified WHERE username = '" + name + "'")) {
+        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT player FROM verified WHERE username = '" + name + "'")) {
             if(resultSet.next()) return true;
         } catch (SQLException e) {
             e.printStackTrace();
