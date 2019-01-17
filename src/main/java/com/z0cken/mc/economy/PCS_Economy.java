@@ -48,7 +48,6 @@ public class PCS_Economy extends JavaPlugin {
         accountManager = new AccountManager(conn);
 
         getLogger().info("Load Complete");
-        //AKtuell halten
     }
 
     @Override
