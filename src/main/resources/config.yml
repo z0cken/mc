@@ -1,0 +1,53 @@
+mysql:
+  server: 127.0.0.1
+  port: 3306
+  username: admin
+  password: 123
+  database: PCS_Economy
+
+economy:
+  messagePrefix: "&b[&aEconomy&b]&f "
+  currency:
+    currencySingular: Schekel
+    currencyPlural: Schekel
+    currencySymbol: ש
+  permissions:
+    admin: pcs.economy.admin
+    user: pcs.economy.user
+  messages:
+    success:
+      successGeneral: Alles gut
+    error:
+      errorGeneral: Irgendwas ist schief gelaufen. Bitte kontaktiere einen Admin
+    action:
+      accounts:
+        success:
+          accountSuccessBalanceSelf: "Kontostand: &l&6{csymbol}{amount}&r&f"
+          accountSuccessBalanceOther: "Kontostand von &2{player}&f: &l&6{csymbol}{amount}&r&f"
+          accountSuccessDelete: Konto von &2{player}&f erfolgreich gelöscht!
+          accountSuccessClear: Konto von &2{player}&f erfolgreich auf 0 gesetzt!
+          accountSuccessCreate: Konto von &2{player}&f erfolgreich erstellt!
+          accountSuccessSet: Kontostand von &2{player}&f erfolgreich auf &l&6{csymbol}{amount}&r&f gesetzt!
+          accountSuccessAdd: Es wurden dem Konto von &2{player}&f &l&6{csymbol}{amount}&r&f hinzugefügt!
+          accountSuccessSubtract: Es wurden dem Konto von &2{player}&f &l&6{csymbol}{amount}&r&f abgezogen!
+        error:
+          accountErrorBalanceSelf: Dein Kontostand konnte nicht abgerufen werden!
+          accountErrorBalanceOther: Der Kontostand von &2{player}&f konnte nicht abgerufen werden!
+          accountErrorDelete: Konto von &2{player}&f konnte nicht gelöscht werden!
+          accountErrorClear: Konto von &2{player}&f konnte nicht auf 0 gesetzt werden!
+          accountErrorCreate: Konto von &2{player}&f konnte nicht erstellt werden!
+          accountErrorSet: Kontostand von &2{player}&f konnte nicht gesetzt werden!
+          accountErrorAdd: Konnte den Betrag dem Konto von &2{player}&f nicht hinzufügen!
+          accountErrorSubtract: Konnte den Betrag dem Konto von &2{player}&f nicht abziehen!
+    payment:
+      error:
+        paymentError: Transaktion fehlgeschlagen
+        paymentErrorNegativeValue: Negative Werte sind nicht erlaubt
+        paymentErrorNotEnoughFunds: Du hast nicht genügend Geld auf dem Konto
+        paymentErrorAccountNotExisting: Das angegebene Konto existiert nicht
+        paymentErrorSelf: Du kannst kein Geld an dich selbst überweisen
+      success:
+        paymentSuccessSender: Es wurden erfolgreich &l&6{csymbol}{amount}&r&f an &2{player2}&f überwiesen!
+        paymentSuccessReceiver: Du hast gerade &l&6{csymbol}{amount}&r&f von &2{player}&f erhalten!
+    permission:
+      errorNoPermission: Du hast keine Berechtigung diesen Command zu nutzen!

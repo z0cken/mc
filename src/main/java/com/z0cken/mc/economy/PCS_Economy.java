@@ -1,0 +1,88 @@
+package com.z0cken.mc.economy;
+
+import co.aikar.commands.BukkitCommandManager;
+import com.z0cken.mc.economy.commands.MoneyCommand;
+import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.events.PlayerListener;
+import com.z0cken.mc.economy.impl.VaultConnector;
+import com.z0cken.mc.economy.utils.MessageBuilder;
+import net.milkbowl.vault.economy.*;
+import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.ServicesManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+
+public class PCS_Economy extends JavaPlugin {
+
+    public static PCS_Economy pcs_economy;
+    public AccountManager accountManager;
+    private static BukkitCommandManager commandManager;
+    private Connection conn;
+
+    @Override
+    public void onLoad(){
+        pcs_economy = this;
+        this.saveDefaultConfig();
+        ConfigManager.loadConfig();
+
+        try{
+            conn = DriverManager.getConnection("jdbc:mysql://" + ConfigManager.mysqlAddress + ":" +
+                    ConfigManager.mysqlPort + "/" +
+                    ConfigManager.mysqlDatabase + "?" +
+                    "user=" + ConfigManager.mysqlUsername +
+                    "&password=" + ConfigManager.mysqlPassword);
+
+            if(conn != null){
+                getLogger().info("Database Connection Established");
+            }
+        }catch (SQLException ex){
+            getLogger().log(Level.SEVERE,"SQLException: " + ex.getMessage());
+            getLogger().log(Level.SEVERE, "SQLState: " + ex.getSQLState());
+            getLogger().log(Level.SEVERE, "VendorError: " + String.valueOf(ex.getErrorCode()));
+        }
+
+        accountManager = new AccountManager(conn);
+
+        getLogger().info("Load Complete");
+        //AKtuell halten
+    }
+
+    @Override
+    public void onEnable(){
+        registerCommands();
+        registerInterfaces();
+
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(conn), this);
+
+        getLogger().info("PCS_Economy Enabled");
+    }
+
+    private void registerCommands(){
+        commandManager = new BukkitCommandManager(this);
+        commandManager.registerCommand(new MoneyCommand().setExceptionHandler((command, registeredCommand, sender, args, t) -> {
+            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
+            return true;
+        }));
+    }
+
+    @Override
+    public void onDisable() {
+        try{
+            conn.close();
+            if(conn.isClosed()) { getLogger().info("SQL-connection closed"); }
+        }catch (SQLException e){
+            getLogger().log(Level.SEVERE, e.getMessage());
+        }
+        getLogger().info("PCS_Economy Disabled");
+    }
+
+    private void registerInterfaces(){
+        ServicesManager sm = getServer().getServicesManager();
+        sm.register(Economy.class, new VaultConnector(), this, ServicePriority.Highest);
+        getLogger().info("Registered Vault Interface");
+    }
+}
