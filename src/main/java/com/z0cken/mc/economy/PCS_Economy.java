@@ -7,6 +7,8 @@ import com.z0cken.mc.economy.events.PlayerListener;
 import com.z0cken.mc.economy.impl.VaultConnector;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.*;
+import net.minecraft.server.v1_13_R1.WorldGenVillagePieces;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;

@@ -8,11 +8,16 @@ import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import sun.security.krb5.Config;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @CommandAlias("m0ney")
 public class MoneyCommand extends BaseCommand {
@@ -157,6 +162,25 @@ public class MoneyCommand extends BaseCommand {
     @CommandPermission("pcs.economy.admin")
     public void onShopCreateAdmin(CommandSender sender, String name){
 
+    }
+
+    @Subcommand("debug matlist")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugMatList(CommandSender sender){
+        String fileContent = "";
+        for(int i = 0; i < Material.values().length; i++){
+            fileContent += Material.values()[i].name() + "\n\n";
+
+        }
+        try{
+            PrintWriter fileWriter = new PrintWriter("mats.txt");
+            fileWriter.write(fileContent);
+            fileWriter.close();
+        }catch (IOException e){
+
+        }
+
+        sender.sendMessage(String.valueOf(Material.values().length));
     }
 
     private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, double amount){
