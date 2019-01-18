@@ -40,29 +40,19 @@ public class AccountManager {
 
     public Account getAccount(UUID uuid){
         String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
-        try(Statement stmt = conn.createStatement()){
-            try(ResultSet set = stmt.executeQuery(query)){
-                return getAccountFromResultSet(set, uuid);
-            }catch (SQLException e){
-                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
-                return null;
-            }
+        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+            return getAccountFromResultSet(set, uuid);
         }catch (SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return null;
         }
     }
 
     public Account getAccount(String playerName){
         String query = "select * from accounts where username = \'" + playerName + "\';";
-        try(Statement stmt = conn.createStatement()){
-            try(ResultSet set = stmt.executeQuery(query)){
-                return getAccountFromResultSet(set, null);
-            }catch (SQLException e){
-                logError(Level.SEVERE, e.getMessage());
-                return null;
-            }
-        }catch(SQLException e){
+        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+            return getAccountFromResultSet(set, null);
+        }catch (SQLException e){
             logError(Level.SEVERE, e.getMessage());
             return null;
         }
@@ -144,8 +134,7 @@ public class AccountManager {
     }
 
     private int getRowCount(String query){
-        try(Statement stmt = conn.createStatement()){
-            ResultSet set = stmt.executeQuery(query);
+        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
             while(set.next()){
                 return set.getInt(1);
             }
