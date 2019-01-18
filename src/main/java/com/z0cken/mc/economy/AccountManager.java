@@ -40,10 +40,13 @@ public class AccountManager {
 
     public Account getAccount(UUID uuid){
         String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
-        try{
-            Statement stmt = conn.createStatement();
-            ResultSet set = stmt.executeQuery(query);
-            return getAccountFromResultSet(set, uuid);
+        try(Statement stmt = conn.createStatement()){
+            try(ResultSet set = stmt.executeQuery(query)){
+                return getAccountFromResultSet(set, uuid);
+            }catch (SQLException e){
+                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+                return null;
+            }
         }catch (SQLException e){
             PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
             return null;
@@ -52,12 +55,15 @@ public class AccountManager {
 
     public Account getAccount(String playerName){
         String query = "select * from accounts where username = \'" + playerName + "\';";
-        try{
-            Statement stmt = conn.createStatement();
-            ResultSet set = stmt.executeQuery(query);
-            return getAccountFromResultSet(set, null);
+        try(Statement stmt = conn.createStatement()){
+            try(ResultSet set = stmt.executeQuery(query)){
+                return getAccountFromResultSet(set, null);
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return null;
+            }
         }catch(SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return null;
         }
     }
@@ -75,18 +81,15 @@ public class AccountManager {
     }
 
     public boolean createAccount(OfflinePlayer player) {
-        try {
-            String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
-            PreparedStatement pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, player.getName());
-            pstmt.setString(2, player.getUniqueId().toString());
-            pstmt.setDouble(3, 0);
-
-            pstmt.execute();
-
+        String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
+        try(PreparedStatement stmt = conn.prepareStatement(query)){
+            stmt.setString(1, player.getName());
+            stmt.setString(2, player.getUniqueId().toString());
+            stmt.setDouble(3, 0);
+            stmt.execute();
             return true;
-        } catch (SQLException e) {
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+        }catch (SQLException e){
+            logError(Level.SEVERE, e.getMessage());
             return false;
         }
     }
@@ -128,40 +131,36 @@ public class AccountManager {
     }
 
     public boolean updateAccountBalance(Account account){
-        try{
-            String query = "update accounts set balance = ? where accountID = ? ;";
-            PreparedStatement stmt = conn.prepareStatement(query);
+        String query = "update accounts set balance = ? where accountID = ? ;";
+        try(PreparedStatement stmt = conn.prepareStatement(query)){
             stmt.setDouble(1, account.getBalance());
             stmt.setInt(2, account.getAccountID());
-
-            stmt.executeUpdate();
+            stmt.execute();
             return true;
         }catch (SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return false;
         }
     }
 
     private int getRowCount(String query){
-        try{
-            Statement stmt = conn.createStatement();
+        try(Statement stmt = conn.createStatement()){
             ResultSet set = stmt.executeQuery(query);
             while(set.next()){
                 return set.getInt(1);
             }
         }catch (SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return 0;
         }
         return 0;
     }
 
     private boolean executeSimpleStatement(String query){
-        try{
-            Statement stmt = conn.createStatement();
+        try(Statement stmt = conn.createStatement()){
             return stmt.execute(query);
         }catch (SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return false;
         }
     }
@@ -189,10 +188,15 @@ public class AccountManager {
                 PCS_Economy.pcs_economy.getLogger().info("AccountHolderUUID: " + holder.getUUID());
                 account = new Account(holder, set.getDouble("balance"), set.getInt("accountID"));
             }
+            set.close();
         }catch (SQLException e){
-            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+            logError(Level.SEVERE, e.getMessage());
             return null;
         }
         return account;
+    }
+
+    private void logError(Level level, String message){
+        PCS_Economy.pcs_economy.getLogger().log(level, message);
     }
 }

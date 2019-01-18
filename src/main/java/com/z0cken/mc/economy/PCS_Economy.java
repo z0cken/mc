@@ -12,6 +12,7 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -29,20 +30,21 @@ public class PCS_Economy extends JavaPlugin {
         this.saveDefaultConfig();
         ConfigManager.loadConfig();
 
+        String sqlConnPath = "jdbc:mysql://" + ConfigManager.mysqlAddress + ":" +
+                ConfigManager.mysqlPort + "/" +
+                ConfigManager.mysqlDatabase + "?" +
+                "user=" + ConfigManager.mysqlUsername +
+                "&password=" + ConfigManager.mysqlPassword;
         try{
-            conn = DriverManager.getConnection("jdbc:mysql://" + ConfigManager.mysqlAddress + ":" +
-                    ConfigManager.mysqlPort + "/" +
-                    ConfigManager.mysqlDatabase + "?" +
-                    "user=" + ConfigManager.mysqlUsername +
-                    "&password=" + ConfigManager.mysqlPassword);
-
+            conn = DriverManager.getConnection(sqlConnPath);
             if(conn != null){
                 getLogger().info("Database Connection Established");
             }
-        }catch (SQLException ex){
+        }catch(SQLException ex){
             getLogger().log(Level.SEVERE,"SQLException: " + ex.getMessage());
             getLogger().log(Level.SEVERE, "SQLState: " + ex.getSQLState());
             getLogger().log(Level.SEVERE, "VendorError: " + String.valueOf(ex.getErrorCode()));
+            conn = null;
         }
 
         accountManager = new AccountManager(conn);
