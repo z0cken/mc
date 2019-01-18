@@ -163,16 +163,8 @@ public class AccountManager {
                 }
                 OfflinePlayer op = PCS_Economy.pcs_economy.getServer().getOfflinePlayer(uuid);
                 AccountHolder holder;
-                if(op == null){
-                    holder = new AccountHolder(set.getString("username"));
-                }else{
-                    holder = new AccountHolder(op);
-                }
+                holder = new AccountHolder(op);
 
-                holder.accountHolderUUID = uuid;
-                if(holder.getName() == null){
-                    holder.accountHolderPN = set.getString("username");
-                }
                 PCS_Economy.pcs_economy.getLogger().info("AccountHolderName: " + holder.getName());
                 PCS_Economy.pcs_economy.getLogger().info("AccountHolderUUID: " + holder.getUUID());
                 account = new Account(holder, set.getDouble("balance"), set.getInt("accountID"));

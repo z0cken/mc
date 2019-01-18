@@ -7,24 +7,27 @@ import java.util.UUID;
 
 public class AccountHolder {
 
-    public OfflinePlayer accountHolderOP;
-    public String accountHolderPN;
-    public Player accountHolderP;
-    public UUID accountHolderUUID;
+    private OfflinePlayer accountHolderOP;
 
     public AccountHolder(OfflinePlayer player){
         if(player != null)
             this.accountHolderOP = player;
-            this.accountHolderPN = player.getName();
-    }
-
-    public AccountHolder(String playerName){
-        if(playerName != null)
-            this.accountHolderPN = playerName;
     }
 
     public String getName(){
-        return accountHolderPN;
+        return accountHolderOP.getName();
+    }
+
+    public OfflinePlayer getOfflinePlayer(){
+        return this.accountHolderOP;
+    }
+
+    public Player getPlayer(){
+        return this.accountHolderOP.getPlayer();
+    }
+
+    public UUID getUUID(){
+        return accountHolderOP.getUniqueId();
     }
 
     public void sendMessage(String message){
@@ -33,11 +36,4 @@ public class AccountHolder {
         }
     }
 
-    public String getId(){
-        return accountHolderOP.getUniqueId().toString();
-    }
-
-    public UUID getUUID(){
-        return accountHolderOP.getUniqueId();
-    }
 }
