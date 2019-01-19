@@ -7,15 +7,15 @@ database:
   user:
   password:
 messages:
-  protected: §c§l>_ §7Dieser Chunk gehört {NAME}
-  success: §a§l>_ §7Du hast erfolgreich den Chunk {CHUNK} beansprucht
+  protected: §c§l>_ §7Dieser Chunk gehört §f{NAME}
+  success: §a§l>_ §7Du hast erfolgreich den Chunk §f{CHUNK} §7beansprucht
   denied-self: §c§l>_ §7Dieser Chunk gehört dir bereits
-  denied-friend: §c§l>_ §7Diesr Chunk gehört deinem Freund {NAME}
+  denied-friend: §c§l>_ §7Diesr Chunk gehört deinem Freund §f{NAME}
   right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick, um ihn abzubauen
-  unclaim: §e§l>_ §7Du hast deinen Chunk {CHUNK} aufgegeben
-  enter: §f§l>_ §7Du hast das Gebiet von {NAME} betreten
+  unclaim: §e§l>_ §7Du hast deinen Chunk §f{CHUNK} §7aufgegeben
+  enter: §f§l>_ §7Du hast das Gebiet von §f{NAME} §7betreten
   enter-self: §f§l>_ §7Du hast dein eigenes Gebiet betreten
-  leave: §f§l>_ §7Du hast das Gebiet von {NAME} verlassen
+  leave: §f§l>_ §7Du hast das Gebiet von §f{NAME} §7verlassen
   leave-self: §f§l>_ §7Du hast dein eigenes Gebiet verlassen
 
 

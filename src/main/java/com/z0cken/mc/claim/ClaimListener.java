@@ -67,13 +67,15 @@ class ClaimListener implements Listener {
 
             OfflinePlayer owner = PCS_Claim.getOwner(chunk);
             if(owner == null) {
+                MessageBuilder builder = new MessageBuilder().define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]");
+
                 EndPortalFrame frame = (EndPortalFrame) event.getBlockPlaced().getBlockData();
                 frame.setEye(true);
                 event.getBlockPlaced().setBlockData(frame);
 
                 PCS_Claim.getInstance().getLogger().info("[" + chunk.getX() + "|" + chunk.getZ() + "]" + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
                 PCS_Claim.claim(chunk, player);
-                player.spigot().sendMessage(new MessageBuilder().build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
+                player.spigot().sendMessage(builder.build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
         }
     }
@@ -90,7 +92,7 @@ class ClaimListener implements Listener {
 
             if(player.equals(PCS_Claim.getOwner(chunk))){
                 BaseComponent[] message = null;
-                MessageBuilder builder = new MessageBuilder();
+                MessageBuilder builder = new MessageBuilder().define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]");
 
                 EndPortalFrame frame = (EndPortalFrame) block.getBlockData();
                 boolean hasEye = frame.hasEye();
