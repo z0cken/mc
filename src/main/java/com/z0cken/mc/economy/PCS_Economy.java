@@ -32,22 +32,8 @@ public class PCS_Economy extends JavaPlugin {
         this.saveDefaultConfig();
         ConfigManager.loadConfig();
 
-        String sqlConnPath = "jdbc:mysql://" + ConfigManager.mysqlAddress + ":" +
-                ConfigManager.mysqlPort + "/" +
-                ConfigManager.mysqlDatabase + "?" +
-                "user=" + ConfigManager.mysqlUsername +
-                "&password=" + ConfigManager.mysqlPassword;
-        try{
-            conn = DriverManager.getConnection(sqlConnPath);
-            if(conn != null){
-                getLogger().info("Database Connection Established");
-            }
-        }catch(SQLException ex){
-            getLogger().log(Level.SEVERE,"SQLException: " + ex.getMessage());
-            getLogger().log(Level.SEVERE, "SQLState: " + ex.getSQLState());
-            getLogger().log(Level.SEVERE, "VendorError: " + String.valueOf(ex.getErrorCode()));
-            conn = null;
-        }
+        connectToDB();
+        checkDBConnection();
 
         accountManager = new AccountManager(conn);
 
@@ -87,5 +73,59 @@ public class PCS_Economy extends JavaPlugin {
         ServicesManager sm = getServer().getServicesManager();
         sm.register(Economy.class, new VaultConnector(), this, ServicePriority.Highest);
         getLogger().info("Registered Vault Interface");
+    }
+
+    public Connection connectToDB(){
+        String sqlConnPath = "jdbc:mysql://" + ConfigManager.mysqlAddress + ":" +
+                ConfigManager.mysqlPort + "/" +
+                ConfigManager.mysqlDatabase + "?" +
+                "user=" + ConfigManager.mysqlUsername +
+                "&password=" + ConfigManager.mysqlPassword;
+        try{
+            conn = DriverManager.getConnection(sqlConnPath);
+            if(conn != null){
+                getLogger().info("Database Connection Established");
+            }
+        }catch(SQLException ex){
+            getLogger().log(Level.SEVERE, "Database Connection Failed");
+            getLogger().log(Level.SEVERE,"SQLException: " + ex.getMessage());
+            getLogger().log(Level.SEVERE, "SQLState: " + ex.getSQLState());
+            getLogger().log(Level.SEVERE, "VendorError: " + ex.getErrorCode());
+            conn = null;
+        }
+        return conn;
+    }
+
+    /*
+        Hoffe, dass der Check ausgiebig genug ist. Auf Nachfrage kann ich u.U.
+        noch Retrys hinzufügen.
+     */
+    public boolean checkDBConnection(){
+        if(conn != null){
+            try{
+                if(!conn.isValid(100)){
+                    connectToDB();
+                    return true;
+                }
+                return false;
+            }catch (SQLException e){
+                getLogger().log(Level.SEVERE, e.getMessage());
+                return false;
+            }
+        }else{
+            connectToDB();
+            if(conn != null){
+                try{
+                    if(conn.isValid(100)){
+                        return true;
+                    }
+                    return false;
+                }catch (SQLException e){
+                    getLogger().log(Level.SEVERE, e.getMessage());
+                    return false;
+                }
+            }
+            return false;
+        }
     }
 }

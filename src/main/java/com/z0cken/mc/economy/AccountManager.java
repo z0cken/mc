@@ -39,23 +39,29 @@ public class AccountManager {
     }
 
     public Account getAccount(UUID uuid){
-        String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
-        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
-            return getAccountFromResultSet(set, uuid);
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return null;
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
+            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+                return getAccountFromResultSet(set, uuid);
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return null;
+            }
         }
+        return null;
     }
 
     public Account getAccount(String playerName){
-        String query = "select * from accounts where username = \'" + playerName + "\';";
-        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
-            return getAccountFromResultSet(set, null);
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return null;
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            String query = "select * from accounts where username = \'" + playerName + "\';";
+            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+                return getAccountFromResultSet(set, null);
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return null;
+            }
         }
+        return null;
     }
 
     public Account getAccount(Player player){
@@ -71,17 +77,20 @@ public class AccountManager {
     }
 
     public boolean createAccount(OfflinePlayer player) {
-        String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
-        try(PreparedStatement stmt = conn.prepareStatement(query)){
-            stmt.setString(1, player.getName());
-            stmt.setString(2, player.getUniqueId().toString());
-            stmt.setDouble(3, 0);
-            stmt.execute();
-            return true;
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return false;
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
+            try(PreparedStatement stmt = conn.prepareStatement(query)){
+                stmt.setString(1, player.getName());
+                stmt.setString(2, player.getUniqueId().toString());
+                stmt.setDouble(3, 0);
+                stmt.execute();
+                return true;
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return false;
+            }
         }
+        return false;
     }
 
     public boolean deleteAccount(String playerName){
@@ -121,37 +130,45 @@ public class AccountManager {
     }
 
     public boolean updateAccountBalance(Account account){
-        String query = "update accounts set balance = ? where accountID = ? ;";
-        try(PreparedStatement stmt = conn.prepareStatement(query)){
-            stmt.setDouble(1, account.getBalance());
-            stmt.setInt(2, account.getAccountID());
-            stmt.execute();
-            return true;
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return false;
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            String query = "update accounts set balance = ? where accountID = ? ;";
+            try(PreparedStatement stmt = conn.prepareStatement(query)){
+                stmt.setDouble(1, account.getBalance());
+                stmt.setInt(2, account.getAccountID());
+                stmt.execute();
+                return true;
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return false;
+            }
         }
+        return false;
     }
 
     private int getRowCount(String query){
-        try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
-            while(set.next()){
-                return set.getInt(1);
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+                while(set.next()){
+                    return set.getInt(1);
+                }
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return 0;
             }
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return 0;
         }
         return 0;
     }
 
     private boolean executeSimpleStatement(String query){
-        try(Statement stmt = conn.createStatement()){
-            return stmt.execute(query);
-        }catch (SQLException e){
-            logError(Level.SEVERE, e.getMessage());
-            return false;
+        if(PCS_Economy.pcs_economy.checkDBConnection()){
+            try(Statement stmt = conn.createStatement()){
+                return stmt.execute(query);
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return false;
+            }
         }
+        return false;
     }
 
     private Account getAccountFromResultSet(ResultSet set, UUID uuid){

@@ -10,6 +10,7 @@ import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
@@ -181,6 +182,14 @@ public class MoneyCommand extends BaseCommand {
         }
 
         sender.sendMessage(String.valueOf(Material.values().length));
+    }
+
+    @Subcommand("debug db")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugDB(CommandSender sender){
+        if(sender instanceof ConsoleCommandSender){
+            pcs_economy.checkDBConnection();
+        }
     }
 
     private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, double amount){
