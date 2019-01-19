@@ -1,0 +1,5 @@
+name: PCS_Claim
+author: Flare
+main: com.z0cken.mc.claim.PCS_Claim
+version: ${project.version}
+api-version: 1.13
