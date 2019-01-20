@@ -2,7 +2,7 @@ package com.z0cken.mc.checkpoint;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-public class Persona {
+class Persona {
 
     private String username;
     private boolean banned;

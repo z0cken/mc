@@ -1,47 +1,78 @@
 package com.z0cken.mc.checkpoint;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 import java.sql.*;
 import java.util.UUID;
+import java.util.logging.Logger;
 
-public class DatabaseHelper {
+class DatabaseHelper {
 
     private static Connection connection;
+    private static final Logger log = PCS_Checkpoint.getInstance().getLogger();
 
-    DatabaseHelper() {
+    private DatabaseHelper() {}
+
+    static void connect() {
+        if(isConnected()) return;
+
+        Configuration config = PCS_Checkpoint.getConfig().getSection("database");
+
+        String ip = config.getString("ip");
+        String db = config.getString("db");
+        String user = config.getString("user");
+        String password = config.getString("password");
+
+        String url = "jdbc:mysql://%s/%s?" + "user=%s&password=%s";
+
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection(String.format(url, ip, db, user, password));
+            setupTables();
+        } catch (SQLException e) {
+            log.severe("Failed to connect to database");
+            log.severe("SQLException: " + e.getMessage());
+            log.severe("SQLState: " + e.getSQLState());
+            log.severe("VendorError: " + e.getErrorCode());
 
-            Configuration config = PCS_Checkpoint.getInstance().getConfig().getSection("database");
-
-            String ip = config.getString("ip");
-            String dbname = config.getString("name");
-            String user = config.getString("user");
-            String password = config.getString("password");
-
-            String url = "jdbc:mysql://%s/%s?" + "user=%s&password=%s";
-            connection = DriverManager.getConnection(String.format(url, ip, dbname, user, password));
-
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
+            //TODO Introduce proper fallback mechanism
+            PCS_Checkpoint.getInstance().getProxy().stop("Database Error");
         }
+    }
 
+    static void disconnect() {
+        try {
+            connection.close();
+        } catch (SQLException e) { }
+    }
+
+    private static void setupTables() {
 
         try (Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
-            statement.executeUpdate(prefix + "pending (player CHAR(36) PRIMARY KEY, code CHAR(32) NOT NULL);");
-            statement.executeUpdate(prefix + "verified (player CHAR(36) PRIMARY KEY, username VARCHAR(32) NOT NULL, invites INT DEFAULT 0);");
-            statement.executeUpdate(prefix + "guests (guest CHAR(36) PRIMARY KEY, host CHAR(36) NOT NULL);");
+
+            statement.addBatch(prefix + "pending (player CHAR(36) PRIMARY KEY, code CHAR(32) NOT NULL);");
+            statement.addBatch(prefix + "verified (player CHAR(36) PRIMARY KEY, username VARCHAR(32) NOT NULL, invites INT DEFAULT 0, anonymous BOOLEAN DEFAULT FALSE);");
+            statement.addBatch(prefix + "guests (guest CHAR(36) PRIMARY KEY, host CHAR(36) NOT NULL, invited INT(10) NOT NULL);");
+            statement.executeBatch();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static boolean isConnected() {
+        boolean connected = false;
+        try {
+            connected = connection != null && connection.isValid(15);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        return connected;
     }
 
     static Persona getPersona(UUID uuid) {
+        connect();
 
         Persona persona = null;
 
@@ -56,6 +87,8 @@ public class DatabaseHelper {
     }
 
     static void verify(String message, String name) {
+        connect();
+
         boolean valid = false;
         UUID uuid = null;
 
@@ -87,15 +120,14 @@ public class DatabaseHelper {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            PCS_Checkpoint.getInstance().checkPlayer(uuid);
-            ProxiedPlayer player = PCS_Checkpoint.getInstance().getProxy().getPlayer(uuid);
-            if(player != null) {
-                player.sendMessage(new Util.MessageBuilder().digest(PCS_Checkpoint.getInstance().getConfig().getString("messages.verify.success")));
-            }
+
+            PCS_Checkpoint.getInstance().checkPlayer(uuid, true);
         }
     }
 
     private static boolean usernameExists(String name) {
+        connect();
+
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT player FROM verified WHERE username = '" + name + "'")) {
             if(resultSet.next()) return true;
         } catch (SQLException e) {
@@ -105,7 +137,9 @@ public class DatabaseHelper {
         return false;
     }
 
-    public static boolean isGuest(UUID uuid) {
+    static boolean isGuest(UUID uuid) {
+        connect();
+
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT guest FROM guests WHERE guest = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return true;
         } catch (SQLException e) {
@@ -115,7 +149,9 @@ public class DatabaseHelper {
         return false;
     }
 
-    public static boolean isVerified(UUID uuid) {
+    static boolean isVerified(UUID uuid) {
+        connect();
+
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT player FROM verified WHERE player = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return true;
         } catch (SQLException e) {
@@ -126,20 +162,22 @@ public class DatabaseHelper {
     }
 
     static void invite(UUID guest, UUID host) {
+        connect();
 
         try(Statement statement = connection.createStatement()) {
-            statement.executeUpdate("INSERT IGNORE INTO guests VALUES ('" + guest.toString() + "', '" + host.toString() + "');");
+            statement.executeUpdate("INSERT IGNORE INTO guests VALUES ('" + guest.toString() + "','" + host.toString() + "','" + (int) (System.currentTimeMillis() / 1000L) + "');");
             statement.executeUpdate("UPDATE verified SET invites = invites - 1 WHERE player = '" + host.toString() + "'");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        PCS_Checkpoint.getInstance().checkPlayer(guest);
+        PCS_Checkpoint.getInstance().checkPlayer(guest, true);
 
     }
 
     static int getInvites(UUID uuid) {
+        connect();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT invites FROM verified WHERE player = '" + uuid.toString() + "'")) {
             resultSet.next();
@@ -152,7 +190,19 @@ public class DatabaseHelper {
         return 0;
     }
 
+    static void giveInvites(UUID uuid, int invites) {
+        connect();
+
+        try(Statement statement = connection.createStatement()) {
+            statement.executeUpdate("UPDATE verified SET invites = invites + " + invites + " WHERE player = '" + uuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     static void insertPending(UUID uuid, String hash) {
+        connect();
 
         try(Statement statement = connection.createStatement()) {
             statement.executeUpdate("INSERT IGNORE INTO pending VALUES ('" + uuid.toString() + "', '" + hash + "');");
@@ -160,6 +210,31 @@ public class DatabaseHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    static boolean isAnonymous(UUID uuid) {
+        connect();
+
+        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT anonymous FROM verified WHERE player = '" + uuid.toString() + "'")) {
+            if(resultSet.next()) return resultSet.getBoolean(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    static boolean setAnonymous(UUID uuid, boolean anonymous) {
+        connect();
+
+        try(Statement statement = connection.createStatement()) {
+            statement.executeUpdate("UPDATE verified SET anonymous = " + Boolean.toString(anonymous).toUpperCase() + " WHERE player = '" + uuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
 }

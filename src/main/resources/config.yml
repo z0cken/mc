@@ -1,0 +1,53 @@
+bot:
+  timestamp: 0
+  interval: 45
+  user: z0cken
+  password:
+  login-timeout-multiplier: 3
+  cookie:
+database:
+  ip:
+  db:
+  user:
+  password:
+hub-name: hub
+messages:
+  accent-color: §b
+  anon:
+    switched-to-true: §a§l>_ §7Du bist nun §aanonymisiert§7! (Wirksam nach ReLog)
+    switched-to-false: §a§l>_ §7Du bist nun §cnicht mehr §7anonymisiert! (Wirksam nach ReLog)
+    denied-nomember: §c§l>_ §7Nur Mitglieder des pr0gramms profitieren von diesem Befehl!
+  invite:
+    denied-self: §c§l>_ §7Ob du behindert bist?
+    denied-exists: §c§l>_ §7§o{NAME} §7ist bereits Mitglied!
+    denied-notfound: §c§l>_ §7ZOMG, Spieler nicht gefunden!
+    denied-noinvites: §c§l>_ §7Du hast derzeit leider keine Invites mehr!
+    denied-nomember: §c§l>_ §7Nur Mitglieder des pr0gramms können Spieler einladen!
+    confirmed-yes: §a§l>_ §7§o{NAME} §7wurde erfolgreich eingeladen!
+    confirmed-yes-guest: §a§l>_ §7Du wurdest soeben von {NAME} eingeladen!
+    #confirmed-invites: §f§l>_ §7Du hast noch {A}{INVITES} §7Invites übrig!
+    #confirmed-invites-none: §c§l>_ §7Du hast derzeit keine Invites mehr übrig!
+    confirmed:
+    - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
+    - '§8[ - §7Aktuell verfügbare Invites: {A}{INVITES}'
+    - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
+    - §8[ - §7Klicke {#[RUN|/invite {NAME} yes][{A}> HIER <]#} §7um §o{NAME} §7einzuladen!
+    - §8[ ------------------------------------------- ]
+    instructions:
+    - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
+    - '§8[ - §7Aktuell verfügbare Invites: {A}{INVITES}'
+    - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
+    - '§8[ - §7Syntax: {A}/invite [Minecraft Username]'
+    - '§8[ - §7{#[RUN|/invite list][{A}Klicke hier] um deine Bürgschaften einzusehen#}'
+    - §8[ ------------------------------------------- ]
+  verify:
+    switch: §c§l>_ §7Bitte nutze §c§l/verify §7um deinen Account zu bestätigen!
+    success: §a§l>_ §7Dein Account wurde soeben bestätigt!
+    info-anon: §f§l>_ §7Nutze {A}/anon §7um dich zu anonymisieren!
+    denied-isverified: §c§l>_ §7Dein Account §o{NAME} §7ist bereits bestätigt!
+    confirmed:
+    - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
+    - §8[ - §7Sende diesen Code per PN an den Bot {A}z0cken
+    - §8[ - §7{#[SUGGEST|{HASH}][{A}{HASH}]#}
+    - §8[ - §7Klick drauf, um ihn ins Textfeld zu kopieren
+    - §8[ ------------------------------------------- ]

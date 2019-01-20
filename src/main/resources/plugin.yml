@@ -1,4 +1,4 @@
 name: PCS_Checkpoint
 main: com.z0cken.mc.checkpoint.PCS_Checkpoint
-version: 1.0-SNAPSHOT
+version: ${project.version}
 author: Flare
