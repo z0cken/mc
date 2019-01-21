@@ -5,7 +5,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 class Persona {
 
     private String username;
-    private boolean banned;
+    private boolean banned = false;
 
     Persona(String username) {
         this.username = username;

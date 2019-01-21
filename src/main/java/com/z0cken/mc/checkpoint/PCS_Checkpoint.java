@@ -59,7 +59,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
         DatabaseHelper.connect();
 
-        getProxy().getScheduler().schedule(this, RequestHelper::checkVerifications, 0 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 0 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         if(persona == null) {
             if(DatabaseHelper.isGuest(uuid)) {
                 guests.add(player);
-                if(verbose) player.sendMessage(messageBuilder.build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-yes-guest")));
+                if(verbose) player.sendMessage(messageBuilder.build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
             }
         } else {
             if(persona.isBanned()) {

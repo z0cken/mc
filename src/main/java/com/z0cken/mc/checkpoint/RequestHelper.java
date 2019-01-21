@@ -23,12 +23,12 @@ class RequestHelper {
     static long timestamp = cfg.getLong("timestamp");
 
     static {
-        login();
+        authenticate();
     }
 
     private RequestHelper() {}
 
-    private static void login() {
+    private static void authenticate() {
         PCS_Checkpoint.getInstance().loadConfig();
         cfg = PCS_Checkpoint.getConfig().getSection("bot");
         cookie = cfg.getString("cookie");
@@ -43,16 +43,14 @@ class RequestHelper {
             return;
         }
 
-        if(response.getStatus() != 200) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Could not login - HTTP " + response.getStatus());
-            return;
+        if(response.getStatus() / 100 != 2) {
+            PCS_Checkpoint.getInstance().getLogger().severe("Authentication failed (HTTP " + response.getStatus() + ")");
         }
 
-        try {
+        if (response.getHeaders().containsKey("Set-Cookie")) {
             cookie = response.getHeaders().get("Set-Cookie").get(0).split(";")[0];
-            checkVerifications();
-        } catch (NullPointerException e) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Could not login - No cookie given (Wrong password?)");
+        } else {
+            PCS_Checkpoint.getInstance().getLogger().severe("Authentication failed (No cookie given)");
 
             PCS_Checkpoint.getInstance().loadConfig();
             cfg = PCS_Checkpoint.getConfig().getSection("bot");
@@ -64,15 +62,11 @@ class RequestHelper {
                 PCS_Checkpoint.getInstance().getLogger().warning("No fallback password defined in config");
                 password = System.getenv(ENV_VAR_PATH);
             }
-            return;
         }
 
-        PCS_Checkpoint.getInstance().getLogger().info("Login successful");
     }
 
-    static void checkVerifications() {
-        DatabaseHelper.connect();
-
+    static void fetchMessages() {
         long newTime = (int) (System.currentTimeMillis() / 1000L);
 
         String path = "inbox/messages";
@@ -85,29 +79,33 @@ class RequestHelper {
             return;
         }
 
-        if(response.getStatus() != 200) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Could not check for verifications (HTTP " + response.getStatus() + ")");
-            if(response.getStatus() == 403) {
+        final int status = response.getStatus();
+
+        if(status != 200) {
+            PCS_Checkpoint.getInstance().getLogger().severe("Failed to check for verifications (HTTP " + response.getStatus() + ")");
+
+            if(status == 403) {
                 if(timeout-- <= 0) {
-                    login();
+                    authenticate();
                     timeout = cfg.getInt("login-timeout-multiplier");
-                } else PCS_Checkpoint.getInstance().getLogger().info("Current timeout: " + (timeout + 1));
+                } else PCS_Checkpoint.getInstance().getLogger().info("Attempting authentication in " + ((timeout + 1) * cfg.getInt("interval")) + " seconds");
             }
-            return;
-        }
 
-        JSONArray array = response.getBody().getObject().getJSONArray("messages");
 
-        for(Object o : array){
-            JSONObject obj = (JSONObject) o;
+        } else {
+            JSONArray array = response.getBody().getObject().getJSONArray("messages");
 
-            if(obj.getLong("created") > timestamp) {
-                if(obj.getBoolean("sent")) continue;
-                DatabaseHelper.verify(obj.getString("message"), obj.getString("senderName"));
+            for(Object o : array){
+                JSONObject obj = (JSONObject) o;
+
+                if(obj.getLong("created") > timestamp) {
+                    if(obj.getBoolean("sent")) continue;
+                    DatabaseHelper.verify(obj.getString("message").trim(), obj.getString("senderName"));
+                }
             }
-        }
 
-        timestamp = newTime;
+            timestamp = newTime;
+        }
     }
 
     static boolean isBanned(String name) throws UnirestException {

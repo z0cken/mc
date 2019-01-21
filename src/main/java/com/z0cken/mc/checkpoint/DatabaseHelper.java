@@ -14,8 +14,6 @@ class DatabaseHelper {
     private DatabaseHelper() {}
 
     static void connect() {
-        if(isConnected()) return;
-
         Configuration config = PCS_Checkpoint.getConfig().getSection("database");
 
         String ip = config.getString("ip");
@@ -39,10 +37,25 @@ class DatabaseHelper {
         }
     }
 
+    public static boolean isConnected() {
+        boolean connected = false;
+        try {
+            connected = connection != null && connection.isValid(15);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return connected;
+    }
+
     static void disconnect() {
         try {
             connection.close();
         } catch (SQLException e) { }
+    }
+
+    private static void validateConnection() {
+        if(!isConnected()) connect();
     }
 
     private static void setupTables() {
@@ -60,19 +73,8 @@ class DatabaseHelper {
         }
     }
 
-    public static boolean isConnected() {
-        boolean connected = false;
-        try {
-            connected = connection != null && connection.isValid(15);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return connected;
-    }
-
     static Persona getPersona(UUID uuid) {
-        connect();
+        validateConnection();
 
         Persona persona = null;
 
@@ -87,7 +89,7 @@ class DatabaseHelper {
     }
 
     static void verify(String message, String name) {
-        connect();
+        validateConnection();
 
         boolean valid = false;
         UUID uuid = null;
@@ -126,7 +128,7 @@ class DatabaseHelper {
     }
 
     private static boolean usernameExists(String name) {
-        connect();
+        validateConnection();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT player FROM verified WHERE username = '" + name + "'")) {
             if(resultSet.next()) return true;
@@ -138,7 +140,7 @@ class DatabaseHelper {
     }
 
     static boolean isGuest(UUID uuid) {
-        connect();
+        validateConnection();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT guest FROM guests WHERE guest = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return true;
@@ -150,7 +152,7 @@ class DatabaseHelper {
     }
 
     static boolean isVerified(UUID uuid) {
-        connect();
+        validateConnection();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT player FROM verified WHERE player = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return true;
@@ -162,7 +164,7 @@ class DatabaseHelper {
     }
 
     static void invite(UUID guest, UUID host) {
-        connect();
+        validateConnection();
 
         try(Statement statement = connection.createStatement()) {
             statement.executeUpdate("INSERT IGNORE INTO guests VALUES ('" + guest.toString() + "','" + host.toString() + "','" + (int) (System.currentTimeMillis() / 1000L) + "');");
@@ -177,7 +179,7 @@ class DatabaseHelper {
     }
 
     static int getInvites(UUID uuid) {
-        connect();
+        validateConnection();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT invites FROM verified WHERE player = '" + uuid.toString() + "'")) {
             resultSet.next();
@@ -191,7 +193,7 @@ class DatabaseHelper {
     }
 
     static void giveInvites(UUID uuid, int invites) {
-        connect();
+        validateConnection();
 
         try(Statement statement = connection.createStatement()) {
             statement.executeUpdate("UPDATE verified SET invites = invites + " + invites + " WHERE player = '" + uuid.toString() + "'");
@@ -202,7 +204,7 @@ class DatabaseHelper {
     }
 
     static void insertPending(UUID uuid, String hash) {
-        connect();
+        validateConnection();
 
         try(Statement statement = connection.createStatement()) {
             statement.executeUpdate("INSERT IGNORE INTO pending VALUES ('" + uuid.toString() + "', '" + hash + "');");
@@ -213,7 +215,7 @@ class DatabaseHelper {
     }
 
     static boolean isAnonymous(UUID uuid) {
-        connect();
+        validateConnection();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT anonymous FROM verified WHERE player = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return resultSet.getBoolean(1);
@@ -225,7 +227,7 @@ class DatabaseHelper {
     }
 
     static boolean setAnonymous(UUID uuid, boolean anonymous) {
-        connect();
+        validateConnection();
 
         try(Statement statement = connection.createStatement()) {
             statement.executeUpdate("UPDATE verified SET anonymous = " + Boolean.toString(anonymous).toUpperCase() + " WHERE player = '" + uuid.toString() + "'");

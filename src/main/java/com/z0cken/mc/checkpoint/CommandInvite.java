@@ -48,14 +48,14 @@ class CommandInvite extends Command {
                                 player.sendMessage(builder.build(cfg.getString("denied-exists")));
                             } else {
                                 if (args.length == 1) {
-                                    for (String s : cfg.getStringList("confirmed")) {
+                                    for (String s : cfg.getStringList("prompt")) {
                                         player.sendMessage(builder.build(s));
                                     }
 
                                 } else if (args[1].equalsIgnoreCase("yes")) {
                                     DatabaseHelper.invite(uuid, player.getUniqueId());
 
-                                    player.sendMessage(builder.build(cfg.getString("confirmed-yes")));
+                                    player.sendMessage(builder.build(cfg.getString("confirmed")));
 
                                 }
                             }
