@@ -37,7 +37,7 @@ class DatabaseHelper {
         }
     }
 
-    public static boolean isConnected() {
+    static boolean isConnected() {
         boolean connected = false;
         try {
             connected = connection != null && connection.isValid(15);
@@ -49,9 +49,9 @@ class DatabaseHelper {
     }
 
     static void disconnect() {
-        try {
+        if(isConnected()) try {
             connection.close();
-        } catch (SQLException e) { }
+        } catch (SQLException ignored) { }
     }
 
     private static void validateConnection() {

@@ -12,7 +12,6 @@ import org.json.JSONObject;
 class RequestHelper {
 
     private static final String ENV_VAR_PATH = "";
-
     private static final String BASE_URL = "https://pr0gramm.com/api/";
     private static Configuration cfg = PCS_Checkpoint.getConfig().getSection("bot");
     private static final String USERNAME = cfg.getString("username");
@@ -48,7 +47,7 @@ class RequestHelper {
         }
 
         if (response.getHeaders().containsKey("Set-Cookie")) {
-            cookie = response.getHeaders().get("Set-Cookie").get(0).split(";")[0];
+            cookie = response.getHeaders().getFirst("Set-Cookie").split(";")[0];
         } else {
             PCS_Checkpoint.getInstance().getLogger().severe("Authentication failed (No cookie given)");
 
@@ -82,7 +81,7 @@ class RequestHelper {
         final int status = response.getStatus();
 
         if(status != 200) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Failed to check for verifications (HTTP " + response.getStatus() + ")");
+            PCS_Checkpoint.getInstance().getLogger().severe("Failed to fetch messages (HTTP " + response.getStatus() + ")");
 
             if(status == 403) {
                 if(timeout-- <= 0) {

@@ -1,7 +1,7 @@
 bot:
   timestamp: 0
   interval: 45
-  user: z0cken
+  username: z0cken
   password:
   login-timeout-multiplier: 3
   cookie:
@@ -14,8 +14,8 @@ hub-name: hub
 messages:
   accent-color: §b
   anon:
-    switched-to-true: §a§l>_ §7Du bist nun §aanonymisiert§7! (Wirksam nach ReLog)
-    switched-to-false: §a§l>_ §7Du bist nun §cnicht mehr §7anonymisiert! (Wirksam nach ReLog)
+    switched-to-true: §a§l>_ §7Du bist nun §aanonymisiert§7! (Wirksam nach Reconnect)
+    switched-to-false: §a§l>_ §7Du bist nun §cnicht mehr §7anonymisiert! (Wirksam nach Reconnect)
     denied-nomember: §c§l>_ §7Nur Mitglieder des pr0gramms profitieren von diesem Befehl!
   invite:
     denied-self: §c§l>_ §7Ob du behindert bist?

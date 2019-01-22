@@ -59,7 +59,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
         DatabaseHelper.connect();
 
-        getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 0 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
     @Override
@@ -77,7 +77,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         }
 
         DatabaseHelper.disconnect();
-
         instance = null;
     }
 
