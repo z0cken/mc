@@ -12,14 +12,12 @@ import com.z0cken.mc.economy.shops.AdminShopItemManager;
 import com.z0cken.mc.economy.shops.TraderManager;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.*;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -89,6 +87,7 @@ public class PCS_Economy extends JavaPlugin {
     @Override
     public void onDisable() {
         saveTraderManagerJSON();
+        adminShopItemManager.saveConfig();
 
         try{
             conn.close();

@@ -2,8 +2,6 @@ package com.z0cken.mc.economy.utils;
 
 import net.minecraft.server.v1_13_R2.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class NBTUtils {

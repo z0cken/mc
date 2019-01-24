@@ -8,7 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 public class AdminShopItemManager {
@@ -30,33 +29,50 @@ public class AdminShopItemManager {
     }
 
     public void loadConfig(){
-        if(!adminShopItemDataFile.exists()){ writeConfig(); }
+        if(!adminShopItemDataFile.exists()){
+            writeConfig();
+        }
         FileConfiguration adminShopItemDataConfig = YamlConfiguration.loadConfiguration(adminShopItemDataFile);
         ArrayList<String> stringList = (ArrayList<String>)adminShopItemDataConfig.get("items");
-        stringList.forEach(s -> {
-            tradeItems.add(parseToTradeItem(s));
-        });
+        stringList.forEach(s -> tradeItems.add(parseToTradeItem(s)));
+        if(tradeItems.size() != createMatList().size()){
+            writeConfig();
+        }
     }
 
-    public String writeConfig(){
-        FileConfiguration adminShopItemDataConfig = YamlConfiguration.loadConfiguration(adminShopItemDataFile);
+    public void writeConfig(){
         if(!adminShopItemDataFile.exists()){
             ArrayList<String> strings = new ArrayList<>();
-            createMatList().forEach(mat -> {
-                strings.add(mat.name() + "|0|0|00");
-            });
-            adminShopItemDataConfig.set("items", strings);
-            try{
-                adminShopItemDataConfig.save(adminShopItemDataFile);
-            }catch (IOException e){
-                pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
-            }
+            createMatList().forEach(mat -> strings.add(mat.name() + "|0|0|00"));
+            saveConfigToFile(strings);
         }else{
-            if(tradeItems.size() != createMatList().size()){
+            pcs_economy.getLogger().info("Materials in AdminShopConfig missing. Adding materials.");
 
-            }
+            ArrayList<Material> mats = createMatList();
+            ArrayList<Material> tradeItemMats = new ArrayList<>();
+            tradeItems.forEach(item -> tradeItemMats.add(item.getMaterial()));
+            mats.forEach(mat -> {
+                if(!tradeItemMats.contains(mat)){
+                    tradeItems.add(new TradeItem(mat, 0, 0, false, false, 0));
+                }
+            });
         }
-        return null;
+    }
+
+    public void saveConfig(){
+        ArrayList<String> strings = new ArrayList<>();
+        tradeItems.forEach(item -> strings.add(item.toString()));
+        saveConfigToFile(strings);
+    }
+
+    public void saveConfigToFile(ArrayList<String> strings){
+        FileConfiguration adminShopItemDataConfig = YamlConfiguration.loadConfiguration(adminShopItemDataFile);
+        adminShopItemDataConfig.set("items", strings);
+        try{
+            adminShopItemDataConfig.save(adminShopItemDataFile);
+        }catch (IOException e){
+            pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+        }
     }
 
     public TradeItem parseToTradeItem(String configString){
@@ -66,7 +82,7 @@ public class AdminShopItemManager {
         boolean canSell = false;
         boolean canBuy = false;
 
-        String[] components = configString.split("|");
+        String[] components = configString.split("\\|");
         if(components.length == 4){
             material = Material.getMaterial(components[0]);
             sellPrice = Integer.valueOf(components[1]);

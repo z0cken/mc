@@ -4,7 +4,6 @@ import com.z0cken.mc.economy.config.ConfigManager;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import sun.security.krb5.Config;
 
 import java.sql.*;
 import java.util.UUID;

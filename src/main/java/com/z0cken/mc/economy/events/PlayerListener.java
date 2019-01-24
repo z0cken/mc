@@ -1,16 +1,14 @@
 package com.z0cken.mc.economy.events;
 
 import com.z0cken.mc.economy.PCS_Economy;
+import com.z0cken.mc.economy.shops.Trader;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import com.z0cken.mc.economy.shops.*;
 
 import java.sql.Connection;
 

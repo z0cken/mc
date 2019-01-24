@@ -1,12 +1,10 @@
 package com.z0cken.mc.economy.shops;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Trader {

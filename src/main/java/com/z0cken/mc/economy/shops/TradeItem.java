@@ -1,9 +1,6 @@
 package com.z0cken.mc.economy.shops;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-
-import java.util.HashMap;
 
 public class TradeItem {
     private transient Material mat;
@@ -56,7 +53,34 @@ public class TradeItem {
         this.amount = amount;
     }
 
+    public String getMatName(){
+        return this.matName;
+    }
+
+    public boolean isSellable(){
+        return this.canSell;
+    }
+
+    public boolean isBuyable(){
+        return this.canBuy;
+    }
+
     public static TradeItem createTradeItem(String confString){
         return null;
+    }
+
+    @Override
+    public String toString(){
+        String s = matName + "|" + sellPrice + "|" + buyPrice + "|";
+        if(canBuy && canSell){
+            s += "11";
+        }else if(canBuy){
+            s += "01";
+        }else if(canSell){
+            s += "10";
+        }else{
+            s += "00";
+        }
+        return s;
     }
 }
