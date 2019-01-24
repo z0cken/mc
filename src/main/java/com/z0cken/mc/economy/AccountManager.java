@@ -52,6 +52,7 @@ public class AccountManager {
     }
 
     public Account getAccount(String playerName){
+        PCS_Economy.pcs_economy.getLogger().info(String.valueOf("DDHDHW: " + PCS_Economy.pcs_economy.checkDBConnection()));
         if(PCS_Economy.pcs_economy.checkDBConnection()){
             String query = "select * from accounts where username = \'" + playerName + "\';";
             try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){

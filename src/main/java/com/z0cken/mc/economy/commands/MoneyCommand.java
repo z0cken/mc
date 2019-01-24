@@ -3,22 +3,33 @@ package com.z0cken.mc.economy.commands;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.contexts.OnlinePlayer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.z0cken.mc.economy.Account;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.shops.TradeItem;
+import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.utils.MessageBuilder;
+import com.z0cken.mc.economy.utils.NBTUtils;
 import net.milkbowl.vault.economy.EconomyResponse;
+import net.minecraft.server.v1_13_R2.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
-import sun.security.krb5.Config;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.UUID;
 
 @CommandAlias("m0ney")
 public class MoneyCommand extends BaseCommand {
@@ -170,26 +181,109 @@ public class MoneyCommand extends BaseCommand {
     public void onDebugMatList(CommandSender sender){
         String fileContent = "";
         for(int i = 0; i < Material.values().length; i++){
-            fileContent += Material.values()[i].name() + "\n\n";
-
+            fileContent += Material.values()[i].name() + "\n";
         }
         try{
             PrintWriter fileWriter = new PrintWriter("mats.txt");
             fileWriter.write(fileContent);
             fileWriter.close();
         }catch (IOException e){
-
+            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
         }
-
-        sender.sendMessage(String.valueOf(Material.values().length));
     }
 
     @Subcommand("debug db")
     @CommandPermission("pcs.economy.admin")
     public void onDebugDB(CommandSender sender){
         if(sender instanceof ConsoleCommandSender){
-            pcs_economy.checkDBConnection();
+            sender.sendMessage(String.valueOf(pcs_economy.checkDBConnection()));
         }
+    }
+
+    @Subcommand("debug trader create")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugTraderCreate(CommandSender sender, String traderName){
+        if(sender instanceof Player){
+            Player p = (Player) sender;
+            Villager v = (Villager)p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
+            v.setInvulnerable(true);
+
+            TradeItem item1 = new TradeItem(Material.DIRT, 20, 10, true, true, 0);
+            TradeItem item2 = new TradeItem(Material.GLASS, 20, 5, true, true, 0);
+            TradeItem item3 = new TradeItem(Material.SAND, 20, 3, true, true, 0);
+            Trader trader = new Trader(v, p, traderName, true);
+            trader.addTradeItem(item1);
+            trader.addTradeItem(item2);
+            trader.addTradeItem(item3);
+            v.setCustomName(traderName);
+            v.setCustomNameVisible(true);
+
+            pcs_economy.traderManager.addTrader(trader);
+        }
+    }
+
+    @Subcommand("debug trader checknbt")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugTraderCheckNbt(CommandSender sender){
+        if(sender instanceof Player){
+            Player p = (Player)sender;
+            ItemStack is = p.getInventory().getItemInMainHand();
+            sender.sendMessage(is.getType().name());
+            sender.sendMessage(NBTUtils.getStringValue(is, "trader"));
+        }
+    }
+
+    @Subcommand("debug trader findowners")
+    @CommandPermission("pcs.economy.admin")
+    @CommandCompletion("@players")
+    public void onDebugTraderFindOwners(CommandSender sender, Player p){
+        if(sender instanceof Player){
+            ArrayList<UUID> uuids = pcs_economy.traderManager.getTradersFromPlayer(p);
+            if(uuids != null && uuids.size() > 0){
+                uuids.forEach(uuid -> {
+                    sender.sendMessage(uuid.toString());
+                });
+            }else{
+                if(uuids == null){
+                    sender.sendMessage("Null");
+                }else{
+                    sender.sendMessage("Nix drin");
+                }
+            }
+        }
+    }
+
+    @Subcommand("debug trader delete")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugTraderDelete(CommandSender sender){
+        if(sender instanceof Player){
+
+        }
+    }
+
+    @Subcommand("debug trader traderdiablock")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugTraderStick(CommandSender sender){
+        if(sender instanceof Player){
+            Player p = (Player) sender;
+            if(p.getInventory().firstEmpty() != -1){
+                ItemStack stack = new ItemStack(Material.DIAMOND_BLOCK, 1);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName("Traderblock");
+                stack.setItemMeta(meta);
+                net.minecraft.server.v1_13_R2.ItemStack nmsDiaBlock = CraftItemStack.asNMSCopy(stack);
+                NBTTagCompound compound = (nmsDiaBlock.hasTag()) ? nmsDiaBlock.getTag() : new NBTTagCompound();
+                compound.set("trader", new NBTTagString("true"));
+                nmsDiaBlock.setTag(compound);
+                p.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsDiaBlock));
+            }
+        }
+    }
+
+    @Subcommand("debug trader tojson")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugTraderToJson(CommandSender sender){
+        pcs_economy.saveTraderManagerJSON();
     }
 
     private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, double amount){

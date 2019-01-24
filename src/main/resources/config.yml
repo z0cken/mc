@@ -3,7 +3,7 @@ mysql:
   port: 3306
   username: admin
   password: 123
-  database: PCS_Economy
+  database: pcs_economy
 
 economy:
   messagePrefix: "&b[&aEconomy&b]&f "
