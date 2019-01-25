@@ -63,7 +63,6 @@ public class InventoryListener implements Listener {
                 ItemStack[] contents = e.getInventory().getStorageContents();
                 if(contents.length > 0){
                     trader.getTradeItems().clear();
-                    e.getPlayer().sendMessage(String.valueOf(contents.length));
                     for(ItemStack stack : contents){
                         if(stack != null){
                             trader.addTradeItem(pcs_economy.adminShopItemManager.getTradeItem(stack.getType()));
