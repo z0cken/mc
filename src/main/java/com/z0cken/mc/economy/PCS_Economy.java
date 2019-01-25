@@ -6,10 +6,12 @@ import com.google.gson.GsonBuilder;
 import com.z0cken.mc.economy.commands.MoneyCommand;
 import com.z0cken.mc.economy.commands.ShopCommand;
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.events.InventoryListener;
 import com.z0cken.mc.economy.events.PlayerListener;
 import com.z0cken.mc.economy.impl.VaultConnector;
 import com.z0cken.mc.economy.shops.AdminShopItemManager;
 import com.z0cken.mc.economy.shops.TraderManager;
+import com.z0cken.mc.economy.shops.gui.TraderTradeGUI;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.*;
 import org.bukkit.plugin.ServicePriority;
@@ -68,6 +70,7 @@ public class PCS_Economy extends JavaPlugin {
         registerInterfaces();
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(conn), this);
+        this.getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 
         getLogger().info("Enabled");
     }

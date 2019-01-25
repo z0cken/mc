@@ -34,6 +34,9 @@ public class TradeItem {
     }
 
     public Material getMaterial(){
+        if(this.mat == null){
+            return Material.getMaterial(this.matName);
+        }
         return this.mat;
     }
 
@@ -72,15 +75,7 @@ public class TradeItem {
     @Override
     public String toString(){
         String s = matName + "|" + sellPrice + "|" + buyPrice + "|";
-        if(canBuy && canSell){
-            s += "11";
-        }else if(canBuy){
-            s += "01";
-        }else if(canSell){
-            s += "10";
-        }else{
-            s += "00";
-        }
+        s += (canSell ? 1 : 0) + (canBuy ? 1 : 0);
         return s;
     }
 }

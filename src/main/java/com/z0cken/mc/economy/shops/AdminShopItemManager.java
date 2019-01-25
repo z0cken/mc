@@ -4,6 +4,7 @@ import com.z0cken.mc.economy.PCS_Economy;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class AdminShopItemManager {
     public AdminShopItemManager(PCS_Economy pcs_economy){
         this.pcs_economy = pcs_economy;
         this.tradeItems = new ArrayList<>();
-        this.adminShopItemDataFile = new File(pcs_economy.getDataFolder() + "/adminShop.yml");
+        this.adminShopItemDataFile = new File(pcs_economy.getDataFolder() + "/adminShopConfig.yml");
     }
 
     public ArrayList<Material> createMatList(){

@@ -9,7 +9,7 @@ public class TraderManager {
     private ArrayList<Trader> traders;
 
     public TraderManager(){
-        this.traders = new ArrayList<Trader>();
+        this.traders = new ArrayList<>();
     }
 
     public void addTrader(Trader trader){
@@ -48,6 +48,14 @@ public class TraderManager {
             return traders.stream().filter(trader -> trader.getTraderUUID().equals(uuid)).findFirst().orElse(null);
         }
         return null;
+    }
+
+    public ArrayList<Trader> getTraders(){
+        return this.traders;
+    }
+
+    public Trader getTrader(String traderName){
+        return traders.stream().filter(trader -> trader.getTraderName().equals(traderName)).findFirst().orElse(null);
     }
 
     public ArrayList<UUID> getTradersFromPlayer(Player player){

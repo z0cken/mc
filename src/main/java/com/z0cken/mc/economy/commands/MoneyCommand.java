@@ -200,23 +200,7 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("debug trader create")
     @CommandPermission("pcs.economy.admin")
     public void onDebugTraderCreate(CommandSender sender, String traderName){
-        if(sender instanceof Player){
-            Player p = (Player) sender;
-            Villager v = (Villager)p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
-            v.setInvulnerable(true);
 
-            TradeItem item1 = new TradeItem(Material.DIRT, 20, 10, true, true, 0);
-            TradeItem item2 = new TradeItem(Material.GLASS, 20, 5, true, true, 0);
-            TradeItem item3 = new TradeItem(Material.SAND, 20, 3, true, true, 0);
-            Trader trader = new Trader(v, p, traderName, true);
-            trader.addTradeItem(item1);
-            trader.addTradeItem(item2);
-            trader.addTradeItem(item3);
-            v.setCustomName(traderName);
-            v.setCustomNameVisible(true);
-
-            pcs_economy.traderManager.addTrader(trader);
-        }
     }
 
     @Subcommand("debug trader checknbt")

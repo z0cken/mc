@@ -57,6 +57,10 @@ public class Trader {
         return false;
     }
 
+    public String getTraderName(){
+        return traderName != null ? traderName : "Shop";
+    }
+
     public void increaseItemAmount(String tradeItemName, int amount){
         if(amount > 0){
             TradeItem item = items.stream().filter(iItem -> iItem.getMaterial().name().equals(tradeItemName)).findFirst().orElse(null);
@@ -91,6 +95,10 @@ public class Trader {
             return item.getAmount();
         }
         return 0;
+    }
+
+    public boolean isAdminShop(){
+        return this.isAdminShop;
     }
 
     public UUID getOwnerUUID(){
