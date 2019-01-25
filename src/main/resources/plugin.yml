@@ -2,3 +2,4 @@ name: PCS_Checkpoint
 main: com.z0cken.mc.checkpoint.PCS_Checkpoint
 version: ${project.version}
 author: Flare
+depend: [PCS_Core]

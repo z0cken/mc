@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import net.md_5.bungee.config.Configuration;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -107,12 +108,21 @@ class RequestHelper {
         }
     }
 
-    static boolean isBanned(String name) throws UnirestException {
-
+    public static long getBannedUntil(String name) throws UnirestException {
         String path = "profile/info?name=" + name;
         JsonNode jsonBody = Unirest.get(BASE_URL + path).header("accept", "application/json").asJson().getBody();
         JSONObject json = jsonBody.getObject();
 
-        return 1 == json.getJSONObject("user").getInt("banned");
+        long bannedUntil = 0;
+
+        try {
+            bannedUntil = json.getJSONObject("user").getLong("bannedUntil");
+        } catch (JSONException ignored) {
+
+        } catch (NumberFormatException e) {
+            bannedUntil = -1;
+        }
+
+        return bannedUntil;
     }
 }

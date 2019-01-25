@@ -1,6 +1,6 @@
 package com.z0cken.mc.checkpoint;
 
-import com.z0cken.mc.util.MessageBuilder;
+import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;

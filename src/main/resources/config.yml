@@ -5,11 +5,6 @@ bot:
   password:
   login-timeout-multiplier: 3
   cookie:
-database:
-  ip:
-  db:
-  user:
-  password:
 hub-name: hub
 messages:
   accent-color: §b
@@ -17,6 +12,8 @@ messages:
     switched-to-true: §a§l>_ §7Du bist nun §aanonymisiert§7! (Wirksam nach Reconnect)
     switched-to-false: §a§l>_ §7Du bist nun §cnicht mehr §7anonymisiert! (Wirksam nach Reconnect)
     denied-nomember: §c§l>_ §7Nur Mitglieder des pr0gramms profitieren von diesem Befehl!
+  banned: §cDein pr0gramm Account ist gesperrt \n§fDie Sperrung wird am {TIME} aufgehoben
+  banned-permanent: §cDein pr0gramm Account ist gesperrt \n§fDie Sperrung ist dauerhaft
   invite:
     denied-self: §c§l>_ §7Ob du behindert bist?
     denied-exists: §c§l>_ §7§o{NAME} §7ist bereits Mitglied!

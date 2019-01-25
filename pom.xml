@@ -8,15 +8,21 @@
     <artifactId>PCS_Checkpoint</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <properties>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
-    </properties>
+    <distributionManagement>
+        <repository>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
         <repository>
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
         </repository>
     </repositories>
 
@@ -37,8 +43,9 @@
         </dependency>
         <dependency>
             <groupId>com.z0cken.mc</groupId>
-            <artifactId>PCS_Util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>PCS_Core-Bungee</artifactId>
+            <version>LATEST</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -79,5 +86,10 @@
             </resource>
         </resources>
     </build>
+
+    <properties>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
+    </properties>
 
 </project>

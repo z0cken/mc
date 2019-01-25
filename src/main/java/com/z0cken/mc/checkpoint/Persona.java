@@ -4,25 +4,23 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 class Persona {
 
-    private String username;
-    private boolean banned = false;
+    private final String username;
+    private long bannedUntil = 0;
 
     Persona(String username) {
         this.username = username;
         try {
-            banned = RequestHelper.isBanned(username);
+            bannedUntil = RequestHelper.getBannedUntil(username);
         } catch (UnirestException e) {
             e.printStackTrace();
         }
-
     }
-
 
     public String getUsername() {
         return username;
     }
 
-    public boolean isBanned() {
-        return banned;
+    public long getBannedUntil() {
+        return bannedUntil;
     }
 }

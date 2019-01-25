@@ -1,7 +1,7 @@
 package com.z0cken.mc.checkpoint;
 
 import com.google.common.io.ByteStreams;
-import com.z0cken.mc.util.MessageBuilder;
+import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -14,14 +14,14 @@ import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /** @author Flare */
-
 public final class PCS_Checkpoint extends Plugin implements Listener {
 
     private static PCS_Checkpoint instance;
@@ -32,7 +32,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     }
 
     private static final HashMap<ProxiedPlayer, Persona> verified = new HashMap<>();
-    private static final Collection<ProxiedPlayer> guests = new ArrayList<>();
     private static Configuration config;
 
     /*
@@ -57,8 +56,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         getProxy().getPluginManager().registerCommand(this, new CommandAnon());
         getProxy().getPluginManager().registerListener(this,this);
 
-        DatabaseHelper.connect();
-
+        DatabaseHelper.setupTables();
         getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
@@ -76,7 +74,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
             e.printStackTrace();
         }
 
-        DatabaseHelper.disconnect();
         instance = null;
     }
 
@@ -87,7 +84,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if(!(verified.containsKey(event.getPlayer()) || guests.contains(event.getPlayer())) && !event.getTarget().getName().equals(config.getString("hub-name"))) {
+        if(!verified.containsKey(event.getPlayer()) && !event.getTarget().getName().equals(config.getString("hub-name"))) {
             event.setTarget(getProxy().getServerInfo(config.getString("hub-name")));
             event.getPlayer().sendMessage(messageBuilder.build(config.getString("messages.verify.switch")));
         }
@@ -96,7 +93,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         verified.remove(event.getPlayer());
-        guests.remove(event.getPlayer());
     }
 
     void checkPlayer(UUID uuid, boolean verbose) {
@@ -107,13 +103,22 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
         if(persona == null) {
             if(DatabaseHelper.isGuest(uuid)) {
-                guests.add(player);
+                verified.put(player, null);
                 if(verbose) player.sendMessage(messageBuilder.build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
             }
         } else {
-            if(persona.isBanned()) {
-                //TODO Reason
-                player.disconnect();
+            long bannedUntil = persona.getBannedUntil();
+            if(bannedUntil > 0 || bannedUntil == -1) {
+
+                String msg;
+                String time = null;
+                if(bannedUntil == -1) msg = PCS_Checkpoint.getConfig().getString("messages.banned-permanent");
+                else {
+                    time = Instant.ofEpochMilli(bannedUntil*1000).atZone(ZoneId.of("UTC+01:00")).format(DateTimeFormatter.ofPattern("dd.MM.yy 'um' HH:mm"));
+                    msg = PCS_Checkpoint.getConfig().getString("messages.banned");
+                }
+
+                player.disconnect(messageBuilder.define("TIME", time).build(msg));
             } else {
                 verified.put(player, persona);
                 if(verbose) {
