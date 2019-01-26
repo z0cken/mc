@@ -7,6 +7,7 @@ mysql:
 
 economy:
   messagePrefix: "&b[&aEconomy&b]&f "
+  pushInterval: 10
   currency:
     currencySingular: Schekel
     currencyPlural: Schekel
@@ -51,3 +52,28 @@ economy:
         paymentSuccessReceiver: Du hast gerade &l&6{csymbol}{amount}&r&f von &2{player}&f erhalten!
     permission:
       errorNoPermission: Du hast keine Berechtigung diesen Command zu nutzen!
+  gui:
+    selection:
+      sellPrice: "Preis pro Stück: &6{amount}"
+      buyPrice: "Ankaufspreis pro Stück: &6{amount}"
+    trade:
+      quantity: "&5* &7Anzahl: &5{quantity}"
+      cost: "&5* &7Preis: &6{amount}{csymbol}"
+      information: "&aInformation:"
+      back: Kehre zur Übersicht zurück
+      sell:
+        titleSingle: "&a&nKaufe Eins"
+        titleStack: "&a&nKaufe Stack"
+        titleInv: "&a&nKaufe Inventar"
+        descriptionSingle: "&8Kaufe ein einzelnes Item"
+        descriptionStack: "&8Kaufe einen Stack Items"
+        descriptionInv: "&8Kaufe so viel wie dein Inventar Platz hat"
+        sell: "&4(!) Klicken um zu kaufen!"
+      buy:
+        titleSingle: "&a&nVerkaufe Eins"
+        titleStack: "&a&nVerkaufe Stack"
+        titleInv: "&a&nVerkaufe Inventar"
+        descriptionSingle: "&8Verkaufe ein einzelnes Item"
+        descriptionStack: "&8Verkaufe einen Stack Items"
+        descriptionInv: "&8Verkaufe dein ganzes Inventar"
+        purchase: "&4(!) Klicken um zu verkaufen!"

@@ -7,6 +7,7 @@ public class ConfigManager {
     public static FileConfiguration config = null;
 
     public static String messagePrefix = null;
+    public static int pushInterval = 0;
 
     public static String mysqlAddress = null;
     public static String mysqlPort = null;
@@ -52,6 +53,31 @@ public class ConfigManager {
 
     public static String errorNoPermission = null;
 
+    public static String tradeSelectionBuyPrice = null;
+    public static String tradeSelectionSellPrice = null;
+
+    public static String tradeSellTitleSingle = null;
+    public static String tradeSellTitleStack = null;
+    public static String tradeSellTitleInv = null;
+    public static String tradeSellDescriptionSingle = null;
+    public static String tradeSellDescriptionStack = null;
+    public static String tradeSellDescriptionInv = null;
+    public static String tradeSell = null;
+
+    public static String tradeBuyTitleSingle = null;
+    public static String tradeBuyTitleStack = null;
+    public static String tradeBuyTitleInv = null;
+    public static String tradeBuyDescriptionSingle = null;
+    public static String tradeBuyDescriptionStack = null;
+    public static String tradeBuyDescriptionInv = null;
+    public static String tradeBuy = null;
+
+    public static String tradeInformation = null;
+    public static String tradeQuantity = null;
+    public static String tradeCost = null;
+    public static String tradePurchase = null;
+    public static String tradeBack = null;
+
     public static void loadConfig(){
         config = PCS_Economy.pcs_economy.getConfig();
 
@@ -62,6 +88,7 @@ public class ConfigManager {
         mysqlDatabase = config.getString("mysql.database");
 
         messagePrefix = config.getString("economy.messagePrefix");
+        pushInterval = config.getInt("economy.pushInterval");
 
         currencySingular = config.getString("economy.currency.currencySingular");
         currencyPlural = config.getString("economy.currency.currencyPlural");
@@ -100,9 +127,30 @@ public class ConfigManager {
         paymentSuccessReceiver = config.getString("economy.messages.payment.success.paymentSuccessReceiver");
 
         errorNoPermission = config.getString("economy.messages.permission.errorNoPermission");
-    }
 
-    public static void saveConfig(){
+        tradeSelectionBuyPrice = config.getString("economy.gui.selection.buyPrice");
+        tradeSelectionSellPrice = config.getString("economy.gui.selection.sellPrice");
 
+        tradeSellTitleSingle = config.getString("economy.gui.trade.sell.titleSingle");
+        tradeSellTitleStack = config.getString("economy.gui.trade.sell.titleStack");
+        tradeSellTitleInv = config.getString("economy.gui.trade.sell.titleInv");
+        tradeSellDescriptionSingle = config.getString("economy.gui.trade.sell.descriptionSingle");
+        tradeSellDescriptionStack = config.getString("economy.gui.trade.sell.descriptionStack");
+        tradeSellDescriptionInv = config.getString("economy.gui.trade.sell.descriptionInv");
+        tradeSell = config.getString("economy.gui.trade.sell.sell");
+
+        tradeBuyTitleSingle = config.getString("economy.gui.trade.buy.titleSingle");
+        tradeBuyTitleStack = config.getString("economy.gui.trade.buy.titleStack");
+        tradeBuyTitleInv = config.getString("economy.gui.trade.buy.titleInv");
+        tradeBuyDescriptionSingle = config.getString("economy.gui.trade.buy.descriptionSingle");
+        tradeBuyDescriptionStack = config.getString("economy.gui.trade.buy.descriptionStack");
+        tradeBuyDescriptionInv = config.getString("economy.gui.trade.buy.descriptionInv");
+        tradeBuy = config.getString("economy.gui.trade.buy.buy");
+
+        tradeInformation = config.getString("economy.gui.trade.information");
+        tradeQuantity = config.getString("economy.gui.trade.quantity");
+        tradeCost = config.getString("economy.gui.trade.cost");
+        tradePurchase = config.getString("economy.gui.trade.purchase");
+        tradeBack = config.getString("economy.gui.trade.back");
     }
 }

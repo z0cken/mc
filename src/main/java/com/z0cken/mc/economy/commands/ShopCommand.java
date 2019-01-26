@@ -22,6 +22,7 @@ public class ShopCommand extends BaseCommand {
     public ShopCommand(){ }
 
     @Subcommand("create")
+    @CommandPermission("pcs.economy.admin")
     public void onShopCreate(CommandSender sender, String traderName){
         if(sender instanceof Player){
 

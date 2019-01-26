@@ -11,7 +11,7 @@ import com.z0cken.mc.economy.events.PlayerListener;
 import com.z0cken.mc.economy.impl.VaultConnector;
 import com.z0cken.mc.economy.shops.AdminShopItemManager;
 import com.z0cken.mc.economy.shops.TraderManager;
-import com.z0cken.mc.economy.shops.gui.TraderTradeGUI;
+import com.z0cken.mc.economy.shops.InventoryManager;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import net.milkbowl.vault.economy.*;
 import org.bukkit.plugin.ServicePriority;
@@ -32,6 +32,7 @@ public class PCS_Economy extends JavaPlugin {
     private static BukkitCommandManager commandManager;
     private Connection conn;
     public AdminShopItemManager adminShopItemManager;
+    public InventoryManager inventoryManager;
 
     @Override
     public void onLoad(){
@@ -41,6 +42,8 @@ public class PCS_Economy extends JavaPlugin {
 
         this.adminShopItemManager = new AdminShopItemManager(this);
         this.adminShopItemManager.loadConfig();
+
+        this.inventoryManager = new InventoryManager();
 
         connectToDB();
         checkDBConnection();
@@ -78,11 +81,11 @@ public class PCS_Economy extends JavaPlugin {
     private void registerCommands(){
         commandManager = new BukkitCommandManager(this);
         commandManager.registerCommand(new MoneyCommand().setExceptionHandler((command, registeredCommand, sender, args, t) -> {
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.errorGeneral));
             return true;
         }));
         commandManager.registerCommand(new ShopCommand().setExceptionHandler((command, registeredCommand, sender, args, t) -> {
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.errorGeneral));
             return true;
         }));
     }
@@ -108,6 +111,9 @@ public class PCS_Economy extends JavaPlugin {
     }
 
     public Connection connectToDB(){
+        if(checkDBConnection()){
+            return this.conn;
+        }
         String sqlConnPath = "jdbc:mysql://" + ConfigManager.mysqlAddress + ":"
                 + ConfigManager.mysqlPort + "/"
                 + ConfigManager.mysqlDatabase + "?"

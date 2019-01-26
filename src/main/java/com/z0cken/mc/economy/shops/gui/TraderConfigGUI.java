@@ -8,7 +8,8 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public class TraderConfigGUI {
+public class TraderConfigGUI{
+
     private Trader trader;
 
     public TraderConfigGUI(Trader trader){

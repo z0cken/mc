@@ -44,7 +44,7 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("balance")
     @CommandPermission("pcs.economy.user")
     public void onBalance(CommandSender sender){
-        sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessBalanceSelf, sender.getName(),
+        sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessBalanceSelf, sender.getName(),
                 pcs_economy.accountManager.getAccount(sender.getName()).getBalance()));
     }
 
@@ -52,8 +52,8 @@ public class MoneyCommand extends BaseCommand {
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
     public void onBalancePlayer(CommandSender sender, OnlinePlayer player){
-        sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessBalanceOther, player.getPlayer().getName(),
-                null, pcs_economy.accountManager.getAccount(player.getPlayer().getName()).getBalance()));
+        sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessBalanceOther, player.getPlayer().getName(),
+                null, pcs_economy.accountManager.getAccount(player.getPlayer().getName()).getBalance(), 0));
     }
 
     @Subcommand("pay")
@@ -64,10 +64,10 @@ public class MoneyCommand extends BaseCommand {
         Account to = pcs_economy.accountManager.getAccount(receiver.getPlayer().getName());
         EconomyResponse response = payHandler(sender, from, to, amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.paymentSuccessSender, sender.getName(), receiver.getPlayer().getName(), amount));
-            receiver.getPlayer().sendMessage(MessageBuilder.buildMessage(ConfigManager.paymentSuccessReceiver, sender.getName(), receiver.getPlayer().getName(), amount));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.paymentSuccessSender, sender.getName(), receiver.getPlayer().getName(), amount, 0));
+            receiver.getPlayer().sendMessage(MessageBuilder.buildMessage(true, ConfigManager.paymentSuccessReceiver, sender.getName(), receiver.getPlayer().getName(), amount, 0));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(response.errorMessage));
+            sender.sendMessage(MessageBuilder.buildMessage(true, response.errorMessage));
         }
     }
 
@@ -78,9 +78,9 @@ public class MoneyCommand extends BaseCommand {
         Account to = pcs_economy.accountManager.getAccount(receiver);
         EconomyResponse response = payHandler(sender, from, to, amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.paymentSuccessSender, sender.getName(), receiver, amount));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.paymentSuccessSender, sender.getName(), receiver, amount, 0));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(response.errorMessage));
+            sender.sendMessage(MessageBuilder.buildMessage(true, response.errorMessage));
         }
     }
 
@@ -90,9 +90,9 @@ public class MoneyCommand extends BaseCommand {
     public void onClear(CommandSender sender, OnlinePlayer player){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).clearBalance();
         if(response.type == EconomyResponse.ResponseType.FAILURE){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorClear, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorClear, player.getPlayer().getName()));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessClear, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessClear, player.getPlayer().getName()));
         }
     }
 
@@ -102,9 +102,9 @@ public class MoneyCommand extends BaseCommand {
     public void onAccountDelete(CommandSender sender, OnlinePlayer player){
         boolean response = pcs_economy.accountManager.deleteAccount(player.getPlayer());
         if(response){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessDelete, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessDelete, player.getPlayer().getName()));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorClear, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorClear, player.getPlayer().getName()));
         }
     }
 
@@ -114,9 +114,9 @@ public class MoneyCommand extends BaseCommand {
     public void onAccountCreate(CommandSender sender, OnlinePlayer player){
         boolean response = pcs_economy.accountManager.createAccount(player.getPlayer());
         if(response){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessCreate, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessCreate, player.getPlayer().getName()));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorCreate, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorCreate, player.getPlayer().getName()));
         }
     }
 
@@ -126,9 +126,9 @@ public class MoneyCommand extends BaseCommand {
     public void onAccountSet(CommandSender sender, OnlinePlayer player, double amount){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).setBalance(amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessSet, player.getPlayer().getName(), amount));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessSet, player.getPlayer().getName(), amount));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorSet, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorSet, player.getPlayer().getName()));
         }
     }
 
@@ -139,9 +139,9 @@ public class MoneyCommand extends BaseCommand {
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).add(amount);
         String message;
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessAdd, player.getPlayer().getName(), amount));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessAdd, player.getPlayer().getName(), amount));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorAdd, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorAdd, player.getPlayer().getName()));
         }
     }
 
@@ -151,9 +151,9 @@ public class MoneyCommand extends BaseCommand {
     public void onAccountSubtract(CommandSender sender, OnlinePlayer player, double amount){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).subtract(amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountSuccessSubtract, player.getPlayer().getName(), amount));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessSubtract, player.getPlayer().getName(), amount));
         }else{
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.accountErrorSubtract, player.getPlayer().getName()));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountErrorSubtract, player.getPlayer().getName()));
         }
     }
 
@@ -185,7 +185,7 @@ public class MoneyCommand extends BaseCommand {
             fileWriter.write(fileContent);
             fileWriter.close();
         }catch (IOException e){
-            sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
+            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.errorGeneral));
         }
     }
 
@@ -280,9 +280,9 @@ public class MoneyCommand extends BaseCommand {
             }
         }else{
             if(senderAccount == null){
-                sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.errorGeneral));
+                sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.errorGeneral));
             }else{
-                sender.sendMessage(MessageBuilder.buildMessage(ConfigManager.paymentErrorAccountNotExisting));
+                sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.paymentErrorAccountNotExisting));
             }
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "");
         }
