@@ -13,11 +13,14 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
+
+        int exp = event.getDroppedExp();
+
         event.setKeepInventory(true);
         event.setKeepLevel(true);
 
         //Restore health so he stays alive
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-        RespawnHandler.getHandler().handlePlayerDeath(player);
+        RespawnHandler.getHandler().handlePlayerDeath(player, exp);
     }
 }

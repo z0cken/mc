@@ -20,23 +20,30 @@ public class RespawnPhase {
 
     private final Player player;
 
-    private final BossBar bossBar;
+    private final BossBar personalBossBar;
+    private final BossBar externalBossBar;
     private final ItemStack[] inventoryContents;
     private final ItemStack[] armorContents;
     private final Location respawnLocation;
     private final long deathTimeStamp;
+    private final int expToDrop;
 
     private ArmorStand armorStand;
 
     private BukkitRunnable respawnRunnable;
 
-    public RespawnPhase(Player player) {
+    public RespawnPhase(Player player, int expToDrop) {
         this.player = player;
         this.inventoryContents = this.player.getInventory().getContents();
         this.armorContents = this.player.getInventory().getArmorContents();
         this.respawnLocation = this.player.getLocation();
+        this.expToDrop = expToDrop;
         this.deathTimeStamp = System.currentTimeMillis();
-        this.bossBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+
+        this.personalBossBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+        this.externalBossBar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+
+        this.personalBossBar.addPlayer(player);
     }
 
     public void startRespawnPhase() {
@@ -54,6 +61,11 @@ public class RespawnPhase {
         this.respawnRunnable = new BukkitRunnable() {
             public void run() {
                 updateBossBar();
+
+                if(getTimeTillRespawnForced() <= 0) {
+                    //Task is cancelled in the endRespawnPhase method
+                    respawnPlayer();
+                }
             }
         };
         this.respawnRunnable.runTaskTimer(Revive.getPlugin(), 0L, 20L);
@@ -73,7 +85,8 @@ public class RespawnPhase {
         }
 
         //Drop experience
-        this.player.getWorld().spawn(this.player.getLocation(), ExperienceOrb.class).setExperience(this.player.getTotalExperience());
+        this.player.getWorld().spawn(this.player.getLocation(), ExperienceOrb.class).setExperience(this.expToDrop);
+        this.player.setTotalExperience(this.player.getTotalExperience() - this.expToDrop);
 
         endRespawnPhase();
         this.player.teleport(this.player.getWorld().getSpawnLocation());
@@ -82,14 +95,26 @@ public class RespawnPhase {
     private void endRespawnPhase() {
         RespawnHandler.getHandler().removeRespawn(this.player);
         this.player.setGameMode(GameMode.SURVIVAL);
+
+        this.armorStand.remove();
+
+        this.respawnRunnable.cancel();
+
+        this.personalBossBar.removePlayer(player);
+
+        for(Player player : this.externalBossBar.getPlayers()) {
+            this.externalBossBar.removePlayer(player);
+        }
     }
 
     private void updateBossBar() {
-        this.bossBar.setTitle(this.player.getName() + " stirbt in " + getTimeTillRespawnForced() + " Sekunden...");
+        int timeTillForce = getTimeTillRespawnForced();
+
+        //Different title for the dead player than external players
+        this.personalBossBar.setTitle("Du stirbst automatisch in " + timeTillForce + " Sekunden...");
+        this.externalBossBar.setTitle(this.player.getName() + " stirbt in " + timeTillForce + " Sekunden...");
 
         BarColor barColor = BarColor.GREEN;
-
-        int timeTillForce = getTimeTillRespawnForced();
 
         if(timeTillForce < RespawnHandler.SECONDS_TILL_RESPAWN_FORCE*0.25) {
             barColor = BarColor.RED;
@@ -97,8 +122,11 @@ public class RespawnPhase {
             barColor = BarColor.YELLOW;
         }
 
-        if(this.bossBar.getColor() != barColor) {
-            this.bossBar.setColor(barColor);
+        if(this.externalBossBar.getColor() != barColor) {
+            this.externalBossBar.setColor(barColor);
+
+            //We only update both bars at the same time which means if external has the wrong colour the personal has the wrong colour too
+            this.personalBossBar.setColor(barColor);
         }
     }
 
@@ -106,18 +134,18 @@ public class RespawnPhase {
         //The player at least needs one totem of undying
         if(!reviver.getInventory().contains(Material.TOTEM_OF_UNDYING, 1)) {
             //If the player sees the boss bar we need to hide it
-            if(this.bossBar.getPlayers().contains(reviver)) {
+            if(this.externalBossBar.getPlayers().contains(reviver)) {
                 hideBossBarFrom(reviver);
             }
 
             return;
         }
 
-        this.bossBar.addPlayer(reviver);
+        this.externalBossBar.addPlayer(reviver);
     }
 
     public void hideBossBarFrom(Player reviver) {
-        this.bossBar.removePlayer(reviver);
+        this.externalBossBar.removePlayer(reviver);
     }
 
 
@@ -153,8 +181,8 @@ public class RespawnPhase {
         return this.deathTimeStamp;
     }
 
-    public BossBar getBossBar() {
-        return this.bossBar;
+    public BossBar getExternalBossBar() {
+        return this.externalBossBar;
     }
 
 }

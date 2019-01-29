@@ -1,6 +1,7 @@
 package com.z0cken.mc.Revive;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
@@ -18,15 +19,15 @@ public class RespawnHandler {
 
     private static RespawnHandler handler = new RespawnHandler();
 
-    private static HashMap<UUID, RespawnPhase> playerRespawns = new HashMap<UUID, RespawnPhase>();
+    private static HashMap<UUID, RespawnPhase> playerRespawns = new HashMap<>();
 
-    public void handlePlayerDeath(Player player) {
+    public void handlePlayerDeath(Player player, int expToDrop) {
         if(isRespawning(player)) {
             Bukkit.getLogger().log(Level.WARNING, "Player '" + player.getName() + " is already respawning...");
             return;
         }
 
-        RespawnPhase respawnPhase = new RespawnPhase(player);
+        RespawnPhase respawnPhase = new RespawnPhase(player, expToDrop);
         playerRespawns.put(player.getUniqueId(), respawnPhase);
         respawnPhase.startRespawnPhase();
     }
@@ -47,6 +48,16 @@ public class RespawnHandler {
         }
 
         return playerRespawns.get(player.getUniqueId());
+    }
+
+    public boolean hasNearbyDeadPlayer(Location location, double rangeSquared) {
+        for(RespawnPhase respawnPhase : playerRespawns.values()) {
+            if(respawnPhase.getPlayer().getLocation().distanceSquared(location) <= rangeSquared) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static HashMap<UUID, RespawnPhase> getPlayerRespawns() {
