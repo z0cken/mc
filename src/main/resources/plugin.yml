@@ -1,0 +1,5 @@
+name: PCS_Essentials
+main: com.z0cken.mc.essentials.PCS_Essentials
+version: ${project.version}
+api-version: 1.13
+author: Flare
