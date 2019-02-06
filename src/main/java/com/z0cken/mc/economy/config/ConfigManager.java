@@ -145,7 +145,7 @@ public class ConfigManager {
         tradeBuyDescriptionSingle = config.getString("economy.gui.trade.buy.descriptionSingle");
         tradeBuyDescriptionStack = config.getString("economy.gui.trade.buy.descriptionStack");
         tradeBuyDescriptionInv = config.getString("economy.gui.trade.buy.descriptionInv");
-        tradeBuy = config.getString("economy.gui.trade.buy.buy");
+        tradeBuy = config.getString("economy.gui.trade.buy.purchase");
 
         tradeInformation = config.getString("economy.gui.trade.information");
         tradeQuantity = config.getString("economy.gui.trade.quantity");

@@ -12,13 +12,13 @@ public class MessageBuilder {
         if(player2 != null && !player2.isEmpty()){
             builtMessage = builtMessage.replace("{player2}", player2);
         }
-        builtMessage = builtMessage.replace("{amount}", String.valueOf(amount));
+        builtMessage = builtMessage.replace("{amount}", String.format("%.0f", amount));
         builtMessage = builtMessage.replace("{csymbol}", ConfigManager.currencySymbol);
         builtMessage = builtMessage.replace("{quantity}", String.valueOf(quantity));
         if(prefix){
-            return ChatColor.translateAlternateColorCodes('&',ConfigManager.messagePrefix + builtMessage);
+            return ChatColor.translateAlternateColorCodes('§',ConfigManager.messagePrefix + builtMessage);
         }else{
-            return ChatColor.translateAlternateColorCodes('&', builtMessage);
+            return ChatColor.translateAlternateColorCodes('§', builtMessage);
         }
     }
 

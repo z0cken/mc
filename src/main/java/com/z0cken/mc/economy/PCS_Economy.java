@@ -13,11 +13,13 @@ import com.z0cken.mc.economy.shops.AdminShopItemManager;
 import com.z0cken.mc.economy.shops.TraderManager;
 import com.z0cken.mc.economy.shops.InventoryManager;
 import com.z0cken.mc.economy.utils.MessageBuilder;
+import com.z0cken.mc.core.Database;
 import net.milkbowl.vault.economy.*;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -30,7 +32,6 @@ public class PCS_Economy extends JavaPlugin {
     public AccountManager accountManager;
     public TraderManager traderManager;
     private static BukkitCommandManager commandManager;
-    private Connection conn;
     public AdminShopItemManager adminShopItemManager;
     public InventoryManager inventoryManager;
 
@@ -44,9 +45,6 @@ public class PCS_Economy extends JavaPlugin {
         this.adminShopItemManager.loadConfig();
 
         this.inventoryManager = new InventoryManager();
-
-        connectToDB();
-        checkDBConnection();
 
         Gson gson = new Gson();
         File tradersJson = new File(this.getDataFolder() + "/traders.json");
@@ -62,7 +60,7 @@ public class PCS_Economy extends JavaPlugin {
             traderManager = new TraderManager();
         }
 
-        accountManager = new AccountManager(conn);
+        accountManager = new AccountManager();
 
         getLogger().info("Load Complete");
     }
@@ -72,7 +70,7 @@ public class PCS_Economy extends JavaPlugin {
         registerCommands();
         registerInterfaces();
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(conn), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
 
         getLogger().info("Enabled");
@@ -94,78 +92,13 @@ public class PCS_Economy extends JavaPlugin {
     public void onDisable() {
         saveTraderManagerJSON();
         adminShopItemManager.saveConfig();
-
-        try{
-            conn.close();
-            if(conn.isClosed()) { getLogger().info("SQL-connection closed"); }
-        }catch (SQLException e){
-            getLogger().log(Level.SEVERE, e.getMessage());
-        }
-        getLogger().info("PCS_Economy Disabled");
+        getLogger().info("Disabled");
     }
 
     private void registerInterfaces(){
         ServicesManager sm = getServer().getServicesManager();
         sm.register(Economy.class, new VaultConnector(), this, ServicePriority.Highest);
         getLogger().info("Registered Vault Interface");
-    }
-
-    public Connection connectToDB(){
-        if(checkDBConnection()){
-            return this.conn;
-        }
-        String sqlConnPath = "jdbc:mysql://" + ConfigManager.mysqlAddress + ":"
-                + ConfigManager.mysqlPort + "/"
-                + ConfigManager.mysqlDatabase + "?"
-                + "user=" + ConfigManager.mysqlUsername
-                + "&password=" + ConfigManager.mysqlPassword;
-
-        try{
-            conn = DriverManager.getConnection(sqlConnPath);
-            if(conn != null){
-                getLogger().info("Database Connection Established");
-            }
-        }catch(SQLException ex){
-            getLogger().log(Level.SEVERE, "Database Connection Failed");
-            getLogger().log(Level.SEVERE,"SQLException: " + ex.getMessage());
-            getLogger().log(Level.SEVERE, "SQLState: " + ex.getSQLState());
-            getLogger().log(Level.SEVERE, "VendorError: " + ex.getErrorCode());
-            conn = null;
-        }
-        return conn;
-    }
-
-    /*
-        Hoffe, dass der Check ausgiebig genug ist. Auf Nachfrage kann ich u.U.
-        noch Retries hinzufügen.
-     */
-    public boolean checkDBConnection(){
-        if(conn != null){
-            try{
-                if(!conn.isValid(100)){
-                    connectToDB();
-                    return true;
-                }
-                return true;
-            }catch (SQLException e){
-                getLogger().log(Level.SEVERE, e.getMessage());
-                return false;
-            }
-        }else{
-            connectToDB();
-            if(conn != null){
-                try{
-                    if(conn.isValid(100)){
-                        return true;
-                    }
-                    return false;
-                }catch (SQLException e){
-                    getLogger().log(Level.SEVERE, e.getMessage());
-                    return false;
-                }
-            }
-            return false;
-        }
     }
 
     public void saveTraderManagerJSON(){

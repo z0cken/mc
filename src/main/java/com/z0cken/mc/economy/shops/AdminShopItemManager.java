@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 public class AdminShopItemManager {
@@ -57,6 +58,8 @@ public class AdminShopItemManager {
                     tradeItems.add(new TradeItem(mat, 0, 0, false, false, 0));
                 }
             });
+
+
         }
     }
 

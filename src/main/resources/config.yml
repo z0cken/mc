@@ -6,7 +6,7 @@ mysql:
   database: pcs_economy
 
 economy:
-  messagePrefix: "&b[&aEconomy&b]&f "
+  messagePrefix: "§b[§aEconomy§b]§f "
   pushInterval: 10
   currency:
     currencySingular: Schekel
@@ -23,23 +23,23 @@ economy:
     action:
       accounts:
         success:
-          accountSuccessBalanceSelf: "Kontostand: &l&6{csymbol}{amount}&r&f"
-          accountSuccessBalanceOther: "Kontostand von &2{player}&f: &l&6{csymbol}{amount}&r&f"
-          accountSuccessDelete: Konto von &2{player}&f erfolgreich gelöscht!
-          accountSuccessClear: Konto von &2{player}&f erfolgreich auf 0 gesetzt!
-          accountSuccessCreate: Konto von &2{player}&f erfolgreich erstellt!
-          accountSuccessSet: Kontostand von &2{player}&f erfolgreich auf &l&6{csymbol}{amount}&r&f gesetzt!
-          accountSuccessAdd: Es wurden dem Konto von &2{player}&f &l&6{csymbol}{amount}&r&f hinzugefügt!
-          accountSuccessSubtract: Es wurden dem Konto von &2{player}&f &l&6{csymbol}{amount}&r&f abgezogen!
+          accountSuccessBalanceSelf: "Kontostand: §l§6{csymbol}{amount}§r§f"
+          accountSuccessBalanceOther: "Kontostand von §2{player}§f: §l§6{csymbol}{amount}§r§f"
+          accountSuccessDelete: Konto von §2{player}§f erfolgreich gelöscht!
+          accountSuccessClear: Konto von §2{player}§f erfolgreich auf 0 gesetzt!
+          accountSuccessCreate: Konto von §2{player}§f erfolgreich erstellt!
+          accountSuccessSet: Kontostand von §2{player}§f erfolgreich auf §l§6{csymbol}{amount}§r§f gesetzt!
+          accountSuccessAdd: Es wurden dem Konto von §2{player}§f §l§6{csymbol}{amount}§r§f hinzugefügt!
+          accountSuccessSubtract: Es wurden dem Konto von §2{player}§f §l§6{csymbol}{amount}§r§f abgezogen!
         error:
           accountErrorBalanceSelf: Dein Kontostand konnte nicht abgerufen werden!
-          accountErrorBalanceOther: Der Kontostand von &2{player}&f konnte nicht abgerufen werden!
-          accountErrorDelete: Konto von &2{player}&f konnte nicht gelöscht werden!
-          accountErrorClear: Konto von &2{player}&f konnte nicht auf 0 gesetzt werden!
-          accountErrorCreate: Konto von &2{player}&f konnte nicht erstellt werden!
-          accountErrorSet: Kontostand von &2{player}&f konnte nicht gesetzt werden!
-          accountErrorAdd: Konnte den Betrag dem Konto von &2{player}&f nicht hinzufügen!
-          accountErrorSubtract: Konnte den Betrag dem Konto von &2{player}&f nicht abziehen!
+          accountErrorBalanceOther: Der Kontostand von §2{player}§f konnte nicht abgerufen werden!
+          accountErrorDelete: Konto von §2{player}§f konnte nicht gelöscht werden!
+          accountErrorClear: Konto von §2{player}§f konnte nicht auf 0 gesetzt werden!
+          accountErrorCreate: Konto von §2{player}§f konnte nicht erstellt werden!
+          accountErrorSet: Kontostand von §2{player}§f konnte nicht gesetzt werden!
+          accountErrorAdd: Konnte den Betrag dem Konto von §2{player}§f nicht hinzufügen!
+          accountErrorSubtract: Konnte den Betrag dem Konto von §2{player}§f nicht abziehen!
     payment:
       error:
         paymentError: Transaktion fehlgeschlagen
@@ -48,32 +48,32 @@ economy:
         paymentErrorAccountNotExisting: Das angegebene Konto existiert nicht
         paymentErrorSelf: Du kannst kein Geld an dich selbst überweisen
       success:
-        paymentSuccessSender: Es wurden erfolgreich &l&6{csymbol}{amount}&r&f an &2{player2}&f überwiesen!
-        paymentSuccessReceiver: Du hast gerade &l&6{csymbol}{amount}&r&f von &2{player}&f erhalten!
+        paymentSuccessSender: Es wurden erfolgreich §l§6{csymbol}{amount}§r§f an §2{player2}§f überwiesen!
+        paymentSuccessReceiver: Du hast gerade §l§6{csymbol}{amount}§r§f von §2{player}§f erhalten!
     permission:
       errorNoPermission: Du hast keine Berechtigung diesen Command zu nutzen!
   gui:
     selection:
-      sellPrice: "Preis pro Stück: &6{amount}"
-      buyPrice: "Ankaufspreis pro Stück: &6{amount}"
+      sellPrice: "Preis pro Stück: §6{amount}"
+      buyPrice: "Ankaufspreis pro Stück: §6{amount}"
     trade:
-      quantity: "&5* &7Anzahl: &5{quantity}"
-      cost: "&5* &7Preis: &6{amount}{csymbol}"
-      information: "&aInformation:"
+      quantity: "§5* §7Anzahl: §5{quantity}"
+      cost: "§5* §7Preis: §6{amount}{csymbol}"
+      information: "§aInformation:"
       back: Kehre zur Übersicht zurück
       sell:
-        titleSingle: "&a&nKaufe Eins"
-        titleStack: "&a&nKaufe Stack"
-        titleInv: "&a&nKaufe Inventar"
-        descriptionSingle: "&8Kaufe ein einzelnes Item"
-        descriptionStack: "&8Kaufe einen Stack Items"
-        descriptionInv: "&8Kaufe so viel wie dein Inventar Platz hat"
-        sell: "&4(!) Klicken um zu kaufen!"
+        titleSingle: §a§nKaufe Eins
+        titleStack: §a§nKaufe Stack
+        titleInv: §a§nKaufe Inventar
+        descriptionSingle: §8Kaufe ein einzelnes Item
+        descriptionStack: §8Kaufe einen Stack Items
+        descriptionInv: §8Kaufe so viel wie dein Inventar Platz hat
+        sell: §4(!) Klicken um zu kaufen!
       buy:
-        titleSingle: "&a&nVerkaufe Eins"
-        titleStack: "&a&nVerkaufe Stack"
-        titleInv: "&a&nVerkaufe Inventar"
-        descriptionSingle: "&8Verkaufe ein einzelnes Item"
-        descriptionStack: "&8Verkaufe einen Stack Items"
-        descriptionInv: "&8Verkaufe dein ganzes Inventar"
-        purchase: "&4(!) Klicken um zu verkaufen!"
+        titleSingle: §a§nVerkaufe Eins
+        titleStack: §a§nVerkaufe Stack
+        titleInv: §a§nVerkaufe Inventar
+        descriptionSingle: §8Verkaufe ein einzelnes Item
+        descriptionStack: §8Verkaufe einen Stack Items
+        descriptionInv: §8Verkaufe dein ganzes Inventar
+        purchase: §4(!) Klicken um zu verkaufen!

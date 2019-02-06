@@ -3,3 +3,4 @@ version: 1.0-SNAPSHOT
 main: com.z0cken.mc.economy.PCS_Economy
 author: Florilu
 api-version: 1.13
+depend: [PCS_Core]

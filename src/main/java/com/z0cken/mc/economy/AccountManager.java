@@ -1,20 +1,24 @@
 package com.z0cken.mc.economy;
 
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.core.Database;
+import com.z0cken.mc.economy.utils.DatabaseHelper;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class AccountManager {
 
-    private Connection conn;
+    private HashMap<UUID, Account> accounts;
 
-    public AccountManager(Connection conn){
-        this.conn = conn;
+    public AccountManager(){
+        accounts = new HashMap<>();
     }
 
     public boolean hasAccount(String playerName){
@@ -37,10 +41,12 @@ public class AccountManager {
         return getRowCount(query) > 0;
     }
 
-    public Account getAccount(UUID uuid){
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
-            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+    public Account getAccountFromDB(UUID uuid){
+        String query = "select * from accounts where uuid = \'" + uuid.toString() + "\';";
+        if(DatabaseHelper.checkConnection()){
+            try(Connection con = Database.MAIN.getConnection();
+                Statement stmt = con.createStatement();
+                ResultSet set = stmt.executeQuery(query)){
                 return getAccountFromResultSet(set, uuid);
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
@@ -50,25 +56,42 @@ public class AccountManager {
         return null;
     }
 
-    public Account getAccount(String playerName){
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            String query = "select * from accounts where username = \'" + playerName + "\';";
-            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+    public Account getAccountFromDB(String playerName){
+        String query = "select * from accounts where username = \'" + playerName + "\';";
+        if(DatabaseHelper.checkConnection()){
+            try(Connection con = Database.MAIN.getConnection();
+                Statement stmt = con.createStatement();
+                ResultSet set = stmt.executeQuery(query)){
                 return getAccountFromResultSet(set, null);
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
-                return null;
             }
         }
         return null;
     }
 
-    public Account getAccount(Player player){
-        return getAccount(player.getName());
+    public Account getAccountFromDB(Player player){
+        return getAccountFromDB(player.getName());
     }
 
-    public Account getAccount(OfflinePlayer offlinePlayer){
+    public Account getAccountFromDB(OfflinePlayer offlinePlayer){
         return getAccount(offlinePlayer.getUniqueId());
+    }
+
+    public Account getAccount(UUID uuid){
+        return accounts.get(uuid);
+    }
+
+    public Account getAccount(String playerName){
+        return getAccount(PCS_Economy.pcs_economy.getServer().getPlayer(playerName).getUniqueId());
+    }
+
+    public Account getAccount(Player player){
+        return getAccount(player.getUniqueId());
+    }
+
+    public Account getAccount(OfflinePlayer player){
+        return getAccount(player.getUniqueId());
     }
 
     public boolean createAccount(String playerName){
@@ -76,30 +99,64 @@ public class AccountManager {
     }
 
     public boolean createAccount(OfflinePlayer player) {
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
-            try(PreparedStatement stmt = conn.prepareStatement(query)){
+        String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
+        if(DatabaseHelper.checkConnection()){
+            try(Connection con = Database.MAIN.getConnection();
+                PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)){
                 stmt.setString(1, player.getName());
                 stmt.setString(2, player.getUniqueId().toString());
                 stmt.setDouble(3, 0);
                 stmt.execute();
-                return true;
+                try(ResultSet set = stmt.getGeneratedKeys()){
+                    if(set.next()){
+                        logError(Level.FINE, "TEST");
+                        int pk = set.getInt(1);
+                        AccountHolder holder = new AccountHolder(player);
+                        Account account = new Account(holder, 0, pk);
+                        accounts.put(player.getUniqueId(), account);
+                        return true;
+                    }
+                }catch (SQLException e){
+                    logError(Level.SEVERE, e.getMessage());
+                    return false;
+                }
+                return false;
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
-                return false;
             }
         }
         return false;
     }
 
+    public void addAccountFromPlayer(Player p){
+        if(hasAccount(p)){
+            PCS_Economy.pcs_economy.getLogger().info("Has account");
+            Account account = getAccountFromDB(p);
+            PCS_Economy.pcs_economy.getLogger().info(String.valueOf(account == null));
+            PCS_Economy.pcs_economy.getLogger().info(String.valueOf(p == null));
+            accounts.put(p.getUniqueId(), account);
+        }else{
+            createAccount(p);
+        }
+    }
+
     public boolean deleteAccount(String playerName){
         String query = "delete from accounts where username = \'" + playerName + "\';";
-        return executeSimpleStatement(query);
+        if(hasAccount(playerName)){
+            executeSimpleStatement(query);
+            removeAccountFromMap(playerName);
+        }
+        return true;
     }
 
     public boolean deleteAccount(UUID uuid){
         String query = "delete from accounts where uuid = \'" + uuid.toString() + "\';";
-        return executeSimpleStatement(query);
+        if(hasAccount(uuid)){
+            executeSimpleStatement(query);
+            removeAccountFromMap(uuid);
+            return true;
+        }
+        return false;
     }
 
     public boolean deleteAccount(OfflinePlayer player){
@@ -108,6 +165,18 @@ public class AccountManager {
 
     public boolean deleteAccount(Player player){
         return deleteAccount(player.getName());
+    }
+
+    public void removeAccountFromMap(Player p){
+        accounts.remove(p.getUniqueId());
+    }
+
+    public void removeAccountFromMap(UUID uuid){
+        accounts.remove(uuid);
+    }
+
+    public void removeAccountFromMap(String playerName){
+        accounts.remove(PCS_Economy.pcs_economy.getServer().getPlayer(playerName).getUniqueId());
     }
 
     public EconomyResponse transferMoney(Account sender, Account receiver, double amount){
@@ -129,42 +198,37 @@ public class AccountManager {
     }
 
     public boolean updateAccountBalance(Account account){
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            String query = "update accounts set balance = ? where accountID = ? ;";
-            try(PreparedStatement stmt = conn.prepareStatement(query)){
-                stmt.setDouble(1, account.getBalance());
-                stmt.setInt(2, account.getAccountID());
-                stmt.execute();
-                return true;
-            }catch (SQLException e){
-                logError(Level.SEVERE, e.getMessage());
-                return false;
-            }
+        if(!DatabaseHelper.existsInDeque(account)){
+            DatabaseHelper.addToDeque(account);
+            return true;
         }
-        return false;
+        return true;
     }
 
     private int getRowCount(String query){
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            try(Statement stmt = conn.createStatement(); ResultSet set = stmt.executeQuery(query)){
+        if(DatabaseHelper.checkConnection()){
+            try(Connection con = Database.MAIN.getConnection();
+                Statement stmt = con.createStatement();
+                ResultSet set = stmt.executeQuery(query)){
                 while(set.next()){
                     return set.getInt(1);
                 }
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
-                return 0;
             }
         }
         return 0;
     }
 
     private boolean executeSimpleStatement(String query){
-        if(PCS_Economy.pcs_economy.checkDBConnection()){
-            try(Statement stmt = conn.createStatement()){
-                return stmt.execute(query);
+        if(DatabaseHelper.checkConnection()){
+            try(Connection con = Database.MAIN.getConnection();
+                Statement stmt = con.createStatement()){
+                boolean bool = stmt.execute(query);
+                logError(Level.FINE, "CHECK" + String.valueOf(bool));
+                return bool;
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
-                return false;
             }
         }
         return false;
@@ -185,7 +249,6 @@ public class AccountManager {
                 PCS_Economy.pcs_economy.getLogger().info("AccountHolderUUID: " + holder.getUUID());
                 account = new Account(holder, set.getDouble("balance"), set.getInt("accountID"));
             }
-            set.close();
         }catch (SQLException e){
             logError(Level.SEVERE, e.getMessage());
             return null;

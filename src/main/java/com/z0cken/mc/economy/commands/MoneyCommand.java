@@ -8,6 +8,7 @@ import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.shops.TradeItem;
 import com.z0cken.mc.economy.shops.Trader;
+import com.z0cken.mc.economy.utils.DatabaseHelper;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import com.z0cken.mc.economy.utils.NBTUtils;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -53,13 +54,13 @@ public class MoneyCommand extends BaseCommand {
     @CommandCompletion("@players")
     public void onBalancePlayer(CommandSender sender, OnlinePlayer player){
         sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessBalanceOther, player.getPlayer().getName(),
-                null, pcs_economy.accountManager.getAccount(player.getPlayer().getName()).getBalance(), 0));
+                null, pcs_economy.accountManager.getAccount(player.getPlayer()).getBalance(), 0));
     }
 
     @Subcommand("pay")
     @CommandPermission("pcs.economy.user")
     @CommandCompletion("@players")
-    public void onPay(CommandSender sender, OnlinePlayer receiver, double amount){
+    public void onPay(CommandSender sender, OnlinePlayer receiver, int amount){
         Account from = pcs_economy.accountManager.getAccount(sender.getName());
         Account to = pcs_economy.accountManager.getAccount(receiver.getPlayer().getName());
         EconomyResponse response = payHandler(sender, from, to, amount);
@@ -73,7 +74,7 @@ public class MoneyCommand extends BaseCommand {
 
     @Subcommand("payo")
     @CommandPermission("pcs.economy.user")
-    public void onPay(CommandSender sender, String receiver, double amount){
+    public void onPay(CommandSender sender, String receiver, int amount){
         Account from = pcs_economy.accountManager.getAccount(sender.getName());
         Account to = pcs_economy.accountManager.getAccount(receiver);
         EconomyResponse response = payHandler(sender, from, to, amount);
@@ -123,7 +124,7 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account set")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountSet(CommandSender sender, OnlinePlayer player, double amount){
+    public void onAccountSet(CommandSender sender, OnlinePlayer player, int amount){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).setBalance(amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
             sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessSet, player.getPlayer().getName(), amount));
@@ -135,7 +136,7 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account add")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountAdd(CommandSender sender, OnlinePlayer player, double amount){
+    public void onAccountAdd(CommandSender sender, OnlinePlayer player, int amount){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).add(amount);
         String message;
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
@@ -148,7 +149,7 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account subtract")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountSubtract(CommandSender sender, OnlinePlayer player, double amount){
+    public void onAccountSubtract(CommandSender sender, OnlinePlayer player, int amount){
         EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).subtract(amount);
         if(response.type == EconomyResponse.ResponseType.SUCCESS){
             sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.accountSuccessSubtract, player.getPlayer().getName(), amount));
@@ -193,7 +194,7 @@ public class MoneyCommand extends BaseCommand {
     @CommandPermission("pcs.economy.admin")
     public void onDebugDB(CommandSender sender){
         if(sender instanceof ConsoleCommandSender){
-            sender.sendMessage(String.valueOf(pcs_economy.checkDBConnection()));
+            sender.sendMessage(String.valueOf(DatabaseHelper.checkConnection()));
         }
     }
 
@@ -267,7 +268,7 @@ public class MoneyCommand extends BaseCommand {
         pcs_economy.saveTraderManagerJSON();
     }
 
-    private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, double amount){
+    private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, int amount){
         if(senderAccount != null && receiverAccount != null){
             if(senderAccount.getHolder().getName().equalsIgnoreCase(receiverAccount.getHolder().getName())){
                 return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, ConfigManager.paymentErrorSelf);
@@ -286,5 +287,11 @@ public class MoneyCommand extends BaseCommand {
             }
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "");
         }
+    }
+
+    @Subcommand("debug db deque")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugDBDeque(CommandSender sender){
+        DatabaseHelper.addToDequeDEBUG();
     }
 }

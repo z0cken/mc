@@ -4,6 +4,7 @@ import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.shops.InventoryMeta;
 import com.z0cken.mc.economy.shops.TradeInventoryType;
 import com.z0cken.mc.economy.shops.Trader;
+import com.z0cken.mc.economy.shops.gui.TradeInventorySlots;
 import com.z0cken.mc.economy.shops.gui.TraderTradeGUI;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -44,7 +45,7 @@ public class InventoryListener implements Listener {
                     break;
                 case TRADE:
                     e.setCancelled(true);
-
+                    int clickedSlot = e.getSlot();
                     break;
             }
         }
@@ -88,21 +89,5 @@ public class InventoryListener implements Listener {
             }
             pcs_economy.inventoryManager.getInventories().remove(e.getInventory());
         }
-        /*String title = e.getView().getTitle();
-        if(title != null && !title.isEmpty()){
-            if(title.contains("Konfiguration")){
-                String[] components = title.split("-");
-                Trader trader = pcs_economy.traderManager.getTrader(ChatColor.stripColor(components[0]));
-                ItemStack[] contents = e.getInventory().getStorageContents();
-                if(contents.length > 0){
-                    trader.getTradeItems().clear();
-                    for(ItemStack stack : contents){
-                        if(stack != null){
-                            trader.addTradeItem(pcs_economy.adminShopItemManager.getTradeItem(stack.getType()));
-                        }
-                    }
-                }
-            }
-        }*/
     }
 }

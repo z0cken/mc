@@ -8,6 +8,7 @@ public class Account {
     private double balance = 0;
     private AccountHolder holder = null;
     private int accountID = 0;
+    private boolean isDirty = false;
 
     public Account(AccountHolder holder, double balance, int accountID){
         this.holder = holder;
@@ -28,30 +29,21 @@ public class Account {
     }
 
     public EconomyResponse add(double amount){
+        this.isDirty = true;
         if(amount <= 0){
             return new EconomyResponse(amount, this.getBalance(), ResponseType.FAILURE, ConfigManager.paymentErrorNegativeValue);
         }
         this.balance += amount;
-        if(updateAccount(amount).type == ResponseType.FAILURE){
-            //PCS_Economy.pcs_economy.getLogger().info("Nix konnte updaten blus " + this.getHolder().getName());
-            String s = "s";
-            return new EconomyResponse(amount, this.getBalance(), ResponseType.FAILURE, ConfigManager.errorGeneral);
-        }
-
-        return new EconomyResponse(0, this.getBalance(), ResponseType.SUCCESS, ConfigManager.successGeneral);
+        return responseFailureOrGeneral(amount);
     }
 
     public EconomyResponse subtract(double amount){
+        this.isDirty = true;
         if(amount < 0){
             return new EconomyResponse(0, this.getBalance(), ResponseType.FAILURE, ConfigManager.paymentErrorNegativeValue);
         }
         this.balance -= amount;
-        if(updateAccount(amount).type == ResponseType.FAILURE) {
-            //PCS_Economy.pcs_economy.getLogger().info("Nix konnte updaten " + this.getHolder().getName());
-            return new EconomyResponse(amount, this.getBalance(), ResponseType.FAILURE, ConfigManager.errorGeneral);
-        }
-
-        return new EconomyResponse(0, this.getBalance(), ResponseType.SUCCESS, ConfigManager.successGeneral);
+        return responseFailureOrGeneral(amount);
     }
 
     public EconomyResponse clearBalance(){
@@ -77,9 +69,19 @@ public class Account {
 
     private EconomyResponse updateAccount(double amount){
         if(PCS_Economy.pcs_economy.accountManager.updateAccountBalance(this)){
+            this.isDirty = true;
             return new EconomyResponse(amount, this.getBalance(), ResponseType.SUCCESS, ConfigManager.successGeneral);
         }
-        //PCS_Economy.pcs_economy.getLogger().info("War zu blöd zum Updaten");
+        this.isDirty = false;
         return new EconomyResponse(amount, this.getBalance(), ResponseType.FAILURE, ConfigManager.errorGeneral);
+    }
+
+    private EconomyResponse responseFailureOrGeneral(double amount){
+        if(updateAccount(amount).type == ResponseType.FAILURE) {
+            this.isDirty = false;
+            return new EconomyResponse(amount, this.getBalance(), ResponseType.FAILURE, ConfigManager.errorGeneral);
+        }
+        this.isDirty = true;
+        return new EconomyResponse(0, this.getBalance(), ResponseType.SUCCESS, ConfigManager.successGeneral);
     }
 }

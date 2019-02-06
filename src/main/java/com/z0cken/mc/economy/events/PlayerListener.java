@@ -13,17 +13,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 
 import java.sql.Connection;
 
 public class PlayerListener implements Listener {
 
-    private Connection conn;
-
-    public PlayerListener(Connection conn){
-        this.conn = conn;
-    }
+    public PlayerListener(){ }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
@@ -31,11 +28,13 @@ public class PlayerListener implements Listener {
 
         PCS_Economy.pcs_economy.getLogger().info("Player joined");
         PCS_Economy.pcs_economy.getLogger().info("JoinedBefore? " + p.hasPlayedBefore());
-        if(!p.hasPlayedBefore()){
-            PCS_Economy.pcs_economy.accountManager.createAccount(p);
-        }
+        PCS_Economy.pcs_economy.accountManager.addAccountFromPlayer(p);
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event){
+        PCS_Economy.pcs_economy.accountManager.removeAccountFromMap(event.getPlayer());
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityInteract(PlayerInteractEntityEvent e){
