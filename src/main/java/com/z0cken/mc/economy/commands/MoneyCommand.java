@@ -306,4 +306,14 @@ public class MoneyCommand extends BaseCommand {
             sender.sendMessage(String.valueOf(p.getInventory().firstEmpty()));
         }
     }
+
+    //TODO REMOVE LATER
+    @Subcommand("debug hasplayerpermission")
+    public void onDebugHasPlayerPermission(CommandSender sender){
+        if(sender.hasPermission("pcs.economy.admin")){
+            sender.sendMessage("HAST RECHTE ALTER!");
+        }else{
+            sender.sendMessage("HAST KEINE RECHTE ALTER!!");
+        }
+    }
 }

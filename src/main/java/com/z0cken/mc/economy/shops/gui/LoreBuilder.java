@@ -10,18 +10,25 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LoreBuilder {
-    private String description;
     private int quantity;
-    private String sellBuy;
     private Material material;
     private boolean sell;
+    private ArrayList<String> lore;
 
     public LoreBuilder(boolean sell){
         this.sell = sell;
+        lore = new ArrayList<>();
     }
 
-    public LoreBuilder setDescription(String description){
-        this.description = description;
+    public LoreBuilder addDescription(String description){
+        String builtDescription = MessageBuilder.buildMessage(false, description);
+        lore.add(builtDescription);
+        return this;
+    }
+
+    public LoreBuilder addInformation(){
+        String builtInformation = MessageBuilder.buildMessage(false, ConfigManager.tradeInformation);
+        lore.add(builtInformation);
         return this;
     }
 
@@ -30,8 +37,37 @@ public class LoreBuilder {
         return this;
     }
 
-    public LoreBuilder setSellBuy(String sellBuy){
-        this.sellBuy = sellBuy;
+    public LoreBuilder addQuantity(){
+        String builtQuantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, this.quantity);
+        lore.add(builtQuantity);
+        return this;
+    }
+
+    public LoreBuilder addSellBuy(String sellBuy){
+        String builtSellBuy = MessageBuilder.buildMessage(false, sellBuy);
+        lore.add(builtSellBuy);
+        return this;
+    }
+
+    public LoreBuilder addTradeCost(){
+        int tradeCost = 0;
+        if(this.sell){
+            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice() * this.quantity;
+        }else{
+            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice() * this.quantity;
+        }
+        String builtCost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
+        lore.add(builtCost);
+        return this;
+    }
+
+    public LoreBuilder addEmpty(){
+        lore.add("");
+        return this;
+    }
+
+    public LoreBuilder addCustom(String line){
+        lore.add(MessageBuilder.buildMessage(false, line));
         return this;
     }
 
@@ -41,19 +77,6 @@ public class LoreBuilder {
     }
 
     public List<String> buildLore(){
-        String builtDescription = MessageBuilder.buildMessage(false, this.description);
-        String builtInformation = MessageBuilder.buildMessage(false, ConfigManager.tradeInformation);
-        String builtQuantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, this.quantity);
-        int tradeCost = 0;
-        if(this.sell){
-            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice() * this.quantity;
-        }else{
-            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice() * this.quantity;
-        }
-        String builtCost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
-        String builtSellBuy = MessageBuilder.buildMessage(false, sellBuy);
-        String empty = "";
-        List<String> lore = Arrays.asList(builtDescription, empty, builtInformation, builtQuantity, builtCost, empty, builtSellBuy);
-        return lore;
+        return this.lore;
     }
 }

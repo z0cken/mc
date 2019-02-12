@@ -14,7 +14,9 @@ public enum TradeInventorySlotType {
     SLOT_BUY_SINGLE(new int[]{6, 7, 8}),
     SLOT_BUY_STACK(new int[]{15, 16, 17}),
     SLOT_BUY_INV(new int[]{24, 25, 26}),
-    SLOT_ALL(new int[]{0, 1, 2, 9, 10, 11, 18, 19, 20, 6, 7, 8, 15, 16, 17, 24, 25, 26});
+    SLOT_ALL(new int[]{0, 1, 2, 9, 10, 11, 18, 19, 20, 6, 7, 8, 15, 16, 17, 24, 25, 26}),
+    SLOT_ALL_SELL(new int[]{0, 1, 2, 9, 10, 11, 18, 19, 20}),
+    SLOT_ALL_BUY(new int[]{6, 7, 8, 15, 16, 17, 24, 25, 26});
 
     private int[] slots;
 

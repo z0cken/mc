@@ -130,10 +130,7 @@ public class AccountManager {
 
     public void addAccountFromPlayer(Player p){
         if(hasAccount(p)){
-            PCS_Economy.pcs_economy.getLogger().info("Has account");
             Account account = getAccountFromDB(p);
-            PCS_Economy.pcs_economy.getLogger().info(String.valueOf(account == null));
-            PCS_Economy.pcs_economy.getLogger().info(String.valueOf(p == null));
             accounts.put(p.getUniqueId(), account);
         }else{
             createAccount(p);

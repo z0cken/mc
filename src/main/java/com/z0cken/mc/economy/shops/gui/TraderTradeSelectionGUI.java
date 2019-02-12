@@ -2,6 +2,7 @@ package com.z0cken.mc.economy.shops.gui;
 
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.shops.TradeItem;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import org.bukkit.ChatColor;
@@ -28,17 +29,19 @@ public class TraderTradeSelectionGUI{
             title = ChatColor.GREEN + trader.getTraderName() + "-Shop";
         }
         Inventory inv = PCS_Economy.pcs_economy.getServer().createInventory(null, 27, title);
-        trader.getTradeItems().forEach(item -> {
-            ItemStack stack = new ItemStack(item.getMaterial(), 1);
-            ItemMeta meta = stack.getItemMeta();
-            String sellPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionSellPrice, item.getSellprice(), 0);
-            String buyPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionBuyPrice, item.getBuyPrice(), 0);
-            List<String> lore = Arrays.asList(sellPrice, buyPrice);
-            meta.setLore(lore);
-            stack.setItemMeta(meta);
-            inv.addItem(stack);
-        });
-
+        if(trader.isAdminShop()){
+            trader.getTradeItems().forEach(item -> {
+                ItemStack stack = new ItemStack(item.getMaterial(), 1);
+                ItemMeta meta = stack.getItemMeta();
+                TradeItem adminItem = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(item.getMaterial());
+                String sellPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionSellPrice, adminItem.getSellprice(), 0);
+                String buyPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionBuyPrice, adminItem.getBuyPrice(), 0);
+                List<String> lore = Arrays.asList(sellPrice, buyPrice);
+                meta.setLore(lore);
+                stack.setItemMeta(meta);
+                inv.addItem(stack);
+            });
+        }
         return inv;
     }
 }

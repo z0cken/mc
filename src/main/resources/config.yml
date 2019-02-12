@@ -61,6 +61,9 @@ economy:
       cost: "§5* §7Preis: §6{amount}{csymbol}"
       information: "§aInformation:"
       back: Kehre zur Übersicht zurück
+      notEnoughFunds: §4Du hast nicht genügend Geld auf dem Konto!
+      inventoryFull: §4Dein Inventar ist voll!
+      notEnoughItems: §4Du hast nicht genug Items!
       sell:
         titleSingle: §a§nKaufe Eins
         titleStack: §a§nKaufe Stack

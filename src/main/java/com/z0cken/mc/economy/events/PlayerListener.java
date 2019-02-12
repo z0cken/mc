@@ -27,9 +27,6 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player p = event.getPlayer();
-
-        PCS_Economy.pcs_economy.getLogger().info("Player joined");
-        PCS_Economy.pcs_economy.getLogger().info("JoinedBefore? " + p.hasPlayedBefore());
         PCS_Economy.pcs_economy.accountManager.addAccountFromPlayer(p);
     }
 
@@ -67,10 +64,9 @@ public class PlayerListener implements Listener {
     * Das soll, wenn ein Spieler über einen Shop etwas kaufen möchte, verhindern, dass er ein Item aufnimmt. Man muss immer mit Trolls rechnen.
     * Kann aber sein, dass das nicht funktioniert.
     * */
-    //TODO
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityPickup(EntityPickupItemEvent e){
-        if(e.getEntityType() == EntityType.PLAYER){
+        if(e.getEntity() instanceof Player){
             Player p = (Player)e.getEntity();
             if(PCS_Economy.pcs_economy.inventoryManager.getInventories().containsKey(p.getOpenInventory().getTopInventory())){
                 e.setCancelled(true);

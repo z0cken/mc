@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -21,7 +22,6 @@ import java.util.stream.IntStream;
 * Bin noch am schauen wie man das am besten löst
 * */
 public class DatabaseHelper {
-    private static Connection connection;
     private static final ConcurrentLinkedDeque<Account> deque = new ConcurrentLinkedDeque<>();
 
     static {
@@ -31,6 +31,21 @@ public class DatabaseHelper {
                 push();
             }
         }.runTaskTimerAsynchronously(PCS_Economy.pcs_economy, 100, ConfigManager.pushInterval * 20);
+    }
+
+    public static void createTable(){
+        try(Connection con = Database.MAIN.getConnection();
+            Statement stmt = con.createStatement()){
+            String query =
+                    "CREATE TABLE IF NOT EXISTS accounts" +
+                            " (accountID INT AUTO_INCREMENT PRIMARY KEY," +
+                            " username VARCHAR(30) NOT NULL UNIQUE," +
+                            " uuid VARCHAR(36) NOT NULL UNIQUE," +
+                            " balance DOUBLE DEFAULT 0 NOT NULL );";
+            stmt.execute(query);
+        }catch (SQLException e){
+            PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+        }
     }
 
     static void push(){

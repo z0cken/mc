@@ -77,6 +77,9 @@ public class ConfigManager {
     public static String tradeCost = null;
     public static String tradePurchase = null;
     public static String tradeBack = null;
+    public static String tradeNotEnoughFunds = null;
+    public static String tradeNotEnoughItems = null;
+    public static String tradeInventoryFull = null;
 
     public static void loadConfig(){
         config = PCS_Economy.pcs_economy.getConfig();
@@ -152,5 +155,8 @@ public class ConfigManager {
         tradeCost = config.getString("economy.gui.trade.cost");
         tradePurchase = config.getString("economy.gui.trade.purchase");
         tradeBack = config.getString("economy.gui.trade.back");
+        tradeNotEnoughFunds = config.getString("economy.gui.trade.notEnoughFunds");
+        tradeNotEnoughItems = config.getString("economy.gui.trade.notEnoughItems");
+        tradeInventoryFull = config.getString("economy.gui.trade.inventoryFull");
     }
 }

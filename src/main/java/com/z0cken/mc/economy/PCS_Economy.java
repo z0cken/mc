@@ -12,6 +12,7 @@ import com.z0cken.mc.economy.impl.VaultConnector;
 import com.z0cken.mc.economy.shops.AdminShopItemManager;
 import com.z0cken.mc.economy.shops.TraderManager;
 import com.z0cken.mc.economy.shops.InventoryManager;
+import com.z0cken.mc.economy.utils.DatabaseHelper;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import com.z0cken.mc.core.Database;
 import net.milkbowl.vault.economy.*;
@@ -38,6 +39,7 @@ public class PCS_Economy extends JavaPlugin {
     @Override
     public void onLoad(){
         pcs_economy = this;
+
         this.saveDefaultConfig();
         ConfigManager.loadConfig();
 
@@ -67,6 +69,7 @@ public class PCS_Economy extends JavaPlugin {
 
     @Override
     public void onEnable(){
+        DatabaseHelper.createTable();
         registerCommands();
         registerInterfaces();
 
