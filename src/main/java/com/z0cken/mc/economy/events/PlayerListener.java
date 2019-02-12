@@ -6,11 +6,13 @@ import com.z0cken.mc.economy.shops.TradeInventoryType;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.shops.gui.TraderConfigGUI;
 import com.z0cken.mc.economy.shops.gui.TraderTradeSelectionGUI;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -59,5 +61,20 @@ public class PlayerListener implements Listener {
             return;
         }
         return;
+    }
+
+    /*
+    * Das soll, wenn ein Spieler über einen Shop etwas kaufen möchte, verhindern, dass er ein Item aufnimmt. Man muss immer mit Trolls rechnen.
+    * Kann aber sein, dass das nicht funktioniert.
+    * */
+    //TODO
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityPickup(EntityPickupItemEvent e){
+        if(e.getEntityType() == EntityType.PLAYER){
+            Player p = (Player)e.getEntity();
+            if(PCS_Economy.pcs_economy.inventoryManager.getInventories().containsKey(p.getOpenInventory().getTopInventory())){
+                e.setCancelled(true);
+            }
+        }
     }
 }

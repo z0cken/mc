@@ -2,6 +2,7 @@ package com.z0cken.mc.economy.shops.gui;
 
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.shops.InventoryHelper;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import org.apache.commons.lang.WordUtils;
@@ -28,12 +29,7 @@ public class TraderTradeGUI{
         String title = trader.getTraderName() + "-" + WordUtils.capitalizeFully(material.name().replace("_", " "));
         Inventory inv = PCS_Economy.pcs_economy.getServer().createInventory(null, 27, title);
 
-        int freeSlots = 0;
-        for (ItemStack stack : player.getInventory().getStorageContents()) {
-            if(stack == null || stack.getType() == Material.AIR){
-                freeSlots += 1;
-            }
-        }
+        int freeSlots = getFreeSlots(player);
 
         String description = null;
         String empty = "";
@@ -43,6 +39,7 @@ public class TraderTradeGUI{
         String cost = null;
         String sell = null;
         ItemStack[] slots = new ItemStack[6];
+        List<String> lore = null;
         for(int i = 0; i < slots.length; i++){
             if(i < 3){
                 slots[i] = new ItemStack(Material.GREEN_STAINED_GLASS_PANE, 1);
@@ -53,57 +50,53 @@ public class TraderTradeGUI{
             switch (i){
                 case 0:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleSingle));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeSellDescriptionSingle);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, 1);
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice(), 0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeSell);
+                    lore = new LoreBuilder(true).setDescription(ConfigManager.tradeSellDescriptionSingle)
+                                            .setMaterial(material)
+                                            .setQuantity(1)
+                                            .setSellBuy(ConfigManager.tradeSell).buildLore();
                     break;
                 case 1:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleStack));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeSellDescriptionStack);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, material.getMaxStackSize());
-                    tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice() * material.getMaxStackSize();
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeSell);
+                    lore = new LoreBuilder(true).setDescription(ConfigManager.tradeSellDescriptionStack)
+                                            .setMaterial(material)
+                                            .setQuantity(material.getMaxStackSize())
+                                            .setSellBuy(ConfigManager.tradeSell).buildLore();
                     break;
                 case 2:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleInv));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeSellDescriptionInv);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, 123);
-                    tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice() * (freeSlots * material.getMaxStackSize());
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost,0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeSell);
+                    int capacity = InventoryHelper.getOverallItemCapacity(player.getInventory(), material);
+                    lore = new LoreBuilder(true).setDescription(ConfigManager.tradeSellDescriptionInv)
+                                            .setMaterial(material)
+                                            .setQuantity(capacity)
+                                            .setSellBuy(ConfigManager.tradeSell).buildLore();
                     break;
                 case 3:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleSingle));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeBuyDescriptionSingle);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, 1);
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice(), 0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeBuy);
+                    lore = new LoreBuilder(false).setDescription(ConfigManager.tradeBuyDescriptionSingle)
+                                            .setMaterial(material)
+                                            .setQuantity(1)
+                                            .setSellBuy(ConfigManager.tradeBuy).buildLore();
                     break;
                 case 4:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleStack));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeBuyDescriptionStack);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, material.getMaxStackSize());
-                    tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice() * material.getMaxStackSize();
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeBuy);
+                    lore = new LoreBuilder(false).setDescription(ConfigManager.tradeBuyDescriptionStack)
+                                            .setMaterial(material)
+                                            .setQuantity(material.getMaxStackSize())
+                                            .setSellBuy(ConfigManager.tradeBuy).buildLore();
                     break;
                 case 5:
                     meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleInv));
-                    description = MessageBuilder.buildMessage(false, ConfigManager.tradeBuyDescriptionInv);
-                    quantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, 123);
-                    tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice() * (freeSlots * material.getMaxStackSize());
-                    cost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
-                    sell = MessageBuilder.buildMessage(false, ConfigManager.tradeBuy);
+                    lore = new LoreBuilder(false).setDescription(ConfigManager.tradeBuyDescriptionInv)
+                                            .setMaterial(material)
+                                            .setQuantity(123)
+                                            .setSellBuy(ConfigManager.tradeBuy).buildLore();
                     break;
             }
-            List<String> lore;
-            lore = Arrays.asList(description, empty, information, quantity, cost, empty, sell);
             meta.setLore(lore);
             slots[i].setItemMeta(meta);
         }
 
+        //SELL
         inv.setItem(0, slots[0]);
         inv.setItem(1, slots[0]);
         inv.setItem(2, slots[0]);
@@ -116,6 +109,7 @@ public class TraderTradeGUI{
         inv.setItem(19, slots[2]);
         inv.setItem(20, slots[2]);
 
+        //BUY
         inv.setItem(6, slots[3]);
         inv.setItem(7, slots[3]);
         inv.setItem(8, slots[3]);
@@ -132,5 +126,48 @@ public class TraderTradeGUI{
         inv.setItem(13, itemOfInterest);
 
         return inv;
+    }
+
+    private static int getFreeSlots(Player player){
+        int freeSlots = 0;
+        for (ItemStack stack : player.getInventory().getStorageContents()) {
+            if(stack == null || stack.getType() == Material.AIR){
+                freeSlots += 1;
+            }
+        }
+        return freeSlots;
+    }
+
+    //TODO CHANGE LORE
+    public static void changeLoreInvSell(Inventory inv, Player player, Material material){
+        if(player != null && inv != null && material != null){
+            List<String> lore = new LoreBuilder(true)
+                    .setDescription(ConfigManager.tradeSellDescriptionInv)
+                    .setMaterial(material)
+                    .setQuantity(InventoryHelper.getOverallItemCapacity(player.getInventory(), material))
+                    .setSellBuy(ConfigManager.tradeSell)
+                    .buildLore();
+            for (int i : TradeInventorySlotType.SLOT_SELL_INV.getSlots()) {
+                ItemMeta meta = inv.getItem(i).getItemMeta();
+                meta.setLore(lore);
+                inv.getItem(i).setItemMeta(meta);
+            }
+        }
+    }
+
+    public void changeLoreTraderInvFull(){
+
+    }
+
+    public void changeLoreTraderInvEmpty(){
+
+    }
+
+    public void changeLorePlayerInvFull(){
+
+    }
+
+    public void changeLorePlayerInvEmpty(){
+
     }
 }

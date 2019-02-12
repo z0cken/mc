@@ -294,4 +294,16 @@ public class MoneyCommand extends BaseCommand {
     public void onDebugDBDeque(CommandSender sender){
         DatabaseHelper.addToDequeDEBUG();
     }
+
+    @Subcommand("debug inv contents")
+    @CommandPermission("pcs.economy.admin")
+    public void onDebugInvContents(CommandSender sender){
+        if(sender instanceof Player){
+            Player p = (Player)sender;
+            for (ItemStack stack : p.getInventory().getStorageContents()) {
+                sender.sendMessage(String.valueOf(stack));
+            }
+            sender.sendMessage(String.valueOf(p.getInventory().firstEmpty()));
+        }
+    }
 }
