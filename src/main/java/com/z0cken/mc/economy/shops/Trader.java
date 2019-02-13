@@ -10,13 +10,15 @@ import java.util.UUID;
 public class Trader {
 
     private String traderUUID;
+    private int traderID;
     private String ownerUUID;
     private String traderName;
     private transient Entity entity;
     private boolean isAdminShop;
     private ArrayList<TradeItem> items;
 
-    public Trader(Entity entity, Player player, String traderName, boolean isAdminShop){
+    public Trader(int traderID, Entity entity, Player player, String traderName, boolean isAdminShop){
+        this.traderID = traderID;
         this.traderUUID = entity.getUniqueId().toString();
         this.ownerUUID = player.getUniqueId().toString();
         this.traderName = traderName;
@@ -100,6 +102,8 @@ public class Trader {
     public boolean isAdminShop(){
         return this.isAdminShop;
     }
+
+    public int getTraderID() {return this.traderID;}
 
     public UUID getOwnerUUID(){
         return UUID.fromString(this.ownerUUID);

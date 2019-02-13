@@ -6,7 +6,7 @@ mysql:
   database: pcs_economy
 
 economy:
-  messagePrefix: "§b[§aEconomy§b]§f "
+  messagePrefix: "§b[§aEconomy§b]§f"
   pushInterval: 10
   currency:
     currencySingular: Schekel
@@ -23,48 +23,54 @@ economy:
     action:
       accounts:
         success:
-          accountSuccessBalanceSelf: "Kontostand: §l§6{csymbol}{amount}§r§f"
-          accountSuccessBalanceOther: "Kontostand von §2{player}§f: §l§6{csymbol}{amount}§r§f"
-          accountSuccessDelete: Konto von §2{player}§f erfolgreich gelöscht!
-          accountSuccessClear: Konto von §2{player}§f erfolgreich auf 0 gesetzt!
-          accountSuccessCreate: Konto von §2{player}§f erfolgreich erstellt!
-          accountSuccessSet: Kontostand von §2{player}§f erfolgreich auf §l§6{csymbol}{amount}§r§f gesetzt!
-          accountSuccessAdd: Es wurden dem Konto von §2{player}§f §l§6{csymbol}{amount}§r§f hinzugefügt!
-          accountSuccessSubtract: Es wurden dem Konto von §2{player}§f §l§6{csymbol}{amount}§r§f abgezogen!
+          accountSuccessBalanceSelf: "{PREFIX} Kontostand: §l§6{CSYMBOL}{AMOUNT}§r§f"
+          accountSuccessBalanceOther: "{PREFIX} Kontostand von §2{PLAYER}§f: §l§6{CSYMBOL}{AMOUNT}§r§f"
+          accountSuccessDelete: "{PREFIX} Konto von §2{PLAYER}§f erfolgreich gelöscht!"
+          accountSuccessClear: "{PREFIX} Konto von §2{PLAYER}§f erfolgreich auf 0 gesetzt!"
+          accountSuccessCreate: "{PREFIX} Konto von §2{PLAYER}§f erfolgreich erstellt!"
+          accountSuccessSet: "{PREFIX} Kontostand von §2{PLAYER}§f erfolgreich auf §l§6{CSYMBOL}{AMOUNT}§r§f gesetzt!"
+          accountSuccessAdd: "{PREFIX} Es wurden dem Konto von §2{PLAYER}§f §l§6{CSYMBOL}{AMOUNT}§r§f hinzugefügt!"
+          accountSuccessSubtract: "{PREFIX} Es wurden dem Konto von §2{PLAYER}§f §l§6{CSYMBOL}{AMOUNT}§r§f abgezogen!"
         error:
-          accountErrorBalanceSelf: Dein Kontostand konnte nicht abgerufen werden!
-          accountErrorBalanceOther: Der Kontostand von §2{player}§f konnte nicht abgerufen werden!
-          accountErrorDelete: Konto von §2{player}§f konnte nicht gelöscht werden!
-          accountErrorClear: Konto von §2{player}§f konnte nicht auf 0 gesetzt werden!
-          accountErrorCreate: Konto von §2{player}§f konnte nicht erstellt werden!
-          accountErrorSet: Kontostand von §2{player}§f konnte nicht gesetzt werden!
-          accountErrorAdd: Konnte den Betrag dem Konto von §2{player}§f nicht hinzufügen!
-          accountErrorSubtract: Konnte den Betrag dem Konto von §2{player}§f nicht abziehen!
+          accountErrorBalanceSelf: "{PREFIX} Dein Kontostand konnte nicht abgerufen werden!"
+          accountErrorBalanceOther: "{PREFIX} Der Kontostand von §2{PLAYER}§f konnte nicht abgerufen werden!"
+          accountErrorDelete: "{PREFIX} Konto von §2{PLAYER}§f konnte nicht gelöscht werden!"
+          accountErrorClear: "{PREFIX} Konto von §2{PLAYER}§f konnte nicht auf 0 gesetzt werden!"
+          accountErrorCreate: "{PREFIX} Konto von §2{PLAYER}§f konnte nicht erstellt werden!"
+          accountErrorSet: "{PREFIX} Kontostand von §2{PLAYER}§f konnte nicht gesetzt werden!"
+          accountErrorAdd: "{PREFIX} Konnte den Betrag dem Konto von §2{PLAYER}§f nicht hinzufügen!"
+          accountErrorSubtract: "{PREFIX} Konnte den Betrag dem Konto von §2{PLAYER}§f nicht abziehen!"
     payment:
       error:
-        paymentError: Transaktion fehlgeschlagen
-        paymentErrorNegativeValue: Negative Werte sind nicht erlaubt
-        paymentErrorNotEnoughFunds: Du hast nicht genügend Geld auf dem Konto
-        paymentErrorAccountNotExisting: Das angegebene Konto existiert nicht
-        paymentErrorSelf: Du kannst kein Geld an dich selbst überweisen
+        paymentError: "{PREFIX} Transaktion fehlgeschlagen"
+        paymentErrorNegativeValue: "{PREFIX} Negative Werte sind nicht erlaubt"
+        paymentErrorNotEnoughFunds: "{PREFIX} Du hast nicht genügend Geld auf dem Konto"
+        paymentErrorAccountNotExisting: "{PREFIX} Das angegebene Konto existiert nicht"
+        paymentErrorSelf: "{PREFIX} Du kannst kein Geld an dich selbst überweisen"
       success:
-        paymentSuccessSender: Es wurden erfolgreich §l§6{csymbol}{amount}§r§f an §2{player2}§f überwiesen!
-        paymentSuccessReceiver: Du hast gerade §l§6{csymbol}{amount}§r§f von §2{player}§f erhalten!
+        paymentSuccessSender: "{PREFIX} Es wurden erfolgreich §l§6{CSYMBOL}{AMOUNT}§r§f an §2{PLAYER}§f überwiesen!"
+        paymentSuccessReceiver: "{PREFIX} Du hast gerade §l§6{CSYMBOL}{AMOUNT}§r§f von §2{PLAYER}§f erhalten!"
     permission:
-      errorNoPermission: Du hast keine Berechtigung diesen Command zu nutzen!
+      errorNoPermission: "{PREFIX} Du hast keine Berechtigung diesen Command zu nutzen!"
+    shop:
+      trader:
+        errorRemoveTrader: "{PREFIX} Trader konnte nicht gelöscht werden!"
+        successRemoveTrader: "{PREFIX} Trader erfolgreich gelöscht!"
+        successCreateTrader: "{PREFIX} Trader erfolgreich erstellt!"
   gui:
     selection:
-      sellPrice: "Preis pro Stück: §6{amount}"
-      buyPrice: "Ankaufspreis pro Stück: §6{amount}"
+      sellPrice: "Preis pro Stück: §6{AMOUNT}"
+      buyPrice: "Ankaufspreis pro Stück: §6{AMOUNT}"
     trade:
-      quantity: "§5* §7Anzahl: §5{quantity}"
-      cost: "§5* §7Preis: §6{amount}{csymbol}"
+      quantity: "§5* §7Anzahl: §5{AMOUNT}"
+      cost: "§5* §7Preis: §6{AMOUNT}{CSYMBOL}"
       information: "§aInformation:"
       back: Kehre zur Übersicht zurück
       notEnoughFunds: §4Du hast nicht genügend Geld auf dem Konto!
       inventoryFull: §4Dein Inventar ist voll!
       notEnoughItems: §4Du hast nicht genug Items!
       sell:
+        errorCantSell: §4Das Item wird hier nicht verkauft!
         titleSingle: §a§nKaufe Eins
         titleStack: §a§nKaufe Stack
         titleInv: §a§nKaufe Inventar
@@ -73,6 +79,7 @@ economy:
         descriptionInv: §8Kaufe so viel wie dein Inventar Platz hat
         sell: §4(!) Klicken um zu kaufen!
       buy:
+        errorCantBuy: §4Das Item wird hier nicht gekauft!
         titleSingle: §a§nVerkaufe Eins
         titleStack: §a§nVerkaufe Stack
         titleInv: §a§nVerkaufe Inventar

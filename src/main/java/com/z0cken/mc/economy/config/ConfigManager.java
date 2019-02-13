@@ -56,6 +56,7 @@ public class ConfigManager {
     public static String tradeSelectionBuyPrice = null;
     public static String tradeSelectionSellPrice = null;
 
+    public static String tradeSellErrorCantSell = null;
     public static String tradeSellTitleSingle = null;
     public static String tradeSellTitleStack = null;
     public static String tradeSellTitleInv = null;
@@ -64,6 +65,7 @@ public class ConfigManager {
     public static String tradeSellDescriptionInv = null;
     public static String tradeSell = null;
 
+    public static String tradeBuyErrorCantBuy = null;
     public static String tradeBuyTitleSingle = null;
     public static String tradeBuyTitleStack = null;
     public static String tradeBuyTitleInv = null;
@@ -80,6 +82,10 @@ public class ConfigManager {
     public static String tradeNotEnoughFunds = null;
     public static String tradeNotEnoughItems = null;
     public static String tradeInventoryFull = null;
+
+    public static String shopTraderErrorRemoveTrader = null;
+    public static String shopTraderSuccessRemoveTrader = null;
+    public static String shopTraderSuccessCreateTrader = null;
 
     public static void loadConfig(){
         config = PCS_Economy.pcs_economy.getConfig();
@@ -134,6 +140,7 @@ public class ConfigManager {
         tradeSelectionBuyPrice = config.getString("economy.gui.selection.buyPrice");
         tradeSelectionSellPrice = config.getString("economy.gui.selection.sellPrice");
 
+        tradeSellErrorCantSell = config.getString("economy.gui.trade.sell.errorCantSell");
         tradeSellTitleSingle = config.getString("economy.gui.trade.sell.titleSingle");
         tradeSellTitleStack = config.getString("economy.gui.trade.sell.titleStack");
         tradeSellTitleInv = config.getString("economy.gui.trade.sell.titleInv");
@@ -142,6 +149,7 @@ public class ConfigManager {
         tradeSellDescriptionInv = config.getString("economy.gui.trade.sell.descriptionInv");
         tradeSell = config.getString("economy.gui.trade.sell.sell");
 
+        tradeBuyErrorCantBuy = config.getString("economy.gui.trade.buy.errorCantBuy");
         tradeBuyTitleSingle = config.getString("economy.gui.trade.buy.titleSingle");
         tradeBuyTitleStack = config.getString("economy.gui.trade.buy.titleStack");
         tradeBuyTitleInv = config.getString("economy.gui.trade.buy.titleInv");
@@ -158,5 +166,9 @@ public class ConfigManager {
         tradeNotEnoughFunds = config.getString("economy.gui.trade.notEnoughFunds");
         tradeNotEnoughItems = config.getString("economy.gui.trade.notEnoughItems");
         tradeInventoryFull = config.getString("economy.gui.trade.inventoryFull");
+
+        shopTraderErrorRemoveTrader = config.getString("economy.messages.shop.trader.errorRemoveTrader");
+        shopTraderSuccessRemoveTrader = config.getString("economy.messages.shop.trader.successRemoveTrader");
+        shopTraderSuccessCreateTrader = config.getString("economy.messages.shop.trader.successCreateTrader");
     }
 }

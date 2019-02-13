@@ -4,7 +4,7 @@ import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.shops.TradeItem;
 import com.z0cken.mc.economy.shops.Trader;
-import com.z0cken.mc.economy.utils.MessageBuilder;
+import com.z0cken.mc.economy.utils.MessageHelper;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -34,8 +34,12 @@ public class TraderTradeSelectionGUI{
                 ItemStack stack = new ItemStack(item.getMaterial(), 1);
                 ItemMeta meta = stack.getItemMeta();
                 TradeItem adminItem = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(item.getMaterial());
-                String sellPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionSellPrice, adminItem.getSellprice(), 0);
-                String buyPrice = MessageBuilder.buildMessage(false, ConfigManager.tradeSelectionBuyPrice, adminItem.getBuyPrice(), 0);
+                String sellPrice = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder()
+                    .define("AMOUNT", String.valueOf(adminItem.getSellprice()))
+                    .build(ConfigManager.tradeSelectionSellPrice));
+                String buyPrice = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder()
+                    .define("AMOUNT", String.valueOf(adminItem.getBuyPrice()))
+                    .build(ConfigManager.tradeSelectionBuyPrice));
                 List<String> lore = Arrays.asList(sellPrice, buyPrice);
                 meta.setLore(lore);
                 stack.setItemMeta(meta);

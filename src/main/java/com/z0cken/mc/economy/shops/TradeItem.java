@@ -75,7 +75,7 @@ public class TradeItem {
     @Override
     public String toString(){
         String s = matName + "|" + sellPrice + "|" + buyPrice + "|";
-        s += (canSell ? 1 : 0) + (canBuy ? 1 : 0);
+        s += (canSell ? 1 : 0) + "" + (canBuy ? 1 : 0);
         return s;
     }
 }

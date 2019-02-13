@@ -1,5 +1,7 @@
 package com.z0cken.mc.economy.shops;
 
+import com.z0cken.mc.economy.PCS_Economy;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -23,10 +25,13 @@ public class TraderManager {
     public boolean removeTrader(Trader trader){
         if(trader != null){
             if(traders.contains(trader)){
+                Entity entity = PCS_Economy.pcs_economy.getServer().getEntity(trader.getTraderUUID());
+                if(entity != null){
+                    entity.remove();
+                }
                 traders.remove(trader);
                 return true;
             }
-            return false;
         }
         return false;
     }
@@ -34,11 +39,7 @@ public class TraderManager {
     public boolean removeTrader(UUID uuid){
         if(uuid != null){
             Trader trader = traders.stream().filter(trader1 -> trader1.getTraderUUID().equals(uuid)).findFirst().orElse(null);
-            if(trader != null){
-                traders.remove(trader);
-                return true;
-            }
-            return false;
+            return removeTrader(trader);
         }
         return false;
     }
@@ -48,6 +49,14 @@ public class TraderManager {
             return traders.stream().filter(trader -> trader.getTraderUUID().equals(uuid)).findFirst().orElse(null);
         }
         return null;
+    }
+
+    public Trader getTrader(int traderID){
+        return traders.stream().filter(trader -> trader.getTraderID() == traderID).findFirst().orElse(null);
+    }
+
+    public int generateTraderID(){
+        return traders.size() + 1;
     }
 
     public ArrayList<Trader> getTraders(){
@@ -67,13 +76,6 @@ public class TraderManager {
                 }
             });
             return uuids;
-        }
-        return null;
-    }
-
-    public Trader getTrader(int index){
-        if(index < traders.size()){
-            return traders.get(index);
         }
         return null;
     }

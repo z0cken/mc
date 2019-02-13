@@ -8,17 +8,16 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.logging.Level;
 
 public class AdminShopItemManager {
     private PCS_Economy pcs_economy;
-    private ArrayList<TradeItem> tradeItems;
+    private HashMap<Material, TradeItem> tradeItems;
     private File adminShopItemDataFile;
     public AdminShopItemManager(PCS_Economy pcs_economy){
         this.pcs_economy = pcs_economy;
-        this.tradeItems = new ArrayList<>();
+        this.tradeItems = new HashMap<>();
         this.adminShopItemDataFile = new File(pcs_economy.getDataFolder() + "/adminShopConfig.yml");
     }
 
@@ -36,7 +35,11 @@ public class AdminShopItemManager {
         }
         FileConfiguration adminShopItemDataConfig = YamlConfiguration.loadConfiguration(adminShopItemDataFile);
         ArrayList<String> stringList = (ArrayList<String>)adminShopItemDataConfig.get("items");
-        stringList.forEach(s -> tradeItems.add(parseToTradeItem(s)));
+        stringList.forEach(s ->
+        {
+            TradeItem item = parseToTradeItem(s);
+            tradeItems.put(item.getMaterial(), item);
+        });
         if(tradeItems.size() != createMatList().size()){
             writeConfig();
         }
@@ -52,20 +55,21 @@ public class AdminShopItemManager {
 
             ArrayList<Material> mats = createMatList();
             ArrayList<Material> tradeItemMats = new ArrayList<>();
-            tradeItems.forEach(item -> tradeItemMats.add(item.getMaterial()));
+            tradeItems.values().forEach(item -> tradeItemMats.add(item.getMaterial()));
             mats.forEach(mat -> {
+                TradeItem item = null;
                 if(!tradeItemMats.contains(mat)){
-                    tradeItems.add(new TradeItem(mat, 0, 0, false, false, 0));
+                    item = new TradeItem(mat, 0, 0, false, false, 0);
+                    tradeItems.put(mat, item);
                 }
             });
-
-
         }
     }
 
     public void saveConfig(){
         ArrayList<String> strings = new ArrayList<>();
-        tradeItems.forEach(item -> strings.add(item.toString()));
+        tradeItems.values().forEach(item -> strings.add(item.toString()));
+        Collections.sort(strings, Comparator.naturalOrder());
         saveConfigToFile(strings);
     }
 
@@ -108,15 +112,15 @@ public class AdminShopItemManager {
         return null;
     }
 
-    public ArrayList<TradeItem> getTradeItems(){
+    public HashMap<Material, TradeItem> getTradeItems(){
         return this.tradeItems;
     }
 
     public TradeItem getTradeItem(Material mat){
-        return tradeItems.stream().filter(i -> i.getMaterial() == mat).findFirst().orElse(null);
+        return tradeItems.get(mat);
     }
 
     public TradeItem getTradeItem(String matName){
-        return tradeItems.stream().filter(i -> i.getMaterial().name().equals(matName)).findFirst().orElse(null);
+        return getTradeItem(Material.getMaterial(matName));
     }
 }

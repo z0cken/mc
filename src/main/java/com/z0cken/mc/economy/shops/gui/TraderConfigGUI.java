@@ -19,9 +19,9 @@ public class TraderConfigGUI{
     public Inventory getInventory(){
         String title = null;
         if(trader.isAdminShop()){
-            title = ChatColor.RED + trader.getTraderName() + "-Konfiguration";
+            title = ChatColor.RED + trader.getTraderName() + trader.getTraderID() + "-Konfiguration";
         }else{
-            title = ChatColor.GREEN + trader.getTraderName() + "-Konfiguration";
+            title = ChatColor.GREEN + trader.getTraderName() + trader.getTraderID() + "-Konfiguration";
         }
         Inventory inv = PCS_Economy.pcs_economy.getServer().createInventory(null, 27, title);
         if(trader.isAdminShop()){

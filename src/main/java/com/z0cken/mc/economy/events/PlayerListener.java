@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
                 Trader trader = PCS_Economy.pcs_economy.traderManager.getTrader(v.getUniqueId());
                 if(trader != null) {
                     e.setCancelled(true);
-                    if(e.getPlayer().isSneaking()){
+                    if(e.getPlayer().isSneaking() && e.getPlayer().hasPermission("pcs.economy.admin")){
                         Inventory inv = new TraderConfigGUI(trader).getInventory();
                         PCS_Economy.pcs_economy.inventoryManager.getInventories().put(inv, new InventoryMeta(trader, TradeInventoryType.CONFIG));
                         e.getPlayer().openInventory(inv);

@@ -1,17 +1,19 @@
 package com.z0cken.mc.economy.shops.gui;
 
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
-import com.z0cken.mc.economy.utils.MessageBuilder;
+import com.z0cken.mc.economy.shops.TradeItem;
+import com.z0cken.mc.economy.utils.MessageHelper;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Material;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class LoreBuilder {
     private int quantity;
-    private Material material;
+    private TradeItem item;
     private boolean sell;
     private ArrayList<String> lore;
 
@@ -21,13 +23,13 @@ public class LoreBuilder {
     }
 
     public LoreBuilder addDescription(String description){
-        String builtDescription = MessageBuilder.buildMessage(false, description);
+        String builtDescription = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(description));
         lore.add(builtDescription);
         return this;
     }
 
     public LoreBuilder addInformation(){
-        String builtInformation = MessageBuilder.buildMessage(false, ConfigManager.tradeInformation);
+        String builtInformation = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(ConfigManager.tradeInformation));
         lore.add(builtInformation);
         return this;
     }
@@ -38,25 +40,41 @@ public class LoreBuilder {
     }
 
     public LoreBuilder addQuantity(){
-        String builtQuantity = MessageBuilder.buildMessage(false, ConfigManager.tradeQuantity, this.quantity);
+        String builtQuantity = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder()
+                .define("AMOUNT", String.valueOf(this.quantity))
+                .build(ConfigManager.tradeQuantity));
         lore.add(builtQuantity);
         return this;
     }
 
     public LoreBuilder addSellBuy(String sellBuy){
-        String builtSellBuy = MessageBuilder.buildMessage(false, sellBuy);
+        String builtSellBuy = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(sellBuy));
         lore.add(builtSellBuy);
+        return this;
+    }
+
+    public LoreBuilder addErrorCantSell(){
+        String builtErrorCantSell = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(ConfigManager.tradeSellErrorCantSell));
+        lore.add(builtErrorCantSell);
+        return this;
+    }
+
+    public LoreBuilder addErrorCantBuy(){
+        String builtErrorCantBuy = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(ConfigManager.tradeBuyErrorCantBuy));
+        lore.add(builtErrorCantBuy);
         return this;
     }
 
     public LoreBuilder addTradeCost(){
         int tradeCost = 0;
         if(this.sell){
-            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getSellprice() * this.quantity;
+            tradeCost = this.item.getSellprice() * this.quantity;
         }else{
-            tradeCost = PCS_Economy.pcs_economy.adminShopItemManager.getTradeItem(material).getBuyPrice() * this.quantity;
+            tradeCost = this.item.getBuyPrice() * this.quantity;
         }
-        String builtCost = MessageBuilder.buildMessage(false, ConfigManager.tradeCost, tradeCost, 0);
+        String builtCost = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder()
+                .define("AMOUNT", String.valueOf(tradeCost))
+                .build(ConfigManager.tradeCost));
         lore.add(builtCost);
         return this;
     }
@@ -67,12 +85,12 @@ public class LoreBuilder {
     }
 
     public LoreBuilder addCustom(String line){
-        lore.add(MessageBuilder.buildMessage(false, line));
+        lore.add(MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder().build(line)));
         return this;
     }
 
-    public LoreBuilder setMaterial(Material mat){
-        this.material = mat;
+    public LoreBuilder setItem(TradeItem item){
+        this.item = item;
         return this;
     }
 

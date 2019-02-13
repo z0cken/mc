@@ -8,15 +8,12 @@ import com.z0cken.mc.economy.shops.TradeItem;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import sun.security.krb5.Config;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TraderTradeGUI{
@@ -27,8 +24,8 @@ public class TraderTradeGUI{
         this.trader = trader;
     }
 
-    public Inventory getInventory(Material material, Player player) {
-        String title = trader.getTraderName() + "-" + WordUtils.capitalizeFully(material.name().replace("_", " "));
+    public Inventory getInventory(TradeItem item, Player player) {
+        String title = trader.getTraderName() + "-" + WordUtils.capitalizeFully(item.getMaterial().name().replace("_", " "));
         Inventory inv = PCS_Economy.pcs_economy.getServer().createInventory(null, 27, title);
         ItemStack[] slots = new ItemStack[6];
 
@@ -62,7 +59,7 @@ public class TraderTradeGUI{
             slots[i].setItemMeta(meta);
         }
 
-        changeLoreGeneral(inv, player, material);
+        changeLoreGeneral(inv, player, item);
 
         //SELL
         inv.setItem(0, slots[0]);
@@ -90,16 +87,16 @@ public class TraderTradeGUI{
         inv.setItem(25, slots[5]);
         inv.setItem(26, slots[5]);
 
-        ItemStack itemOfInterest = new ItemStack(material, 1);
+        ItemStack itemOfInterest = new ItemStack(item.getMaterial(), 1);
         inv.setItem(13, itemOfInterest);
 
         return inv;
     }
 
-    public static void changeLoreSingleSell(Inventory inv, Material material){
-        if(inv != null && material != null){
+    public static void changeLoreSingleSell(Inventory inv, TradeItem item){
+        if(inv != null && item != null){
             List<String> lore = new LoreBuilder(true)
-                    .setMaterial(material)
+                    .setItem(item)
                     .setQuantity(1)
                     .addDescription(ConfigManager.tradeSellDescriptionSingle)
                     .addEmpty()
@@ -112,11 +109,11 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreStackSell(Inventory inv, Material material){
-        if(inv != null && material != null){
+    public static void changeLoreStackSell(Inventory inv, TradeItem item){
+        if(inv != null && item != null){
             List<String> lore = new LoreBuilder(true)
-                    .setMaterial(material)
-                    .setQuantity(material.getMaxStackSize())
+                    .setItem(item)
+                    .setQuantity(item.getMaterial().getMaxStackSize())
                     .addDescription(ConfigManager.tradeSellDescriptionStack)
                     .addEmpty()
                     .addInformation()
@@ -128,11 +125,11 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreInvSell(Inventory inv, Player player, Material material){
-        if(player != null && inv != null && material != null){
+    public static void changeLoreInvSell(Inventory inv, Player player, TradeItem item){
+        if(player != null && inv != null && item != null){
             List<String> lore = new LoreBuilder(true)
-                    .setMaterial(material)
-                    .setQuantity(InventoryHelper.getOverallItemCapacity(player.getInventory(), material))
+                    .setItem(item)
+                    .setQuantity(InventoryHelper.getOverallItemCapacity(player.getInventory(), item.getMaterial()))
                     .addDescription(ConfigManager.tradeSellDescriptionInv)
                     .addEmpty()
                     .addInformation()
@@ -144,10 +141,10 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreSingleBuy(Inventory inv, Material material){
-        if(inv != null && material != null){
+    public static void changeLoreSingleBuy(Inventory inv, TradeItem item){
+        if(inv != null && item != null){
             List<String> lore = new LoreBuilder(false)
-                    .setMaterial(material)
+                    .setItem(item)
                     .setQuantity(1)
                     .addDescription(ConfigManager.tradeBuyDescriptionSingle)
                     .addEmpty()
@@ -160,11 +157,11 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreStackBuy(Inventory inv, Material material){
-        if(inv != null && material != null){
+    public static void changeLoreStackBuy(Inventory inv, TradeItem item){
+        if(inv != null && item != null){
             List<String> lore = new LoreBuilder(false)
-                    .setMaterial(material)
-                    .setQuantity(material.getMaxStackSize())
+                    .setItem(item)
+                    .setQuantity(item.getMaterial().getMaxStackSize())
                     .addDescription(ConfigManager.tradeBuyDescriptionStack)
                     .addEmpty()
                     .addInformation()
@@ -176,11 +173,11 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreInvBuy(Inventory inv, Player player, Material material){
-        if(player != null && inv != null && material != null){
+    public static void changeLoreInvBuy(Inventory inv, Player player, TradeItem item){
+        if(player != null && inv != null && item != null){
             List<String> lore = new LoreBuilder(false)
-                    .setMaterial(material)
-                    .setQuantity(InventoryHelper.getAmountOfItem(player.getInventory(), material))
+                    .setItem(item)
+                    .setQuantity(InventoryHelper.getAmountOfItem(player.getInventory(), item.getMaterial()))
                     .addDescription(ConfigManager.tradeBuyDescriptionInv)
                     .addEmpty()
                     .addInformation()
@@ -188,8 +185,23 @@ public class TraderTradeGUI{
                     .addTradeCost()
                     .addEmpty()
                     .addSellBuy(ConfigManager.tradeBuy).buildLore();
-            ItemMeta meta = null;
             changeLoreWithList(inv, TradeInventorySlotType.SLOT_BUY_INV, lore);
+        }
+    }
+
+    public static void changeLoreItemNotSellable(Inventory inv){
+        if(inv != null){
+            List<String> lore = new LoreBuilder(false)
+                    .addErrorCantSell().buildLore();
+            changeLoreWithList(inv, TradeInventorySlotType.SLOT_ALL_SELL, lore);
+        }
+    }
+
+    public static void changeLoreItemNotBuyable(Inventory inv){
+        if(inv != null){
+            List<String> lore = new LoreBuilder(false)
+                    .addErrorCantBuy().buildLore();
+            changeLoreWithList(inv, TradeInventorySlotType.SLOT_ALL_BUY, lore);
         }
     }
 
@@ -207,15 +219,22 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreGeneral(Inventory inv, Player player, Material material){
-        if(inv != null && player != null && material != null){
-            changeLoreSingleSell(inv, material);
-            changeLoreStackSell(inv, material);
-            changeLoreInvSell(inv, player, material);
-
-            changeLoreSingleBuy(inv, material);
-            changeLoreStackBuy(inv, material);
-            changeLoreInvBuy(inv, player, material);
+    public static void changeLoreGeneral(Inventory inv, Player player, TradeItem item){
+        if(inv != null && player != null && item != null){
+            if(item.isSellable()){
+                changeLoreSingleSell(inv, item);
+                changeLoreStackSell(inv, item);
+                changeLoreInvSell(inv, player, item);
+            }else{
+                changeLoreItemNotSellable(inv);
+            }
+            if(item.isBuyable()){
+                changeLoreSingleBuy(inv, item);
+                changeLoreStackBuy(inv, item);
+                changeLoreInvBuy(inv, player, item);
+            }else{
+                changeLoreItemNotBuyable(inv);
+            }
         }
     }
 
@@ -245,43 +264,46 @@ public class TraderTradeGUI{
 
     public static void doInvLogic(Inventory inv, TradeItem item, Account account){
         Player player = account.getHolder().getPlayer();
-        changeLoreGeneral(inv, player, item.getMaterial());
-
+        changeLoreGeneral(inv, player, item);
         //SELL
-        //SINGLE
-        if(account.has(item.getSellprice())){
-            if(!InventoryHelper.canFit(inv, item.getMaterial(), 1)){
+        if(item.isSellable()){
+            //SINGLE
+            if(account.has(item.getSellprice())){
+                if(!InventoryHelper.canFit(inv, item.getMaterial(), 1)){
+                    changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_ALL_SELL);
+                }
+            }else{
+                changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_ALL_SELL);
+            }
+            //STACK
+            if(account.has(item.getSellprice() * item.getMaterial().getMaxStackSize())){
+                if(!InventoryHelper.canFit(inv, item.getMaterial(), item.getMaterial().getMaxStackSize())){
+                    changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_SELL_STACK);
+                }
+            }else{
+                changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_STACK);
+            }
+            //INV
+            int capacity = InventoryHelper.getOverallItemCapacity(inv, item.getMaterial());
+            if(capacity == 0){
                 changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_ALL_SELL);
-            }
-        }else{
-            changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_ALL_SELL);
-        }
-        //STACK
-        if(account.has(item.getSellprice() * item.getMaterial().getMaxStackSize())){
-            if(!InventoryHelper.canFit(inv, item.getMaterial(), item.getMaterial().getMaxStackSize())){
-                changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_SELL_STACK);
-            }
-        }else{
-            changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_STACK);
-        }
-        //INV
-        int capacity = InventoryHelper.getOverallItemCapacity(inv, item.getMaterial());
-        if(capacity == 0){
-            changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_ALL_SELL);
-        }else{
-            if(!account.has(item.getSellprice() * capacity)){
-                changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_INV);
+            }else{
+                if(!account.has(item.getSellprice() * capacity)){
+                    changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_INV);
+                }
             }
         }
-        //BUY
-        int itemAmount = InventoryHelper.getAmountOfItem(player.getInventory(), item.getMaterial());
-        //SINGLE
-        if(itemAmount == 0){
-            changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_ALL_BUY);
-        }
-        //STACK
-        if(itemAmount < item.getMaterial().getMaxStackSize()){
-            changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_BUY_STACK);
+        if(item.isBuyable()){
+            //BUY
+            int itemAmount = InventoryHelper.getAmountOfItem(player.getInventory(), item.getMaterial());
+            //SINGLE
+            if(itemAmount == 0){
+                changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_ALL_BUY);
+            }
+            //STACK
+            if(itemAmount < item.getMaterial().getMaxStackSize()){
+                changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_BUY_STACK);
+            }
         }
     }
 }

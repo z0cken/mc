@@ -30,10 +30,12 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e){
-        if(pcs_economy.inventoryManager.getInventories().containsKey(e.getClickedInventory()) && e.getWhoClicked() instanceof Player){
+        ItemStack stack = e.getCurrentItem();
+        if(pcs_economy.inventoryManager.getInventories().containsKey(e.getClickedInventory()) && e.getWhoClicked() instanceof Player
+            && stack != null && stack.getType() != Material.AIR){
             InventoryMeta information = pcs_economy.inventoryManager.getInventories().get(e.getClickedInventory());
             Trader trader = information.getTrader();
-            ItemStack stack = e.getCurrentItem();
+            TradeItem item = pcs_economy.adminShopItemManager.getTradeItem(information.getMaterial());
             Player player = (Player)e.getWhoClicked();
             Account account = pcs_economy.accountManager.getAccount(e.getWhoClicked().getUniqueId());
             switch(information.getType()){
@@ -42,12 +44,13 @@ public class InventoryListener implements Listener {
                 case SELECTION:
                     e.setCancelled(true);
                     if(stack != null && stack.getType() != Material.AIR){
+                        item = pcs_economy.adminShopItemManager.getTradeItem(stack.getType());
                         e.getWhoClicked().closeInventory();
-                        Inventory inv = new TraderTradeGUI(trader).getInventory(stack.getType(), (Player)e.getWhoClicked());
+                        Inventory inv = new TraderTradeGUI(trader).getInventory(item, (Player)e.getWhoClicked());
                         e.getWhoClicked().closeInventory();
                         e.getWhoClicked().openInventory(inv);
                         pcs_economy.inventoryManager.getInventories().put(inv, new InventoryMeta(trader, TradeInventoryType.TRADE, stack.getType()));
-                        TraderTradeGUI.doInvLogic(inv, pcs_economy.adminShopItemManager.getTradeItem(stack.getType()), account);
+                        TraderTradeGUI.doInvLogic(inv, item, account);
                     }
                     break;
                 case TRADE:
@@ -55,11 +58,10 @@ public class InventoryListener implements Listener {
                     int clickedSlot = e.getSlot();
                     TradeInventorySlotType type = TradeInventorySlotType.getCorrespondingType(clickedSlot);
                     Inventory playerInventory = e.getWhoClicked().getInventory();
-                    TradeItem item = pcs_economy.adminShopItemManager.getTradeItem(information.getMaterial());
                     if(type != null){
                         switch (type){
                             case SLOT_SELL_SINGLE:
-                                if(account.has(item.getSellprice())){
+                                if(item.isSellable() && account.has(item.getSellprice())){
                                     if(InventoryHelper.canFit(playerInventory, item.getMaterial(), 1)){
                                         account.subtract(item.getSellprice());
                                         playerInventory.addItem(new ItemStack(item.getMaterial(), 1));
@@ -67,7 +69,7 @@ public class InventoryListener implements Listener {
                                 }
                                 break;
                             case SLOT_SELL_STACK:
-                                if(account.has(item.getSellprice() * item.getMaterial().getMaxStackSize())){
+                                if(item.isSellable() && account.has(item.getSellprice() * item.getMaterial().getMaxStackSize())){
                                     if(InventoryHelper.canFit(playerInventory, item.getMaterial(), item.getMaterial().getMaxStackSize())){
                                         account.subtract(item.getSellprice() * item.getMaterial().getMaxStackSize());
                                         playerInventory.addItem(new ItemStack(item.getMaterial(), item.getMaterial().getMaxStackSize()));
@@ -75,29 +77,33 @@ public class InventoryListener implements Listener {
                                 }
                                 break;
                             case SLOT_SELL_INV:
-                                int capacity = InventoryHelper.getOverallItemCapacity(playerInventory, item.getMaterial());
-                                if(capacity > 0 && account.has(item.getSellprice() * capacity)){
-                                    account.subtract(item.getSellprice() * capacity);
-                                    playerInventory.addItem(new ItemStack(item.getMaterial(), capacity));
+                                if(item.isSellable()){
+                                    int capacity = InventoryHelper.getOverallItemCapacity(playerInventory, item.getMaterial());
+                                    if(capacity > 0 && account.has(item.getSellprice() * capacity)){
+                                        account.subtract(item.getSellprice() * capacity);
+                                        playerInventory.addItem(new ItemStack(item.getMaterial(), capacity));
+                                    }
                                 }
                                 break;
                             case SLOT_BUY_SINGLE:
-                                if(InventoryHelper.hasAmountOfItem(playerInventory, item.getMaterial(), 1)){
+                                if(item.isBuyable() && InventoryHelper.hasAmountOfItem(playerInventory, item.getMaterial(), 1)){
                                     account.add(item.getBuyPrice());
                                     playerInventory.removeItem(new ItemStack(item.getMaterial(), 1));
                                 }
                                 break;
                             case SLOT_BUY_STACK:
-                                if(InventoryHelper.hasAmountOfItem(playerInventory, item.getMaterial(), item.getMaterial().getMaxStackSize())){
+                                if(item.isBuyable() && InventoryHelper.hasAmountOfItem(playerInventory, item.getMaterial(), item.getMaterial().getMaxStackSize())){
                                     account.add(item.getBuyPrice() * item.getMaterial().getMaxStackSize());
                                     playerInventory.removeItem(new ItemStack(item.getMaterial(), item.getMaterial().getMaxStackSize()));
                                 }
                                 break;
                             case SLOT_BUY_INV:
-                                int amount = InventoryHelper.getAmountOfItem(playerInventory, item.getMaterial());
-                                if(amount > 0){
-                                    account.add(item.getBuyPrice() * amount);
-                                    playerInventory.removeItem(new ItemStack(item.getMaterial(), amount));
+                                if(item.isBuyable()){
+                                    int amount = InventoryHelper.getAmountOfItem(playerInventory, item.getMaterial());
+                                    if(amount > 0){
+                                        account.add(item.getBuyPrice() * amount);
+                                        playerInventory.removeItem(new ItemStack(item.getMaterial(), amount));
+                                    }
                                 }
                                 break;
                         }
