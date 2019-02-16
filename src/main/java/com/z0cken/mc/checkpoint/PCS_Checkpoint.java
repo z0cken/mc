@@ -3,7 +3,6 @@ package com.z0cken.mc.checkpoint;
 import com.google.common.io.ByteStreams;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -17,8 +16,8 @@ import java.io.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.TimeUnit;
 
 /** @author Flare */
@@ -31,7 +30,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         return instance;
     }
 
-    private static final HashMap<ProxiedPlayer, Persona> verified = new HashMap<>();
+    private static final WeakHashMap<ProxiedPlayer, Persona> verified = new WeakHashMap<>();
     private static Configuration config;
 
     /*
@@ -90,10 +89,10 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         }
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onDisconnect(PlayerDisconnectEvent event) {
         verified.remove(event.getPlayer());
-    }
+    }*/
 
     void checkPlayer(UUID uuid, boolean verbose) {
         ProxiedPlayer player = getProxy().getPlayer(uuid);

@@ -42,7 +42,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.z0cken.mc</groupId>
+            <groupId>com.z0cken.mc.core</groupId>
             <artifactId>PCS_Core-Bungee</artifactId>
             <version>LATEST</version>
             <scope>provided</scope>
