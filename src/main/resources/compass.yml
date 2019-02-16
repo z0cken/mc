@@ -1,0 +1,13 @@
+targets:
+  5:
+    material: "COMPASS"
+    title: "Spawn"
+    lore:
+      - "Lorem"
+      - "Ipsum"
+      - "Dolor"
+    target: "0,0,0"
+menu:
+  rows: 1
+messages:
+  left-click: "Dein aktuelles Ziel ist {DISTANCE} Meter entfernt!"

@@ -1,7 +1,7 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
-import com.z0cken.mc.util.MessageBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -22,8 +22,6 @@ import java.util.Map;
 
 public class ModuleSnowball extends Module implements Listener {
 
-    private static boolean instantiated = false;
-
     private HashMap<Player, Integer> ammo = new HashMap<>();
     private HashMap<Player, Integer> reloading = new HashMap<>();
 
@@ -32,11 +30,8 @@ public class ModuleSnowball extends Module implements Listener {
 
     public ModuleSnowball(String configPath) {
         super(configPath);
-        if(instantiated) throw new IllegalStateException(getClass().getName() + " cannot be instantiated twice!");
-        instantiated = true;
 
-        this.load();
-
+        //TODO Make async
         tasks.add(new BukkitRunnable() {
             @Override
             public void run() {
@@ -75,7 +70,7 @@ public class ModuleSnowball extends Module implements Listener {
     }
 
     private void launchSnowball(Player player) {
-        boolean hasPermission = player.hasPermission("test");
+        boolean hasPermission = player.hasPermission("TBD");
         if(ammo.get(player) > 0 || hasPermission) {
 
             if(ammo.get(player) == maxAmmo && !hasPermission) {

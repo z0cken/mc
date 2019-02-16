@@ -1,9 +1,9 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import com.z0cken.mc.persona.PCS_Persona;
 import com.z0cken.mc.persona.Persona;
-import com.z0cken.mc.util.MessageBuilder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 
 public class ModuleChat extends Module implements Listener {
 
-    private static boolean instantiated = false;
     private static Chat chat = null;
 
     private static final Pattern PATTERN_URL = Pattern.compile("^(?:(https?)://)([-\\w_.]{2,}\\.[a-z]{2,4})([/?]\\S*)?$");
@@ -33,10 +32,7 @@ public class ModuleChat extends Module implements Listener {
 
     public ModuleChat(String configPath) {
         super(configPath);
-        if(instantiated) throw new IllegalStateException(getClass().getName() + " cannot be instantiated twice!");
-        instantiated = true;
 
-        this.load();
         setupVaultChat();
     }
 
@@ -46,7 +42,10 @@ public class ModuleChat extends Module implements Listener {
 
         BaseComponent[] message = parseMessage(event.getMessage());
         event.getRecipients().forEach(r -> r.spigot().sendMessage((BaseComponent[]) ArrayUtils.addAll(getFormat(event.getPlayer()), message)));
-        if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
+        if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message));
+
+        //Without log4j
+        //if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
     }
 
     private BaseComponent[] getFormat(Player player) {

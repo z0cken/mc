@@ -29,6 +29,10 @@
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
+        <repository>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -45,8 +49,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.z0cken.mc.core</groupId>
+            <artifactId>PCS_Core-Bukkit</artifactId>
+            <scope>provided</scope>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
             <groupId>com.z0cken.mc</groupId>
-            <artifactId>PCS_Util</artifactId>
+            <artifactId>PCS_Persona</artifactId>
+            <scope>provided</scope>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -20,7 +20,7 @@ public abstract class Module {
     protected ConfigurationSection config;
 
     Module(String configPath) {
-        this.configPath = configPath;
+        this.configPath = "modules." + configPath;
         loadConfig();
         load();
 
@@ -33,20 +33,20 @@ public abstract class Module {
         config = PCS_Essentials.getInstance().getConfig().getConfigurationSection(configPath);
     }
 
-    protected void registerCommand(String command) {
+    protected final void registerCommand(String command) {
         commands.add(command);
         if(this instanceof CommandExecutor) {
             PCS_Essentials.getInstance().getCommand(command).setExecutor((CommandExecutor) this);
         } else throw new RuntimeException("Could not register \"" + command + "\" - Module does not implement CommandExecutor");
     }
 
-    public void disable() {
+    public final void disable() {
         if(this instanceof Listener) HandlerList.unregisterAll((Listener) this);
         if(this instanceof CommandExecutor) commands.forEach(cmd -> PCS_Essentials.getInstance().getCommand(cmd).setExecutor(null));
         tasks.forEach(BukkitTask::cancel);
     }
 
-    public void reload() {
+    public final void reload() {
         loadConfig();
         load();
     }
