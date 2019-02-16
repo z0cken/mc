@@ -1,6 +1,6 @@
 package com.z0cken.mc.claim;
 
-import com.z0cken.mc.util.MessageBuilder;
+import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -87,10 +87,12 @@ class ClaimListener implements Listener {
         if(block != null && block.getType() == Material.END_PORTAL_FRAME) {
             final Chunk chunk = block.getChunk();
             final Player player = event.getPlayer();
+            final OfflinePlayer owner = PCS_Claim.getOwner(chunk);
+            final boolean isOwner = player.equals(owner);
 
-            if(player.equals(PCS_Claim.getOwner(chunk))){
+            if(isOwner || player.hasPermission("pcs.claim.override") ) {
                 BaseComponent[] message = null;
-                MessageBuilder builder = new MessageBuilder();
+                MessageBuilder builder = new MessageBuilder().define("NAME", owner.getName());
 
                 EndPortalFrame frame = (EndPortalFrame) block.getBlockData();
                 boolean hasEye = frame.hasEye();
@@ -110,10 +112,11 @@ class ClaimListener implements Listener {
                         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.END_PORTAL_FRAME, 1));
 
                         PCS_Claim.claim(chunk, null);
-                        PCS_Claim.getInstance().getLogger().info("[" + chunk.getX()+"|" + chunk.getZ() + "]" + " REM -> " + player.getUniqueId() + " (" + player.getName() + ")");
+                        PCS_Claim.getInstance().getLogger().info("[" + chunk.getX()+"|" + chunk.getZ() + "]" + " REM -> " + owner.getUniqueId() + " (" + owner.getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
 
                         trespassers.remove(player);
-                        message = builder.build(PCS_Claim.getInstance().getConfig().getString("messages.unclaim"));
+                        String path = isOwner ? "messages.unclaim" : "messages.unclaim-override";
+                        message = builder.build(PCS_Claim.getInstance().getConfig().getString(path));
                     }
                 } else {
                     frame.setEye(!hasEye);

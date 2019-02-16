@@ -1,5 +1,5 @@
 push-interval: 20
-world-name: world
+main-world: world
 eye-timer: 10
 database:
   ip:
@@ -10,12 +10,10 @@ messages:
   protected: §c§l>_ §7Dieser Chunk gehört {NAME}
   success: §a§l>_ §7Du hast erfolgreich den Chunk {CHUNK} beansprucht
   denied-self: §c§l>_ §7Dieser Chunk gehört dir bereits
-  denied-friend: §c§l>_ §7Diesr Chunk gehört deinem Freund {NAME}
   right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick, um ihn abzubauen
   unclaim: §e§l>_ §7Du hast deinen Chunk {CHUNK} aufgegeben
+  unclaim-override: §e§l>_ §7Der Claim bei {CHUNK} von {NAME} wurde aufgehoben
   enter: §f§l>_ §7Du hast das Gebiet von {NAME} betreten
   enter-self: §f§l>_ §7Du hast dein eigenes Gebiet betreten
   leave: §f§l>_ §7Du hast das Gebiet von {NAME} verlassen
   leave-self: §f§l>_ §7Du hast dein eigenes Gebiet verlassen
-
-
