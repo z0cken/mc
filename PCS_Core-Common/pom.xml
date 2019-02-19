@@ -40,12 +40,6 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <version>1.6.0</version>
                 <executions>
