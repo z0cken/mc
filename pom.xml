@@ -20,6 +20,10 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -30,9 +34,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.z0cken.mc</groupId>
-            <artifactId>PCS_Util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>com.z0cken.mc.core</groupId>
+            <artifactId>PCS_Core-Bukkit</artifactId>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
 

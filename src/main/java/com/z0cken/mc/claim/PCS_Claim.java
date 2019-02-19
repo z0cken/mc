@@ -8,10 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author Flare */
-public class PCS_Claim extends JavaPlugin {
+@SuppressWarnings("unused")
+public final class PCS_Claim extends JavaPlugin {
 
     private static PCS_Claim instance;
 
@@ -38,12 +40,10 @@ public class PCS_Claim extends JavaPlugin {
         DatabaseHelper.connect();
 
         try {
-            DatabaseHelper.populate(claims, Bukkit.getWorld(getConfig().getString("world-name")));
+            DatabaseHelper.populate(claims, Bukkit.getWorld(getConfig().getString("main-world")));
         } catch (SQLException e) {
             Bukkit.getServer().shutdown();
         }
-
-        System.out.println(claims.size());
 
         Bukkit.getPluginManager().registerEvents(new ClaimListener(), this);
         Bukkit.getPluginManager().registerEvents(new ProtectionListener(), this);
@@ -69,10 +69,13 @@ public class PCS_Claim extends JavaPlugin {
 
     static boolean canBuild(OfflinePlayer player, Chunk chunk) {
         if(claims.containsKey(chunk)) {
+            OfflinePlayer owner = claims.get(chunk);
+
+            if(player.isOnline() && player.getPlayer().hasPermission("pcs.claim.override")) return true;
+
             //TODO areFriends
             boolean friends = false;
 
-            OfflinePlayer owner = claims.get(chunk);
             return owner.equals(player) || friends;
         }
 
@@ -81,5 +84,11 @@ public class PCS_Claim extends JavaPlugin {
 
     static OfflinePlayer getOwner(Chunk chunk) {
         return claims.getOrDefault(chunk, null);
+    }
+
+    static ArrayList<Chunk> getClaims(OfflinePlayer player) {
+        ArrayList<Chunk> list = new ArrayList<>();
+        claims.forEach((chunk, player1) -> { if(player.equals(player1)) list.add(chunk); });
+        return list;
     }
 }
