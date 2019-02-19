@@ -25,7 +25,7 @@ public class MoneyCommand extends BaseCommand {
 
     }
 
-    @Subcommand("balance")
+    @Default
     @CommandPermission("pcs.economy.user")
     public void onBalance(CommandSender sender){
         if(sender instanceof Player){
