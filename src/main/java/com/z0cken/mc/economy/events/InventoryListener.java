@@ -2,9 +2,7 @@ package com.z0cken.mc.economy.events;
 
 import com.z0cken.mc.economy.Account;
 import com.z0cken.mc.economy.PCS_Economy;
-import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.shops.*;
-import com.z0cken.mc.economy.shops.gui.TradeInventorySlot;
 import com.z0cken.mc.economy.shops.gui.TradeInventorySlotType;
 import com.z0cken.mc.economy.shops.gui.TraderTradeGUI;
 import com.z0cken.mc.economy.shops.gui.TraderTradeSelectionGUI;
@@ -13,13 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Arrays;
 
 public class InventoryListener implements Listener {
     private PCS_Economy pcs_economy;

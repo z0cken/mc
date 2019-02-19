@@ -25,7 +25,7 @@ public class MoneyCommand extends BaseCommand {
 
     }
 
-    @Subcommand("balance")
+    @Default
     @CommandPermission("pcs.economy.user")
     public void onBalance(CommandSender sender){
         if(sender instanceof Player){
@@ -34,6 +34,7 @@ public class MoneyCommand extends BaseCommand {
                     .define("PREFIX", ConfigManager.messagePrefix)
                     .define("AMOUNT", String.valueOf(pcs_economy.accountManager.getAccount(sender.getName()).getBalance()))
                     .build(ConfigManager.accountSuccessBalanceSelf));
+
         }
     }
 
