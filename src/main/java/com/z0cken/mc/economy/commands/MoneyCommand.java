@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@CommandAlias("m0ney")
+@CommandAlias("m0ney|m")
 public class MoneyCommand extends BaseCommand {
 
     @Dependency
@@ -38,9 +38,10 @@ public class MoneyCommand extends BaseCommand {
         }
     }
 
-    @Subcommand("balance")
+    @Subcommand("balance|b")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
+    @Description("Kontostand eines anderen Spielers einsehen.")
     public void onBalancePlayer(CommandSender sender, OnlinePlayer player){
         if(sender instanceof Player){
             Player p = (Player)sender;
@@ -51,7 +52,7 @@ public class MoneyCommand extends BaseCommand {
         }
     }
 
-    @Subcommand("pay")
+    @Subcommand("pay|p")
     @CommandPermission("pcs.economy.user")
     @CommandCompletion("@players")
     public void onPay(CommandSender sender, OnlinePlayer receiver, int amount){
@@ -75,7 +76,7 @@ public class MoneyCommand extends BaseCommand {
         }
     }
 
-    @Subcommand("payo")
+    @Subcommand("payo|po")
     @CommandPermission("pcs.economy.admin")
     public void onPay(CommandSender sender, String receiver, int amount){
         if(sender instanceof Player){
