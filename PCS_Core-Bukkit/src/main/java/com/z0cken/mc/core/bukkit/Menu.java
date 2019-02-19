@@ -3,7 +3,6 @@ package com.z0cken.mc.core.bukkit;
 import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftInventoryCustom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,11 +10,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -24,6 +25,8 @@ import java.util.Map;
 public class Menu extends CraftInventoryCustom implements Listener {
 
     private Menu parent;
+    private final List<ItemStack[]> pages = new ArrayList<>();
+    private int currentPage = 0;
 
     public Menu(JavaPlugin plugin, int rows) {
         this(plugin, rows, null);
@@ -31,39 +34,93 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
     public Menu(JavaPlugin plugin, int rows, Menu parent) {
         super(null, rows * 9);
+        pages.add(new ItemStack[getSize()]);
         this.parent = parent;
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-   @EventHandler
-   public void onInteract(InventoryInteractEvent event) {
-        //TODO Test event reliability
-        if(event.getInventory() != this) return;
-        event.setCancelled(true);
-   }
+    @Override
+    public void setItem(int index, ItemStack item) {
+        setItem(currentPage, index, item);
+    }
 
+    public void setItem(int page, int index, ItemStack item) {
+        while (pages.size() < page) pages.add(new ItemStack[getSize()]);
+        pages.get(page)[index] = item;
+        if (page == currentPage) super.setItem(index, item);
+    }
 
-   @EventHandler
-   public void onClick(InventoryClickEvent event) {
-        Bukkit.broadcastMessage("ClickEvent 1");
-        if(event.getClickedInventory() != this || !(event.getCurrentItem() instanceof Button)) {
-            System.out.println(event.getClickedInventory().hashCode());
-            System.out.println(((CraftInventory)event.getClickedInventory()).getInventory().hashCode());
-            System.out.println(this.getInventory().hashCode());
+    @Override
+    public void setContents(ItemStack[] items) {
+        setContents(currentPage, items);
+    }
+
+    public void setContents(int page, ItemStack[] items) {
+        while (pages.size() < page) pages.add(new ItemStack[getSize()]);
+
+        if (this.getSize() < items.length) {
+            throw new IllegalArgumentException("Invalid inventory size; expected " + this.getSize() + " or less");
+        } else {
+            for (int i = 0; i < this.getSize(); ++i) {
+                if (i >= items.length) {
+                    this.setItem(page, i, null);
+                } else {
+                    this.setItem(page, i, items[i]);
+                }
+            }
+        }
+    }
+
+    public void showPage(int page) {
+        if(page < 0 || page >= pages.size()) throw new ArrayIndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
+        setContents(pages.get(page));
+        currentPage = page;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public Menu getParent() {
+        return parent;
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        if(!event.getInventory().equals(this)) return;
+        int hashCode = this.hashCode();
+        boolean cancel;
+        for(Integer i : event.getRawSlots()) {
+            Inventory inventory = event.getView().getInventory(i);
+            if(inventory.hashCode() == hashCode && inventory.equals(this)) {
+                event.setCancelled(true);
+                break;
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClick(InventoryClickEvent event) {
+        Inventory inv = event.getView().getTopInventory();
+        if (inv == null || !inv.equals(this)) {
             return;
         }
-        event.setCancelled(true);
-        Bukkit.broadcastMessage("ClickEvent 2");
 
-        Button button = (Button) event.getCurrentItem();
-        if(button.getClickEvent() == null) return;
+        if(event.getClick().isShiftClick()) event.setCancelled(true);
+        if(inv != event.getClickedInventory()) return;
+        event.setCancelled(true);
+
+        ItemStack itemStack = pages.get(currentPage)[event.getSlot()];
+        if(!(itemStack instanceof Button)) return;
+        Button button = (Button) itemStack;
+        if (button.getClickEvent() == null) return;
 
 
         //TODO Implement Economy
-        if(button instanceof PricedButton && ((PricedButton)button).price > 0) {
+        if (button instanceof PricedButton && ((PricedButton) button).price > 0) {
             int playerMoney = Integer.MAX_VALUE;
-            if(playerMoney < ((PricedButton)button).price) {
+            if (playerMoney < ((PricedButton) button).price) {
                 //Play sound
                 return;
             } else {
@@ -73,16 +130,15 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         button.clickEvent.run(this, button, (Player) event.getWhoClicked(), event.getClick());
         setItem(event.getSlot(), button);
-        Bukkit.broadcastMessage("ClickEvent 3");
 
-   }
+    }
 
-   @EventHandler
-   public void onClose(InventoryCloseEvent event) {
-        if(event.getInventory() != this) return;
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (event.getInventory() != this) return;
 
-        if(parent != null) event.getPlayer().openInventory(parent);
-   }
+        if (parent != null) event.getPlayer().openInventory(parent);
+    }
 
     public static class Button extends ItemStack {
 
@@ -92,15 +148,27 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         protected Button.ClickEvent clickEvent;
 
-        public Button(ClickEvent clickEvent) { this.clickEvent = clickEvent; }
-        public Button(ClickEvent clickEvent, Material material) { super(material); this.clickEvent = clickEvent; }
-        public Button(ClickEvent clickEvent, Material material, int amount) { super(material, amount); this.clickEvent = clickEvent; }
+        public Button(ClickEvent clickEvent) {
+            this.clickEvent = clickEvent;
+        }
+
+        public Button(ClickEvent clickEvent, Material material) {
+            super(material);
+            this.clickEvent = clickEvent;
+        }
+
+        public Button(ClickEvent clickEvent, Material material, int amount) {
+            super(material, amount);
+            this.clickEvent = clickEvent;
+        }
 
         public ClickEvent getClickEvent() {
             return clickEvent;
         }
 
-        public void setClickEvent(ClickEvent clickEvent) { this.clickEvent = clickEvent; }
+        public void setClickEvent(ClickEvent clickEvent) {
+            this.clickEvent = clickEvent;
+        }
 
         @Override
         public Button clone() {
@@ -136,9 +204,20 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         protected int price;
 
-        public PricedButton(ClickEvent clickEvent, int price) { super(clickEvent); this.price = price; }
-        public PricedButton(ClickEvent clickEvent, int price, Material material) { super(clickEvent, material); this.price = price; }
-        public PricedButton(ClickEvent clickEvent, int price, Material material, int amount) { super(clickEvent, material, amount); this.price = price; }
+        public PricedButton(ClickEvent clickEvent, int price) {
+            super(clickEvent);
+            this.price = price;
+        }
+
+        public PricedButton(ClickEvent clickEvent, int price, Material material) {
+            super(clickEvent, material);
+            this.price = price;
+        }
+
+        public PricedButton(ClickEvent clickEvent, int price, Material material, int amount) {
+            super(clickEvent, material, amount);
+            this.price = price;
+        }
 
         public void setPricetagVisible(boolean visible) {
             ItemMeta itemMeta = getItemMeta();
@@ -150,7 +229,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
             ItemMeta itemMeta = super.getItemMeta();
 
             List<String> lore = itemMeta.getLore();
-            lore.remove(lore.size()-1);
+            if (lore != null && !lore.isEmpty()) lore.remove(lore.size() - 1);
             itemMeta.setLore(lore);
 
             return itemMeta;
