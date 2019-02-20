@@ -2,15 +2,13 @@ package com.z0cken.mc.claim;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nonnull;
 import java.sql.*;
-import java.util.AbstractMap;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
@@ -28,7 +26,7 @@ class DatabaseHelper {
 
     private static Connection connection;
     private static final Logger log = PCS_Claim.getInstance().getLogger();
-    private static final ConcurrentLinkedDeque<AbstractMap.SimpleEntry<Chunk, OfflinePlayer>> deque = new ConcurrentLinkedDeque<>();
+    private static final ConcurrentLinkedDeque<Claim> deque = new ConcurrentLinkedDeque<>();
 
     private DatabaseHelper() {}
 
@@ -60,7 +58,7 @@ class DatabaseHelper {
         try (Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
 
-            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL);");
+            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL );");
             statement.executeBatch();
         }
     }
@@ -83,25 +81,30 @@ class DatabaseHelper {
         return connected;
     }
 
-    static void commit(AbstractMap.SimpleEntry<Chunk, OfflinePlayer> entry) {
-        deque.add(entry);
+    static void commit(Claim claim) {
+        deque.add(claim);
     }
 
     static void push() {
         connect();
 
-        try (PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?);");
+        try (PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?);");
              PreparedStatement statementRem = connection.prepareStatement("DELETE FROM claims WHERE x = ? AND z = ?")) {
 
             while (!deque.isEmpty()) {
-                AbstractMap.SimpleEntry<Chunk, OfflinePlayer> entry = deque.peek();
+                Claim claim = deque.peek();
 
-                boolean hasOwner = entry.getValue() != null;
+                boolean hasOwner = claim.getPlayer() != null;
 
                 PreparedStatement pstmt = hasOwner ? statementAdd : statementRem;
-                pstmt.setInt(1, entry.getKey().getX());
-                pstmt.setInt(2, entry.getKey().getZ());
-                if (hasOwner) pstmt.setString(3, entry.getValue().getUniqueId().toString());
+                pstmt.setInt(1, claim.getChunk().getX());
+                pstmt.setInt(2, claim.getChunk().getZ());
+                if (hasOwner) {
+                    pstmt.setString(3, claim.getPlayer().getUniqueId().toString());
+                    pstmt.setInt(4, claim.getBaseBlock().getX());
+                    pstmt.setInt(5, claim.getBaseBlock().getY());
+                    pstmt.setInt(6, claim.getBaseBlock().getZ());
+                }
 
                 pstmt.addBatch();
                 deque.pop();
@@ -115,24 +118,38 @@ class DatabaseHelper {
         } catch (SQLException e) {
             log.severe(">>> Failed to push deque - dumping content <<<");
             while (!deque.isEmpty()) {
-                AbstractMap.SimpleEntry<Chunk, OfflinePlayer> entry = deque.poll();
-                log.warning(">>> [" + entry.getKey().getX() + "|" + entry.getKey().getZ() + "] -> " + (entry.getValue() == null ? "null" : entry.getValue().getUniqueId()));
+                Claim claim = deque.poll();
+                log.warning(">>> [" + claim.getChunk().getX() + "|" + claim.getChunk().getZ() + "] -> " + (claim.getPlayer() == null ? "null" : claim.getPlayer().getUniqueId()));
             }
         }
     }
 
-    public static void populate(ConcurrentHashMap<Chunk, OfflinePlayer> claims, World world) throws SQLException {
+    /*
+    public static void populate(ConcurrentHashMap<Chunk, Claim> claims, World world) throws SQLException {
         connect();
 
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims;")) {
             while (resultSet.next()) {
-                System.out.println(resultSet.getInt(1) + "|" + resultSet.getInt(2) + "|" + resultSet.getString(3));
-                final Chunk chunkAt = world.getChunkAt(resultSet.getInt(1), resultSet.getInt(2));
+                final Chunk chunk = world.getChunkAt(resultSet.getInt(1), resultSet.getInt(2));
                 final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(3)));
-                System.out.println(chunkAt.isLoaded());
-                System.out.println(offlinePlayer.getName());
-                claims.put(chunkAt, offlinePlayer);
+                final Location baseLocation = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
+                claims.put(chunk, new Claim(offlinePlayer, baseLocation));
             }
         }
+    }*/
+
+    static Claim getClaim(@Nonnull Chunk chunk) {
+        connect();
+
+        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
+            if(resultSet.next()) {
+                Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
+                new Claim(Bukkit.getPlayer(UUID.fromString(resultSet.getString(3))), location);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

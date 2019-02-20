@@ -72,7 +72,7 @@ class ClaimListener implements Listener {
                 event.getBlockPlaced().setBlockData(frame);
 
                 PCS_Claim.getInstance().getLogger().info("[" + chunk.getX() + "|" + chunk.getZ() + "]" + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
-                PCS_Claim.claim(chunk, player);
+                PCS_Claim.claim(player, event.getBlockPlaced().getRelative(0, -1, 0));
                 player.spigot().sendMessage(new MessageBuilder().build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
         }
@@ -111,7 +111,7 @@ class ClaimListener implements Listener {
                         block.breakNaturally();
                         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.END_PORTAL_FRAME, 1));
 
-                        PCS_Claim.claim(chunk, null);
+                        PCS_Claim.claim(null, block);
                         PCS_Claim.getInstance().getLogger().info("[" + chunk.getX()+"|" + chunk.getZ() + "]" + " REM -> " + owner.getUniqueId() + " (" + owner.getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
 
                         trespassers.remove(player);
