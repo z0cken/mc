@@ -57,7 +57,7 @@ public final class PCS_Claim extends JavaPlugin {
         instance = null;
     }
 
-    static void claim(Chunk chunk, Player player) {
+    public static void claim(Chunk chunk, Player player) {
         DatabaseHelper.commit(new AbstractMap.SimpleEntry<>(chunk, player));
 
         if(player == null) {
@@ -67,7 +67,7 @@ public final class PCS_Claim extends JavaPlugin {
         }
     }
 
-    static boolean canBuild(OfflinePlayer player, Chunk chunk) {
+    public static boolean canBuild(OfflinePlayer player, Chunk chunk) {
         if(claims.containsKey(chunk)) {
             OfflinePlayer owner = claims.get(chunk);
 
@@ -82,11 +82,11 @@ public final class PCS_Claim extends JavaPlugin {
         return true;
     }
 
-    static OfflinePlayer getOwner(Chunk chunk) {
+    public static OfflinePlayer getOwner(Chunk chunk) {
         return claims.getOrDefault(chunk, null);
     }
 
-    static ArrayList<Chunk> getClaims(OfflinePlayer player) {
+    public static ArrayList<Chunk> getClaims(OfflinePlayer player) {
         ArrayList<Chunk> list = new ArrayList<>();
         claims.forEach((chunk, player1) -> { if(player.equals(player1)) list.add(chunk); });
         return list;
