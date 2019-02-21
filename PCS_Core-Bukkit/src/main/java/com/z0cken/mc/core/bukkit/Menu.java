@@ -41,12 +41,21 @@ public class Menu extends CraftInventoryCustom implements Listener {
     }
 
     @Override
+    public ItemStack getItem(int index) {
+        return getItem(getCurrentPage(), index);
+    }
+
+    public ItemStack getItem(int page, int index) {
+        return pages.get(page)[index];
+    }
+
+    @Override
     public void setItem(int index, ItemStack item) {
         setItem(currentPage, index, item);
     }
 
     public void setItem(int page, int index, ItemStack item) {
-        while (pages.size() < page) pages.add(new ItemStack[getSize()]);
+        while (pages.size() <= page) pages.add(new ItemStack[getSize()]);
         pages.get(page)[index] = item;
         if (page == currentPage) super.setItem(index, item);
     }
@@ -57,25 +66,21 @@ public class Menu extends CraftInventoryCustom implements Listener {
     }
 
     public void setContents(int page, ItemStack[] items) {
-        while (pages.size() < page) pages.add(new ItemStack[getSize()]);
-
         if (this.getSize() < items.length) {
             throw new IllegalArgumentException("Invalid inventory size; expected " + this.getSize() + " or less");
         } else {
             for (int i = 0; i < this.getSize(); ++i) {
-                if (i >= items.length) {
-                    this.setItem(page, i, null);
-                } else {
-                    this.setItem(page, i, items[i]);
-                }
+                ItemStack itemStack = items[i];
+                if(itemStack == null) itemStack = new ItemStack(Material.AIR);
+                this.setItem(page, i, itemStack);
             }
         }
     }
 
     public void showPage(int page) {
         if(page < 0 || page >= pages.size()) throw new ArrayIndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
-        setContents(pages.get(page));
         currentPage = page;
+        setContents(pages.get(page));
     }
 
     public int getCurrentPage() {
@@ -84,6 +89,10 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
     public Menu getParent() {
         return parent;
+    }
+
+    public int getPageCount() {
+        return pages.size();
     }
 
     @EventHandler
@@ -108,13 +117,15 @@ public class Menu extends CraftInventoryCustom implements Listener {
         }
 
         if(event.getClick().isShiftClick()) event.setCancelled(true);
+        if(event.getClick() == ClickType.DOUBLE_CLICK && this.contains(event.getCursor().getType())) event.setCancelled(true);
         if(inv != event.getClickedInventory()) return;
         event.setCancelled(true);
 
         ItemStack itemStack = pages.get(currentPage)[event.getSlot()];
+        if(itemStack == null) return;
         if(!(itemStack instanceof Button)) return;
         Button button = (Button) itemStack;
-        if (button.getClickEvent() == null) return;
+        if(button.getClickEvent() == null) return;
 
 
         //TODO Implement Economy
@@ -128,9 +139,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
             }
         }
 
-        button.clickEvent.run(this, button, (Player) event.getWhoClicked(), event.getClick());
-        setItem(event.getSlot(), button);
-
+        button.clickEvent.run(this, button, (Player) event.getWhoClicked(), event);
     }
 
     @EventHandler
@@ -143,12 +152,13 @@ public class Menu extends CraftInventoryCustom implements Listener {
     public static class Button extends ItemStack {
 
         public interface ClickEvent {
-            void run(Menu menu, Button button, Player player, ClickType clickType);
+            void run(Menu menu, Button button, Player player, InventoryClickEvent event);
         }
 
         protected Button.ClickEvent clickEvent;
 
         public Button(ClickEvent clickEvent) {
+            super();
             this.clickEvent = clickEvent;
         }
 
