@@ -4,6 +4,7 @@ import com.z0cken.mc.core.FriendsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,11 +14,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /** @author Flare */
 @SuppressWarnings("unused")
@@ -35,7 +39,8 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return instance;
     }
 
-    private static final ConcurrentHashMap<Chunk, Optional<Claim>> claims = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<ChunkCoordinate, Claim> claimedChunks = new ConcurrentHashMap<>();
+    private static final Set<ChunkCoordinate> lockedChunks = Collections.synchronizedSet(new HashSet<>());
 
     public PCS_Claim() {
         if(instance != null) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
@@ -57,19 +62,43 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
         /* TODO Make optional?
         try {
-            DatabaseHelper.populate(claims, Bukkit.getWorld(getConfig().getString("main-world")));
+            DatabaseHelper.populate(claimedChunks, Bukkit.getWorld(getConfig().getString("main-world")));
         } catch (SQLException e) {
             Bukkit.getServer().shutdown();
         }
         */
 
+        //TODO Whitelist?
+        //Lock all chunks until their status has been retrieved asynchronously
+        final HashSet<ChunkCoordinate> coordinates = Arrays.stream(Bukkit.getWorld(getConfig().getString("main-world")).getLoadedChunks())
+                                                                .map(ChunkCoordinate::new).collect(Collectors.toCollection(HashSet::new));
+        lockedChunks.addAll(coordinates);
+
+        /*new BukkitRunnable() {
+            @Override
+            public void run() {
+                long time = System.nanoTime();
+
+                for (Chunk chunk : chunks) {
+                    Claim claim = DatabaseHelper.getClaim(chunk);
+                    if(claim != null) {
+                        final ChunkCoordinate coordinate = new ChunkCoordinate(chunk);
+                        claimedChunks.put(coordinate, claim);
+                        lockedChunks.remove(coordinate);
+                    }
+                }
+
+                System.out.println("1: " + (System.nanoTime() - time) / 1000000D + " ms");
+            }
+        }.runTaskAsynchronously(this);*/
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Chunk chunk : Bukkit.getWorld("world").getLoadedChunks()) {
-                    Claim claim = DatabaseHelper.getClaim(chunk);
-                    claims.put(chunk, claim == null ? Optional.empty() : Optional.of(claim));
-                }
+                //long time = System.nanoTime();
+                claimedChunks.putAll(DatabaseHelper.getClaims(Bukkit.getWorld("world"), coordinates));
+                lockedChunks.removeAll(coordinates);
+                //System.out.println("2: " + (System.nanoTime() - time) / 1000000D + " ms");
             }
         }.runTaskAsynchronously(this);
 
@@ -88,16 +117,16 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
+        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(chunk);
 
-        int x = chunk.getX(), z = chunk.getZ();
-        if (x > 200 || z > 200) Bukkit.broadcastMessage("+ " + x + " | " + z);
-
-        if (!claims.containsKey(chunk)) {
+        if (!claimedChunks.containsKey(chunkCoordinate)) {
+            lockedChunks.add(chunkCoordinate);
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     Claim claim = DatabaseHelper.getClaim(chunk);
-                    claims.put(chunk, claim == null ? Optional.empty() : Optional.of(claim));
+                    if(claim != null) claimedChunks.put(chunkCoordinate, claim);
+                    lockedChunks.remove(chunkCoordinate);
                 }
             }.runTaskAsynchronously(this);
         }
@@ -105,24 +134,23 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
-        int x = event.getChunk().getX(), z = event.getChunk().getZ();
-        if(x > 200 || z > 200) Bukkit.broadcastMessage("- "+x+" | "+z);
+        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(event.getChunk());
 
-        claims.remove(event.getChunk());
+        Claim claim = claimedChunks.getOrDefault(chunkCoordinate, null);
+        if(claim != null) claim.updateBaseMaterial();
+        claimedChunks.remove(chunkCoordinate);
     }
 
-    public static void claim(OfflinePlayer player, @Nonnull Block baseBlock) {
+    public static void claim(@Nullable OfflinePlayer player, @Nonnull Block baseBlock) {
         Claim claim = new Claim(player, baseBlock);
         DatabaseHelper.commit(claim);
 
-        if(player == null) {
-            claims.put(baseBlock.getChunk(), Optional.empty());
-        } else {
-            claims.put(baseBlock.getChunk(), Optional.of(claim));
-        }
+        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
+        if(player == null) claimedChunks.remove(chunkCoordinate);
+        else claimedChunks.put(chunkCoordinate, claim);
     }
 
-    public static boolean canBuild(OfflinePlayer player, Chunk chunk) {
+    public static boolean canBuild(@Nonnull OfflinePlayer player, @Nonnull Chunk chunk) {
         OfflinePlayer owner = getOwner(chunk);
 
         if(player.isOnline() && player.getPlayer().hasPermission("pcs.claim.override")) return true;
@@ -140,22 +168,21 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return owner == null || owner.equals(player) || friends;
     }
 
-    public static OfflinePlayer getOwner(Chunk chunk) {
-        Claim claim;
-
-        if(claims.containsKey(chunk)) {
-            claim = claims.get(chunk).orElse(null);
-        } else {
-            claim = DatabaseHelper.getClaim(chunk);
-        }
-
-        return claim == null ? null : claim.getPlayer();
+    public static OfflinePlayer getOwner(@Nonnull Chunk chunk) {
+        Claim claim = getClaim(chunk);
+        return claim == null ? null : claim.getOwner();
     }
 
-    //Broken
-    public static List<Claim> getClaims(OfflinePlayer player) {
-        ArrayList<Claim> list = new ArrayList<>();
-        claims.forEach(((chunk, claim) -> { if(claim.isPresent() && player.equals(claim.get().getPlayer())) list.add(claim.get()); }));
-        return list;
+    public static Claim getClaim(@Nonnull Chunk chunk) {
+        Claim claim;
+        final ChunkCoordinate coordinate = new ChunkCoordinate(chunk);
+        if(lockedChunks.contains(coordinate)) claim = DatabaseHelper.getClaim(chunk);
+        else claim = claimedChunks.getOrDefault(coordinate, null);
+
+        return claim;
+    }
+
+    public static Set<Claim> getClaims(@Nonnull World world, @Nonnull OfflinePlayer player) {
+        return DatabaseHelper.getClaims(world, player);
     }
 }

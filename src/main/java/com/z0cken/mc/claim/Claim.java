@@ -1,39 +1,37 @@
 package com.z0cken.mc.claim;
 
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class Claim {
-    private final Chunk chunk;
-    private final OfflinePlayer player;
+    private final OfflinePlayer owner;
     private Location baseLocation;
     private Material baseMaterial;
+    private ChunkCoordinate chunkCoordinate;
 
-    Claim(OfflinePlayer player, @Nonnull Block baseBlock) {
-        this.chunk = baseLocation.getChunk();
-        this.player = player;
+    Claim(@Nullable OfflinePlayer owner, @Nonnull Block baseBlock) {
         this.baseLocation = baseBlock.getLocation();
+        this.owner = owner;
         this.baseMaterial = baseBlock.getType();
+        this.chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
     }
 
-    Claim(OfflinePlayer player, @Nonnull Location baseLocation) {
-        this.chunk = baseLocation.getChunk();
-        this.player = player;
+    Claim(@Nonnull OfflinePlayer owner, @Nonnull Location baseLocation, @Nonnull Material baseMaterial) {
+        this.owner = owner;
         this.baseLocation = baseLocation;
-        this.baseMaterial = baseLocation.getBlock().getType();
+        this.baseMaterial = baseMaterial;
+        this.chunkCoordinate = new ChunkCoordinate((int) baseLocation.getX() >> 4, (int) baseLocation.getZ() >> 4);
     }
 
-    public OfflinePlayer getPlayer() {
-        return player;
+    public OfflinePlayer getOwner() {
+        return owner;
     }
 
     public Chunk getChunk() {
-        return chunk;
+        return baseLocation.getChunk();
     }
 
     public Block getBaseBlock() {
@@ -41,17 +39,19 @@ public class Claim {
     }
 
     public Material getBaseMaterial() {
-        if(baseMaterial == null || chunk.isLoaded()) baseMaterial = getBaseBlock().getType();
         return baseMaterial;
     }
 
-    @Override
-    public int hashCode() {
-        return chunk.hashCode();
+    public ChunkCoordinate getChunkCoordinate() {
+        return chunkCoordinate;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return chunk.equals(obj);
+    public World getWorld() {
+        return baseLocation.getWorld();
+    }
+
+    public void updateBaseMaterial() {
+        baseMaterial = getBaseBlock().getType();
+        DatabaseHelper.updateMaterial(this, getBaseMaterial());
     }
 }

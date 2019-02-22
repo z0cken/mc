@@ -1,16 +1,15 @@
 package com.z0cken.mc.claim;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
 import java.sql.*;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 class DatabaseHelper {
@@ -58,7 +57,7 @@ class DatabaseHelper {
         try (Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
 
-            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL );");
+            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL, material VARCHAR(50) NOT NULL );");
             statement.executeBatch();
         }
     }
@@ -88,22 +87,25 @@ class DatabaseHelper {
     static void push() {
         connect();
 
-        try (PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?);");
+        List<String> content = deque.stream().map(claim -> ">>> [" + claim.getChunk().getX() + "|" + claim.getChunk().getZ() + "] -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
+
+        try (PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
              PreparedStatement statementRem = connection.prepareStatement("DELETE FROM claims WHERE x = ? AND z = ?")) {
 
             while (!deque.isEmpty()) {
                 Claim claim = deque.peek();
 
-                boolean hasOwner = claim.getPlayer() != null;
+                boolean hasOwner = claim.getOwner() != null;
 
                 PreparedStatement pstmt = hasOwner ? statementAdd : statementRem;
                 pstmt.setInt(1, claim.getChunk().getX());
                 pstmt.setInt(2, claim.getChunk().getZ());
                 if (hasOwner) {
-                    pstmt.setString(3, claim.getPlayer().getUniqueId().toString());
+                    pstmt.setString(3, claim.getOwner().getUniqueId().toString());
                     pstmt.setInt(4, claim.getBaseBlock().getX());
                     pstmt.setInt(5, claim.getBaseBlock().getY());
                     pstmt.setInt(6, claim.getBaseBlock().getZ());
+                    pstmt.setString(7, claim.getBaseMaterial().name());
                 }
 
                 pstmt.addBatch();
@@ -116,11 +118,9 @@ class DatabaseHelper {
             log.fine("[PUSH] ADD " + IntStream.of(add).sum() + " | " + IntStream.of(rem).sum() + " REM");
 
         } catch (SQLException e) {
+            e.printStackTrace();
             log.severe(">>> Failed to push deque - dumping content <<<");
-            while (!deque.isEmpty()) {
-                Claim claim = deque.poll();
-                log.warning(">>> [" + claim.getChunk().getX() + "|" + claim.getChunk().getZ() + "] -> " + (claim.getPlayer() == null ? "null" : claim.getPlayer().getUniqueId()));
-            }
+            content.forEach(log::severe);
         }
     }
 
@@ -144,12 +144,62 @@ class DatabaseHelper {
         try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
             if(resultSet.next()) {
                 Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                new Claim(Bukkit.getPlayer(UUID.fromString(resultSet.getString(3))), location);
+                new Claim(Bukkit.getPlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    static Map<ChunkCoordinate, Claim> getClaims(@Nonnull World world, @Nonnull Set<ChunkCoordinate> set) {
+        connect();
+
+        HashMap<ChunkCoordinate, Claim> result = new HashMap<>();
+        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims;")) {
+            while(resultSet.next()) {
+                ChunkCoordinate coordinate = new ChunkCoordinate(resultSet.getInt(1), resultSet.getInt(2));
+                if(set.contains(coordinate)) {
+                    Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
+                    result.put(coordinate, new Claim(Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7))));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    static Set<Claim> getClaims(@Nonnull World world, @Nonnull OfflinePlayer player) {
+        connect();
+
+        Set<Claim> claims = new HashSet<>();
+        try(PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM claims WHERE player = ?;")) {
+            pstmt.setString(1, player.getUniqueId().toString());
+            ResultSet resultSet = pstmt.executeQuery();
+
+            while(resultSet.next()) {
+                Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
+                claims.add(new Claim(player, location, Material.valueOf(resultSet.getString(7))));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    static void updateMaterial(@Nonnull Claim claim, @Nonnull Material baseMaterial) {
+        try(PreparedStatement pstmt = connection.prepareStatement("UPDATE claims SET material = ? WHERE x = ? AND z = ?;")) {
+            pstmt.setString(1, baseMaterial.name());
+            pstmt.setInt(2, claim.getChunkCoordinate().getX());
+            pstmt.setInt(3, claim.getChunkCoordinate().getZ());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

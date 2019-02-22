@@ -2,11 +2,9 @@ package com.z0cken.mc.claim;
 
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,19 +59,21 @@ class ClaimListener implements Listener {
     public static void onBlockPlace(BlockPlaceEvent event) {
         if(event.isCancelled()) return;
 
-        if(event.getBlockPlaced().getType() == Material.END_PORTAL_FRAME) {
-            final Chunk chunk = event.getBlockPlaced().getChunk();
+        final Block blockPlaced = event.getBlockPlaced();
+
+        if(blockPlaced.getType() == Material.END_PORTAL_FRAME) {
+            final Chunk chunk = blockPlaced.getChunk();
             final Player player = event.getPlayer();
 
             OfflinePlayer owner = PCS_Claim.getOwner(chunk);
             if(owner == null) {
-                EndPortalFrame frame = (EndPortalFrame) event.getBlockPlaced().getBlockData();
+                EndPortalFrame frame = (EndPortalFrame) blockPlaced.getBlockData();
                 frame.setEye(true);
-                event.getBlockPlaced().setBlockData(frame);
+                blockPlaced.setBlockData(frame);
 
                 PCS_Claim.getInstance().getLogger().info("[" + chunk.getX() + "|" + chunk.getZ() + "]" + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
-                PCS_Claim.claim(player, event.getBlockPlaced().getRelative(0, -1, 0));
-                player.spigot().sendMessage(new MessageBuilder().build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
+                PCS_Claim.claim(player, blockPlaced.getRelative(BlockFace.DOWN));
+                player.spigot().sendMessage(new MessageBuilder().define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]").build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
         }
     }
@@ -88,9 +88,11 @@ class ClaimListener implements Listener {
             final Chunk chunk = block.getChunk();
             final Player player = event.getPlayer();
             final OfflinePlayer owner = PCS_Claim.getOwner(chunk);
+            if(owner == null) return;
+
             final boolean isOwner = player.equals(owner);
 
-            if(isOwner || player.hasPermission("pcs.claim.override") ) {
+            if(isOwner || player.hasPermission("pcs.claim.override")) {
                 BaseComponent[] message = null;
                 MessageBuilder builder = new MessageBuilder().define("NAME", owner.getName());
 
@@ -103,7 +105,7 @@ class ClaimListener implements Listener {
                 }
 
                 if(event.getAction().name().startsWith("L")) {
-
+                    if(player.getGameMode() == GameMode.CREATIVE) event.setCancelled(true);
                     if(hasEye) {
                         //Has to right click
                         message = builder.build(PCS_Claim.getInstance().getConfig().getString("messages.right-click"));
@@ -116,7 +118,7 @@ class ClaimListener implements Listener {
 
                         trespassers.remove(player);
                         String path = isOwner ? "messages.unclaim" : "messages.unclaim-override";
-                        message = builder.build(PCS_Claim.getInstance().getConfig().getString(path));
+                        message = builder.define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]").build(PCS_Claim.getInstance().getConfig().getString(path));
                     }
                 } else {
                     frame.setEye(!hasEye);
