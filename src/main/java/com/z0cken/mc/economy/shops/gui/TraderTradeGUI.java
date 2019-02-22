@@ -3,9 +3,7 @@ package com.z0cken.mc.economy.shops.gui;
 import com.z0cken.mc.economy.Account;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
-import com.z0cken.mc.economy.shops.InventoryHelper;
-import com.z0cken.mc.economy.shops.TradeItem;
-import com.z0cken.mc.economy.shops.Trader;
+import com.z0cken.mc.economy.shops.*;
 import com.z0cken.mc.economy.utils.MessageBuilder;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
@@ -14,11 +12,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public class TraderTradeGUI{
 
     private Trader trader;
+    private static int[] singleSellSlots = TradeInventorySlotType.SLOT_SELL_SINGLE.getSlots();
+    private static int[] stackSellSlots = TradeInventorySlotType.SLOT_SELL_STACK.getSlots();
+    private static int[] invSellSlots = TradeInventorySlotType.SLOT_SELL_INV.getSlots();
+    private static int[] singleBuySlots = TradeInventorySlotType.SLOT_BUY_SINGLE.getSlots();
+    private static int[] stackBuySlots = TradeInventorySlotType.SLOT_BUY_STACK.getSlots();
+    private static int[] invBuySlots = TradeInventorySlotType.SLOT_BUY_INV.getSlots();
 
     public TraderTradeGUI(Trader trader){
         this.trader = trader;
@@ -27,65 +32,22 @@ public class TraderTradeGUI{
     public Inventory getInventory(TradeItem item, Player player) {
         String title = trader.getTraderName() + "-" + WordUtils.capitalizeFully(item.getMaterial().name().replace("_", " "));
         Inventory inv = PCS_Economy.pcs_economy.getServer().createInventory(null, 27, title);
-        ItemStack[] slots = new ItemStack[6];
 
-        for(int i = 0; i < slots.length; i++){
-            if(i < 3){
-                slots[i] = new ItemStack(Material.GREEN_STAINED_GLASS_PANE, 1);
-            }else{
-                slots[i] = new ItemStack(Material.RED_STAINED_GLASS_PANE, 1);
-            }
-            ItemMeta meta = slots[i].getItemMeta();
-            switch (i){
-                case 0:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleSingle));
-                    break;
-                case 1:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleStack));
-                    break;
-                case 2:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeSellTitleInv));
-                    break;
-                case 3:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleSingle));
-                    break;
-                case 4:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleStack));
-                    break;
-                case 5:
-                    meta.setDisplayName(MessageBuilder.buildMessage(false, ConfigManager.tradeBuyTitleInv));
-                    break;
-            }
-            slots[i].setItemMeta(meta);
+        normalSingleSell(inv);
+        normalStackSell(inv);
+        normalInvSell(inv);
+        normalSingleBuy(inv);
+        normalStackBuy(inv);
+        normalInvBuy(inv);
+
+        if(!item.isBuyable()){
+            grayAllBuy(inv);
+        }
+        if(!item.isSellable()){
+            grayAllSell(inv);
         }
 
         changeLoreGeneral(inv, player, item);
-
-        //SELL
-        inv.setItem(0, slots[0]);
-        inv.setItem(1, slots[0]);
-        inv.setItem(2, slots[0]);
-
-        inv.setItem(9, slots[1]);
-        inv.setItem(10, slots[1]);
-        inv.setItem(11, slots[1]);
-
-        inv.setItem(18, slots[2]);
-        inv.setItem(19, slots[2]);
-        inv.setItem(20, slots[2]);
-
-        //BUY
-        inv.setItem(6, slots[3]);
-        inv.setItem(7, slots[3]);
-        inv.setItem(8, slots[3]);
-
-        inv.setItem(15, slots[4]);
-        inv.setItem(16, slots[4]);
-        inv.setItem(17, slots[4]);
-
-        inv.setItem(24, slots[5]);
-        inv.setItem(25, slots[5]);
-        inv.setItem(26, slots[5]);
 
         ItemStack itemOfInterest = new ItemStack(item.getMaterial(), 1);
         inv.setItem(13, itemOfInterest);
@@ -95,6 +57,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreSingleSell(Inventory inv, TradeItem item){
         if(inv != null && item != null){
+            normalSingleSell(inv);
             List<String> lore = new LoreBuilder(true)
                     .setItem(item)
                     .setQuantity(1)
@@ -111,6 +74,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreStackSell(Inventory inv, TradeItem item){
         if(inv != null && item != null){
+            normalStackSell(inv);
             List<String> lore = new LoreBuilder(true)
                     .setItem(item)
                     .setQuantity(item.getMaterial().getMaxStackSize())
@@ -127,6 +91,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreInvSell(Inventory inv, Player player, TradeItem item){
         if(player != null && inv != null && item != null){
+            normalInvSell(inv);
             List<String> lore = new LoreBuilder(true)
                     .setItem(item)
                     .setQuantity(InventoryHelper.getOverallItemCapacity(player.getInventory(), item.getMaterial()))
@@ -143,6 +108,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreSingleBuy(Inventory inv, TradeItem item){
         if(inv != null && item != null){
+            normalSingleBuy(inv);
             List<String> lore = new LoreBuilder(false)
                     .setItem(item)
                     .setQuantity(1)
@@ -159,6 +125,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreStackBuy(Inventory inv, TradeItem item){
         if(inv != null && item != null){
+            normalStackBuy(inv);
             List<String> lore = new LoreBuilder(false)
                     .setItem(item)
                     .setQuantity(item.getMaterial().getMaxStackSize())
@@ -175,6 +142,7 @@ public class TraderTradeGUI{
 
     public static void changeLoreInvBuy(Inventory inv, Player player, TradeItem item){
         if(player != null && inv != null && item != null){
+            normalInvBuy(inv);
             List<String> lore = new LoreBuilder(false)
                     .setItem(item)
                     .setQuantity(InventoryHelper.getAmountOfItem(player.getInventory(), item.getMaterial()))
@@ -189,8 +157,11 @@ public class TraderTradeGUI{
         }
     }
 
-    public static void changeLoreItemNotSellable(Inventory inv){
+    /*public static void changeLoreItemNotSellable(Inventory inv){
         if(inv != null){
+            graySingleSell(inv);
+            grayStackSell(inv);
+            grayInvSell(inv);
             List<String> lore = new LoreBuilder(false)
                     .addErrorCantSell().buildLore();
             changeLoreWithList(inv, TradeInventorySlotType.SLOT_ALL_SELL, lore);
@@ -199,11 +170,14 @@ public class TraderTradeGUI{
 
     public static void changeLoreItemNotBuyable(Inventory inv){
         if(inv != null){
+            graySingleBuy(inv);
+            grayStackBuy(inv);
+            grayInvSell(inv);
             List<String> lore = new LoreBuilder(false)
                     .addErrorCantBuy().buildLore();
             changeLoreWithList(inv, TradeInventorySlotType.SLOT_ALL_BUY, lore);
         }
-    }
+    }*/
 
     public static void changeLoreWithList(Inventory inv, TradeInventorySlotType slotType, List<String> lore){
         if(inv != null && slotType != null && lore != null){
@@ -225,15 +199,11 @@ public class TraderTradeGUI{
                 changeLoreSingleSell(inv, item);
                 changeLoreStackSell(inv, item);
                 changeLoreInvSell(inv, player, item);
-            }else{
-                changeLoreItemNotSellable(inv);
             }
             if(item.isBuyable()){
                 changeLoreSingleBuy(inv, item);
                 changeLoreStackBuy(inv, item);
                 changeLoreInvBuy(inv, player, item);
-            }else{
-                changeLoreItemNotBuyable(inv);
             }
         }
     }
@@ -262,6 +232,164 @@ public class TraderTradeGUI{
         }
     }
 
+    private static void normalSingleSell(Inventory inv){
+        for(int i : singleSellSlots){
+            ItemStack stack = new ItemStack(Material.GREEN_STAINED_GLASS, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleSingle);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void normalStackSell(Inventory inv){
+        for(int i : stackSellSlots){
+            ItemStack stack = new ItemStack(Material.GREEN_STAINED_GLASS, 64);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleStack);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void normalInvSell(Inventory inv){
+        for(int i : invSellSlots){
+            ItemStack stack = new ItemStack(Material.GREEN_SHULKER_BOX, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleInv);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void normalSingleBuy(Inventory inv){
+        for(int i : singleBuySlots){
+            ItemStack stack = new ItemStack(Material.RED_STAINED_GLASS, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleSingle);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void normalStackBuy(Inventory inv){
+        for(int i : stackBuySlots){
+            ItemStack stack = new ItemStack(Material.RED_STAINED_GLASS, 64);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleStack);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void normalInvBuy(Inventory inv){
+        for(int i : invBuySlots){
+            ItemStack stack = new ItemStack(Material.RED_SHULKER_BOX, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleInv);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void graySingleSell(Inventory inv){
+        for(int i : singleSellSlots){
+            ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleSingle);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void grayStackSell(Inventory inv){
+        for(int i : stackSellSlots){
+            ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS, 64);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleStack);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void grayInvSell(Inventory inv){
+        for(int i : invSellSlots){
+            ItemStack stack = new ItemStack(Material.GRAY_SHULKER_BOX, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeSellTitleInv);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void graySingleBuy(Inventory inv){
+        for(int i : singleBuySlots){
+            ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleSingle);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void grayStackBuy(Inventory inv){
+        for(int i : stackBuySlots){
+            ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS, 64);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleStack);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    private static void grayInvBuy(Inventory inv){
+        for(int i : invBuySlots){
+            ItemStack stack = new ItemStack(Material.GRAY_SHULKER_BOX, 1);
+            ItemMeta meta = stack.getItemMeta();
+            meta.setDisplayName(ConfigManager.tradeBuyTitleInv);
+            stack.setItemMeta(meta);
+            inv.setItem(i, stack);
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    private static void grayAllSell(Inventory inv){
+        for(int i : TradeInventorySlotType.SLOT_ALL_SELL.getSlots()){
+            if(i != 16){
+                ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE,1);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ConfigManager.tradeSellErrorCantSell);
+                stack.setItemMeta(meta);
+                inv.setItem(i, stack);
+            }else{
+                ItemStack stack = new ItemStack(Material.BARRIER, 1);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ConfigManager.tradeSellErrorCantSell);
+                stack.setItemMeta(meta);
+                inv.setItem(i, stack);
+            }
+        }
+    }
+
+    @SuppressWarnings("Duplicates")
+    private static void grayAllBuy(Inventory inv){
+        for(int i : TradeInventorySlotType.SLOT_ALL_BUY.getSlots()){
+            if(i != 10){
+                ItemStack stack = new ItemStack(Material.GRAY_STAINED_GLASS_PANE,1);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ConfigManager.tradeBuyErrorCantBuy);
+                stack.setItemMeta(meta);
+                inv.setItem(i, stack);
+            }else{
+                ItemStack stack = new ItemStack(Material.BARRIER,1);
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName(ConfigManager.tradeBuyErrorCantBuy);
+                stack.setItemMeta(meta);
+                inv.setItem(i, stack);
+            }
+        }
+    }
+
     public static void doInvLogic(Inventory inv, TradeItem item, Account account){
         Player player = account.getHolder().getPlayer();
         changeLoreGeneral(inv, player, item);
@@ -270,25 +398,37 @@ public class TraderTradeGUI{
             //SINGLE
             if(account.has(item.getSellprice())){
                 if(!InventoryHelper.canFit(inv, item.getMaterial(), 1)){
+                    graySingleSell(inv);
+                    grayStackSell(inv);
+                    grayInvSell(inv);
                     changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_ALL_SELL);
                 }
             }else{
+                graySingleSell(inv);
+                grayStackSell(inv);
+                grayInvSell(inv);
                 changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_ALL_SELL);
             }
             //STACK
             if(account.has(item.getSellprice() * item.getMaterial().getMaxStackSize())){
                 if(!InventoryHelper.canFit(inv, item.getMaterial(), item.getMaterial().getMaxStackSize())){
+                    grayStackSell(inv);
                     changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_SELL_STACK);
                 }
             }else{
+                grayStackSell(inv);
                 changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_STACK);
             }
             //INV
             int capacity = InventoryHelper.getOverallItemCapacity(inv, item.getMaterial());
             if(capacity == 0){
+                graySingleSell(inv);
+                grayStackSell(inv);
+                grayInvSell(inv);
                 changeLorePlayerInvFull(inv, TradeInventorySlotType.SLOT_ALL_SELL);
             }else{
                 if(!account.has(item.getSellprice() * capacity)){
+                    grayInvSell(inv);
                     changeLorePlayerNotEnoughFunds(inv, TradeInventorySlotType.SLOT_SELL_INV);
                 }
             }
@@ -298,10 +438,14 @@ public class TraderTradeGUI{
             int itemAmount = InventoryHelper.getAmountOfItem(player.getInventory(), item.getMaterial());
             //SINGLE
             if(itemAmount == 0){
+                graySingleBuy(inv);
+                grayStackBuy(inv);
+                grayInvBuy(inv);
                 changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_ALL_BUY);
             }
             //STACK
             if(itemAmount < item.getMaterial().getMaxStackSize()){
+                grayStackBuy(inv);
                 changeLorePlayerInvNotEnoughItems(inv, TradeInventorySlotType.SLOT_BUY_STACK);
             }
         }

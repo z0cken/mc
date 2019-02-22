@@ -1,7 +1,5 @@
 package com.z0cken.mc.economy.shops;
 
-import com.z0cken.mc.economy.shops.TradeInventoryType;
-import com.z0cken.mc.economy.shops.Trader;
 import org.bukkit.Material;
 
 public class InventoryMeta {

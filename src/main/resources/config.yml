@@ -54,9 +54,19 @@ economy:
       errorNoPermission: "{PREFIX} Du hast keine Berechtigung diesen Command zu nutzen!"
     shop:
       trader:
-        errorRemoveTrader: "{PREFIX} Trader konnte nicht gelöscht werden!"
-        successRemoveTrader: "{PREFIX} Trader erfolgreich gelöscht!"
-        successCreateTrader: "{PREFIX} Trader erfolgreich erstellt!"
+        create:
+          success: "{PREFIX} Trader erfolgreich erstellt!"
+          error: "{PREFIX} Trader konnte nicht erstellt werden!"
+        remove:
+          success: "{PREFIX} Trader erfolgreich gelöscht!"
+          error: "{PREFIX} Trader konnte nicht gelöscht werden!"
+        changeName:
+          success: "{PREFIX} Der Name vom Trader wurde erfolgreich geändert!"
+          error: "{PREFIX} Der Name vom Trader konnte nicht geändert werden!"
+        tphere:
+          error: "{PREFIX} Der Trader konnte nicht teleportiert werden!"
+        tpto:
+          error: "{PREFIX} Konnte nicht zu Trader teleportieren!"
   gui:
     selection:
       sellPrice: "Preis pro Stück: §6{AMOUNT}"

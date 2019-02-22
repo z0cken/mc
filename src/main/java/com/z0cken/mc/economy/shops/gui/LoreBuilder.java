@@ -66,12 +66,13 @@ public class LoreBuilder {
     }
 
     public LoreBuilder addTradeCost(){
-        int tradeCost = 0;
+        double tradeCost = 0;
         if(this.sell){
             tradeCost = this.item.getSellprice() * this.quantity;
         }else{
             tradeCost = this.item.getBuyPrice() * this.quantity;
         }
+        tradeCost = MessageHelper.roundToTwoDecimals(tradeCost);
         String builtCost = MessageHelper.convertBcToString(PCS_Economy.pcs_economy.getMessageBuilder()
                 .define("AMOUNT", String.valueOf(tradeCost))
                 .build(ConfigManager.tradeCost));

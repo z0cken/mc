@@ -86,6 +86,10 @@ public class ConfigManager {
     public static String shopTraderErrorRemoveTrader = null;
     public static String shopTraderSuccessRemoveTrader = null;
     public static String shopTraderSuccessCreateTrader = null;
+    public static String shopTraderSuccessChangeName = null;
+    public static String shopTraderErrorChangeName = null;
+    public static String shopTraderErrorTpHere = null;
+    public static String shopTraderErrorTpTo = null;
 
     public static void loadConfig(){
         config = PCS_Economy.pcs_economy.getConfig();
@@ -167,8 +171,12 @@ public class ConfigManager {
         tradeNotEnoughItems = config.getString("economy.gui.trade.notEnoughItems");
         tradeInventoryFull = config.getString("economy.gui.trade.inventoryFull");
 
-        shopTraderErrorRemoveTrader = config.getString("economy.messages.shop.trader.errorRemoveTrader");
-        shopTraderSuccessRemoveTrader = config.getString("economy.messages.shop.trader.successRemoveTrader");
-        shopTraderSuccessCreateTrader = config.getString("economy.messages.shop.trader.successCreateTrader");
+        shopTraderErrorRemoveTrader = config.getString("economy.messages.shop.trader.remove.error");
+        shopTraderSuccessRemoveTrader = config.getString("economy.messages.shop.trader.remove.success");
+        shopTraderSuccessCreateTrader = config.getString("economy.messages.shop.trader.create.success");
+        shopTraderSuccessChangeName = config.getString("economy.messages.shop.trader.changeName.success");
+        shopTraderErrorChangeName = config.getString("economy.messages.shop.trader.changeName.error");
+        shopTraderErrorTpHere = config.getString("economy.messages.shop.trader.tphere.error");
+        shopTraderErrorTpTo = config.getString("economy.messages.shop.trader.tpto.error");
     }
 }

@@ -39,7 +39,7 @@ public class Account {
 
     public EconomyResponse subtract(double amount){
         this.isDirty = true;
-        if(amount < 0){
+        if(amount <= 0){
             return new EconomyResponse(0, this.getBalance(), ResponseType.FAILURE, ConfigManager.paymentErrorNegativeValue);
         }
         this.balance -= amount;

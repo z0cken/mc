@@ -39,7 +39,6 @@ public class DatabaseHelper {
             String query =
                     "CREATE TABLE IF NOT EXISTS accounts" +
                             " (accountID INT AUTO_INCREMENT PRIMARY KEY," +
-                            " username VARCHAR(30) NOT NULL UNIQUE," +
                             " uuid VARCHAR(36) NOT NULL UNIQUE," +
                             " balance DOUBLE DEFAULT 0 NOT NULL );";
             stmt.execute(query);
@@ -75,17 +74,6 @@ public class DatabaseHelper {
 
     public static boolean existsInDeque(Account account){
         return deque.contains(account);
-    }
-
-    //TODO
-    public static void addToDequeDEBUG(){
-        if(checkConnection()){
-            try(Connection con = Database.MAIN.getConnection(); PreparedStatement stmt = con.prepareStatement("SELECT * FROM accounts")){
-
-            }catch (SQLException e){
-                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
-            }
-        }
     }
 
     public static boolean checkConnection(){

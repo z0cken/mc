@@ -85,16 +85,16 @@ public class AdminShopItemManager {
 
     public TradeItem parseToTradeItem(String configString){
         Material material;
-        int sellPrice;
-        int buyPrice;
+        double sellPrice;
+        double buyPrice;
         boolean canSell = false;
         boolean canBuy = false;
 
         String[] components = configString.split("\\|");
         if(components.length == 4){
             material = Material.getMaterial(components[0]);
-            sellPrice = Integer.valueOf(components[1]);
-            buyPrice = Integer.valueOf(components[2]);
+            sellPrice = Double.valueOf(components[1]);
+            buyPrice = Double.valueOf(components[2]);
             switch (components[3]){
                 case "01":
                     canBuy = true;

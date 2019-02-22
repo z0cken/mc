@@ -6,41 +6,35 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.economy.commands.MoneyCommand;
+import com.z0cken.mc.economy.commands.PayCommand;
 import com.z0cken.mc.economy.commands.ShopCommand;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.events.InventoryListener;
 import com.z0cken.mc.economy.events.PlayerListener;
 import com.z0cken.mc.economy.impl.VaultConnector;
 import com.z0cken.mc.economy.shops.AdminShopItemManager;
+import com.z0cken.mc.economy.shops.InventoryManager;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.shops.TraderManager;
-import com.z0cken.mc.economy.shops.InventoryManager;
 import com.z0cken.mc.economy.utils.DatabaseHelper;
-import com.z0cken.mc.core.Database;
-import net.milkbowl.vault.economy.*;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.xml.crypto.Data;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 
 public class PCS_Economy extends JavaPlugin {
-
+    private static BukkitCommandManager commandManager;
     public static PCS_Economy pcs_economy;
     public static MessageBuilder messageBuilder;
     public AccountManager accountManager;
     public TraderManager traderManager;
-    private static BukkitCommandManager commandManager;
     public AdminShopItemManager adminShopItemManager;
     public InventoryManager inventoryManager;
 
@@ -107,12 +101,20 @@ public class PCS_Economy extends JavaPlugin {
             }
             return true;
         }));
+        commandManager.registerCommand(new PayCommand().setExceptionHandler((command, registeredCommand, sender, args, t) -> {
+            if(sender.isPlayer()){
+                Player p = sender.getIssuer();
+                p.spigot().sendMessage(getMessageBuilder().build(ConfigManager.errorGeneral));
+            }
+            return true;
+        }));
         createTraderCommandCompletionHandler();
     }
 
     @Override
     public void onDisable() {
         saveTraderManagerJSON();
+        adminShopItemManager.loadConfig();
         adminShopItemManager.saveConfig();
         getLogger().info("Disabled");
     }
@@ -136,9 +138,16 @@ public class PCS_Economy extends JavaPlugin {
         commandManager.getCommandCompletions().registerCompletion("traderID", c -> {
             List<String> traderIDs = new ArrayList<>();
             for (Trader trader : traderManager.getTraders()){
-                traderIDs.add(String.valueOf(trader.getTraderID()));
+                traderIDs.add(trader.getTraderName() + "#" + trader.getTraderID());
             }
             return ImmutableList.copyOf(traderIDs);
+        });
+        commandManager.getCommandCompletions().registerCompletion("traderLook", c -> {
+           List<String> traderLooks = new ArrayList<>();
+            for(Villager.Profession career : Villager.Profession.values()){
+                traderLooks.add(career.toString());
+            }
+            return ImmutableList.copyOf(traderLooks);
         });
     }
 

@@ -14,10 +14,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+@SuppressWarnings("Duplicates")
 public class InventoryListener implements Listener {
     private PCS_Economy pcs_economy;
 
@@ -126,6 +128,36 @@ public class InventoryListener implements Listener {
                 case SELECTION:
                     e.setCancelled(true);
                     break;
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInventoryMove(InventoryMoveItemEvent e){
+        Inventory from = e.getInitiator();
+        Inventory to = e.getDestination();
+        if(pcs_economy.inventoryManager.getInventories().containsKey(from) || pcs_economy.inventoryManager.getInventories().containsKey(to)){
+            InventoryMeta fromMeta = pcs_economy.inventoryManager.getInventories().get(from);
+            InventoryMeta toMeta = pcs_economy.inventoryManager.getInventories().get(to);
+            if(fromMeta != null){
+                switch (fromMeta.getType()){
+                    case SELECTION:
+                        e.setCancelled(true);
+                        break;
+                    case TRADE:
+                        e.setCancelled(true);
+                        break;
+                }
+            }
+            if(toMeta != null){
+                switch (toMeta.getType()){
+                    case SELECTION:
+                        e.setCancelled(true);
+                        break;
+                    case TRADE:
+                        e.setCancelled(true);
+                        break;
+                }
             }
         }
     }

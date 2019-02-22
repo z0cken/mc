@@ -6,7 +6,6 @@ import com.z0cken.mc.economy.shops.TradeInventoryType;
 import com.z0cken.mc.economy.shops.Trader;
 import com.z0cken.mc.economy.shops.gui.TraderConfigGUI;
 import com.z0cken.mc.economy.shops.gui.TraderTradeSelectionGUI;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
@@ -17,8 +16,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-
-import java.sql.Connection;
 
 public class PlayerListener implements Listener {
 

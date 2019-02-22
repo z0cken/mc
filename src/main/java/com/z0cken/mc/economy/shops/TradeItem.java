@@ -5,13 +5,13 @@ import org.bukkit.Material;
 public class TradeItem {
     private transient Material mat;
     private String matName;
-    private int buyPrice;
-    private int sellPrice;
+    private double buyPrice;
+    private double sellPrice;
     private boolean canBuy;
     private boolean canSell;
     private int amount;
 
-    public TradeItem(Material mat, int buyPrice, int sellPrice, boolean canBuy, boolean canSell, int amount){
+    public TradeItem(Material mat, double buyPrice, double sellPrice, boolean canBuy, boolean canSell, int amount){
         this.mat = mat;
         this.matName = mat.name();
         this.buyPrice = buyPrice;
@@ -40,11 +40,11 @@ public class TradeItem {
         return this.mat;
     }
 
-    public int getBuyPrice(){
+    public double getBuyPrice(){
         return this.buyPrice;
     }
 
-    public int getSellprice(){
+    public double getSellprice(){
         return this.sellPrice;
     }
 

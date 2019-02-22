@@ -6,14 +6,19 @@ import co.aikar.commands.contexts.OnlinePlayer;
 import com.z0cken.mc.economy.Account;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
+import com.z0cken.mc.economy.utils.MessageHelper;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @CommandAlias("m0ney|m")
 public class MoneyCommand extends BaseCommand {
@@ -30,9 +35,10 @@ public class MoneyCommand extends BaseCommand {
     public void onBalance(CommandSender sender){
         if(sender instanceof Player){
             Player p = (Player)sender;
+            double rounded = MessageHelper.roundToTwoDecimals(pcs_economy.accountManager.getAccount(sender.getName()).getBalance());
             p.spigot().sendMessage(pcs_economy.getMessageBuilder()
                     .define("PREFIX", ConfigManager.messagePrefix)
-                    .define("AMOUNT", String.valueOf(pcs_economy.accountManager.getAccount(sender.getName()).getBalance()))
+                    .define("AMOUNT", String.valueOf(rounded))
                     .build(ConfigManager.accountSuccessBalanceSelf));
 
         }
@@ -45,55 +51,12 @@ public class MoneyCommand extends BaseCommand {
     public void onBalancePlayer(CommandSender sender, OnlinePlayer player){
         if(sender instanceof Player){
             Player p = (Player)sender;
+            double rounded = MessageHelper.roundToTwoDecimals(pcs_economy.accountManager.getAccount(player.getPlayer()).getBalance());
             p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                    .define("AMOUNT", String.valueOf(pcs_economy.accountManager.getAccount(player.getPlayer()).getBalance()))
+                    .define("AMOUNT", String.valueOf(rounded))
                     .define("PLAYER", player.getPlayer().getName())
                     .build(ConfigManager.accountSuccessBalanceOther));
         }
-    }
-
-    @Subcommand("pay|p")
-    @CommandPermission("pcs.economy.user")
-    @CommandCompletion("@players")
-    public void onPay(CommandSender sender, OnlinePlayer receiver, int amount){
-        if(sender instanceof Player){
-            Player p = (Player)sender;
-            Account from = pcs_economy.accountManager.getAccount(sender.getName());
-            Account to = pcs_economy.accountManager.getAccount(receiver.getPlayer().getName());
-            EconomyResponse response = payHandler(sender, from, to, amount);
-            if(response.type == EconomyResponse.ResponseType.SUCCESS){
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("AMOUNT", String.valueOf(amount))
-                        .define("PLAYER", receiver.getPlayer().getName())
-                        .build(ConfigManager.paymentSuccessSender));
-                receiver.getPlayer().spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("AMOUNT", String.valueOf(amount))
-                        .define("PLAYER", p.getName())
-                        .build(ConfigManager.paymentSuccessReceiver));
-            }else{
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(response.errorMessage));
-            }
-        }
-    }
-
-    @Subcommand("payo|po")
-    @CommandPermission("pcs.economy.admin")
-    public void onPay(CommandSender sender, String receiver, int amount){
-        if(sender instanceof Player){
-            Player p = (Player)sender;
-            p.sendMessage("NOCH NICHT BEREIT MANN! HAB GEDULD ALTER!!!1!11elf");
-        }
-        /*if(sender instanceof Player){
-            Player p = (Player)sender;
-            Account from = pcs_economy.accountManager.getAccount(sender.getName());
-            Account to = pcs_economy.accountManager.getAccount(receiver);
-            EconomyResponse response = payHandler(sender, from, to, amount);
-        }
-        if(response.type == EconomyResponse.ResponseType.SUCCESS){
-            sender.sendMessage(MessageBuilder.buildMessage(true, ConfigManager.paymentSuccessSender, sender.getName(), receiver, amount, 0));
-        }else{
-            sender.sendMessage(MessageBuilder.buildMessage(true, response.errorMessage));
-        }*/
     }
 
     @Subcommand("account clear")
@@ -156,13 +119,16 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account set")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountSet(CommandSender sender, OnlinePlayer player, int amount){
+    public void onAccountSet(CommandSender sender, OnlinePlayer player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).setBalance(amount);
+            double rounded = MessageHelper.roundToTwoDecimals(amount);
+            pcs_economy.getServer().getLogger().info(String.valueOf(rounded));
+            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).setBalance(rounded);
             if(response.type == EconomyResponse.ResponseType.SUCCESS){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
                         .define("PLAYER", player.getPlayer().getName())
+                        .define("AMOUNT", String.valueOf(rounded))
                         .build(ConfigManager.accountSuccessSet));
             }else{
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
@@ -175,13 +141,15 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account add")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountAdd(CommandSender sender, OnlinePlayer player, int amount){
+    public void onAccountAdd(CommandSender sender, OnlinePlayer player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).add(amount);
+            double rounded = MessageHelper.roundToTwoDecimals(amount);
+            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).add(rounded);
             if(response.type == EconomyResponse.ResponseType.SUCCESS){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
                         .define("PLAYER", player.getPlayer().getName())
+                        .define("AMOUNT", String.valueOf(rounded))
                         .build(ConfigManager.accountSuccessAdd));
             }else{
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
@@ -194,13 +162,15 @@ public class MoneyCommand extends BaseCommand {
     @Subcommand("account subtract")
     @CommandPermission("pcs.economy.admin")
     @CommandCompletion("@players")
-    public void onAccountSubtract(CommandSender sender, OnlinePlayer player, int amount){
+    public void onAccountSubtract(CommandSender sender, OnlinePlayer player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).subtract(amount);
+            double rounded = MessageHelper.roundToTwoDecimals(amount);
+            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).subtract(rounded);
             if(response.type == EconomyResponse.ResponseType.SUCCESS){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
                         .define("PLAYER", player.getPlayer().getName())
+                        .define("AMOUNT", String.valueOf(rounded))
                         .build(ConfigManager.accountSuccessSubtract));
             }else{
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder()
@@ -227,30 +197,5 @@ public class MoneyCommand extends BaseCommand {
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.errorGeneral));
             }
         }
-    }
-
-    private EconomyResponse payHandler(CommandSender sender, Account senderAccount, Account receiverAccount, int amount){
-        if(sender instanceof Player){
-            Player p = (Player)sender;
-            if(senderAccount != null && receiverAccount != null){
-                if(senderAccount.getHolder().getName().equalsIgnoreCase(receiverAccount.getHolder().getName())){
-                    return new EconomyResponse(amount, 0, EconomyResponse.ResponseType.FAILURE, ConfigManager.paymentErrorSelf);
-                }
-                EconomyResponse ecoResponse = pcs_economy.accountManager.transferMoney(senderAccount, receiverAccount, amount);
-                if(ecoResponse.type == EconomyResponse.ResponseType.FAILURE){
-                    return ecoResponse;
-                }else{
-                    return ecoResponse;
-                }
-            }else{
-                if(senderAccount == null){
-                    p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.errorGeneral));
-                }else{
-                    p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.paymentErrorAccountNotExisting));
-                }
-                return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "");
-            }
-        }
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "You are no player");
     }
 }

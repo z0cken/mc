@@ -99,6 +99,12 @@ public class Trader {
         return 0;
     }
 
+    public void setTraderName(String traderName){
+        if(traderName != null){
+            this.traderName = traderName;
+        }
+    }
+
     public boolean isAdminShop(){
         return this.isAdminShop;
     }

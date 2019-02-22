@@ -22,18 +22,19 @@ public class AccountManager {
     }
 
     public boolean hasAccount(String playerName){
-        String query = "select count(*) from accounts where username = \'" + playerName + "\';";
-        return getRowCount(query) > 0;
+        Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
+        if(p != null){
+            return hasAccount(p.getUniqueId());
+        }
+        return false;
     }
 
     public boolean hasAccount(OfflinePlayer player){
-        String query = "select count(*) from accounts where username = \'" + player.getName() + "\';";
-        return getRowCount(query) > 0;
+        return hasAccount(player.getUniqueId());
     }
 
     public boolean hasAccount(Player player){
-        String query = "select count(*) from accounts where username = \'" + player.getName() + "\';";
-        return getRowCount(query) > 0;
+        return hasAccount(player.getUniqueId());
     }
 
     public boolean hasAccount(UUID uuid){
@@ -57,21 +58,15 @@ public class AccountManager {
     }
 
     public Account getAccountFromDB(String playerName){
-        String query = "select * from accounts where username = \'" + playerName + "\';";
-        if(DatabaseHelper.checkConnection()){
-            try(Connection con = Database.MAIN.getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet set = stmt.executeQuery(query)){
-                return getAccountFromResultSet(set, null);
-            }catch (SQLException e){
-                logError(Level.SEVERE, e.getMessage());
-            }
+        Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
+        if(p != null){
+            return getAccountFromDB(p.getUniqueId());
         }
         return null;
     }
 
     public Account getAccountFromDB(Player player){
-        return getAccountFromDB(player.getName());
+        return getAccountFromDB(player.getUniqueId());
     }
 
     public Account getAccountFromDB(OfflinePlayer offlinePlayer){
@@ -99,13 +94,12 @@ public class AccountManager {
     }
 
     public boolean createAccount(OfflinePlayer player) {
-        String query = "insert into accounts (username, uuid, balance) values (?, ?, ?);";
+        String query = "insert into accounts (uuid, balance) values (?, ?);";
         if(DatabaseHelper.checkConnection()){
             try(Connection con = Database.MAIN.getConnection();
                 PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)){
-                stmt.setString(1, player.getName());
-                stmt.setString(2, player.getUniqueId().toString());
-                stmt.setDouble(3, 0);
+                stmt.setString(1, player.getUniqueId().toString());
+                stmt.setDouble(2, 0);
                 stmt.execute();
                 try(ResultSet set = stmt.getGeneratedKeys()){
                     if(set.next()){
@@ -138,12 +132,13 @@ public class AccountManager {
     }
 
     public boolean deleteAccount(String playerName){
-        String query = "delete from accounts where username = \'" + playerName + "\';";
-        if(hasAccount(playerName)){
-            executeSimpleStatement(query);
-            removeAccountFromMap(playerName);
+        Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
+        if(p != null){
+            deleteAccount(p.getUniqueId());
+            removeAccountFromMap(p.getUniqueId());
+            return true;
         }
-        return true;
+        return false;
     }
 
     public boolean deleteAccount(UUID uuid){
@@ -180,12 +175,10 @@ public class AccountManager {
         if(amount <= sender.getBalance()){
             EconomyResponse response1 = sender.subtract(amount);
             if(response1.type == EconomyResponse.ResponseType.FAILURE){
-                PCS_Economy.pcs_economy.getLogger().info("Konnte nicht subtrahieren");
                 return response1;
             }
             EconomyResponse response2 = receiver.add(amount);
             if(response2.type == EconomyResponse.ResponseType.FAILURE){
-                PCS_Economy.pcs_economy.getLogger().info("Konnte nicht addieren");
                 return response2;
             }
             return new EconomyResponse(amount, sender.getBalance(), EconomyResponse.ResponseType.SUCCESS, ConfigManager.paymentSuccessReceiver);
