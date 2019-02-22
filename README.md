@@ -4,15 +4,15 @@ Economyplugin für den Z0cken Minecraftserver.
 
 # Implementierte Funktionen:
 ## Commands:
+#### \<> -> Muss
+#### \[] -> Optional
+#### Alias von /m0ney -> /m
 #### Balance-Self
-Command: **/m0ney balance**  
+Command: **/m0ney**  
 Zweck: Eigenen Kontostand einsehen
 #### Balance-Other
 Command: **/m0ney balance \<player>**  
 Zweck: Kontostand eines fremden Spielers einsehen
-#### Pay
-Command: **/m0ney pay \<player> \<amount>**  
-Zweck: Einem Spieler den gewählten Betrag überweisen.
 #### Account-Clear
 Command: **/m0ney account clear \<player>**  
 Zweck: Konto eines Spielers auf 0 setzen
@@ -31,12 +31,27 @@ Zweck: Dem Konto eines Spielers den gewählten Betrag hinzufügen.
 #### Account-Subtract
 Command: **/m0ney account subtract \<player> \<amount>**  
 Zweck: Dem Konto eines Spielers den gewählten Betrag abziehen.
+#### Pay
+Command: **/pay \<player> \<amount>**  
+Zweck: Einem Spieler den gewählten Betrag überweisen.
 #### Shop-Create-Admin
-Command: **/shop create admin \<shopname>**  
+Command: **/shop create admin \<shopname> [traderLook]**  
 Zweck: Einen Adminshop mit dem gewählten Namen erstellen.
 #### Shop-Delete
 Command: **/shop delete \<shopID>**  
 Zweck: Einen Shop mit der gewählten Shop-ID entfernen.
+#### Shop-TpTo
+Command: **/shop tpto \<shopID>**
+Zweck: Zu einem Shop teleportieren
+#### Shop-TpHere
+Command **/shop tphere \<shopID>**
+Zweck: Einen Shop zur aktuellen Spielerposition teleportieren
+#### Shop-ChangeName
+Command: **/shop change name \<shopID> \<traderName>**
+Zweck: Den Namen eines Shops ändern
+#### Shop-Career
+Command: **/shop career \<shopID> \<traderLook>**
+Zweck: Dem Trader ein neues Aussehen geben.
 
 ## NPC-Adminshops:
 ### Sinn und Zweck:
@@ -72,12 +87,7 @@ Adminshops können unendlich viele Items verkaufen. Solltet ihr einen Stack da r
 #### Ein- und Verkauf
 Durch Rechtsklick auf einen Shop öffnet sich das Auswahlfenster. Dort sind alle Items aufgelistet, die der Shop zum An- und Verkauf anbietet. Dabei wird im Lore zudem noch der An- und Verkaufspreis für ein einzelnes Item angezeigt.  
 
-Klickt man nun dabei auf eines der Items, öffnet sich die nächste Ansicht. Dies ist die Handelsansicht. In der Mitte ist das Item zu sehen, um das es geht. Links befinden sich 3x3 Felder mit grünen Glasscheiben. Rechts befinden sich 3x3 Felder mit roten Glasscheiben.  
-
-**Die Reihen sind wie folgt strukturiert:**
-* 1. Reihe: Klickt man auf ein Feld in der ersten Reihe, wird ein einzelnes Item Ver- oder Gekauft.
-* 2. Reihe: Klickt man auf ein Feld in der zweiten Reihe, wird ein Stack Ver- oder Gekauft.
-* 3. Reihe: Klickt man auf ein Feld in der dritten Reihe, wird so viel, wie der Spieler Platz oder das entsprechende Item hat, Ver- oder Gekauft.
+Klickt man nun dabei auf eines der Items, öffnet sich die nächste Ansicht. Dies ist die Handelsansicht. In der Mitte ist das Item zu sehen, um das es geht. Links kann der User Gegenstände verkaufen, rechts kaufen. 
 
 Im Lore der jeweiligen Felder steht natürlich auch, was diese machen, wie viele Items dort Ver- oder Gekauft werden, sowie der Preis.  
 
