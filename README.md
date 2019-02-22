@@ -41,16 +41,16 @@ Zweck: Einen Adminshop mit dem gewählten Namen erstellen.
 Command: **/shop delete \<shopID>**  
 Zweck: Einen Shop mit der gewählten Shop-ID entfernen.
 #### Shop-TpTo
-Command: **/shop tpto \<shopID>**
+Command: **/shop tpto \<shopID>**    
 Zweck: Zu einem Shop teleportieren
 #### Shop-TpHere
-Command **/shop tphere \<shopID>**
+Command **/shop tphere \<shopID>**    
 Zweck: Einen Shop zur aktuellen Spielerposition teleportieren
 #### Shop-ChangeName
-Command: **/shop change name \<shopID> \<traderName>**
+Command: **/shop change name \<shopID> \<traderName>**    
 Zweck: Den Namen eines Shops ändern
 #### Shop-Career
-Command: **/shop career \<shopID> \<traderLook>**
+Command: **/shop career \<shopID> \<traderLook>**    
 Zweck: Dem Trader ein neues Aussehen geben.
 
 ## NPC-Adminshops:
