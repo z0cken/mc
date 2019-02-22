@@ -1,7 +1,7 @@
 package com.z0cken.mc.claim;
 
+import com.z0cken.mc.core.Database;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
@@ -23,38 +23,15 @@ class DatabaseHelper {
         }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, PCS_Claim.getInstance().getConfig().getInt("push-interval")*20);
     }
 
-    private static Connection connection;
+    private static final Database DATABASE = Database.MAIN;
     private static final Logger log = PCS_Claim.getInstance().getLogger();
     private static final ConcurrentLinkedDeque<Claim> deque = new ConcurrentLinkedDeque<>();
 
     private DatabaseHelper() {}
 
-    static void connect() {
-        if(isConnected()) return;
-
-        ConfigurationSection config = PCS_Claim.getInstance().getConfig().getConfigurationSection("database");
-
-        String ip = config.getString("ip");
-        String db = config.getString("db");
-        String user = config.getString("user");
-        String password = config.getString("password");
-
-        String url = "jdbc:mysql://%s/%s?" + "user=%s&password=%s";
-
-        try {
-            connection = DriverManager.getConnection(String.format(url, ip, db, user, password));
-            setupTables();
-        } catch (SQLException e) {
-            log.severe("Database Connection Failed");
-            log.severe("SQLException: " + e.getMessage());
-            log.severe("SQLState: " + e.getSQLState());
-            log.severe("VendorError: " + e.getErrorCode());
-            Bukkit.getServer().shutdown();
-        }
-    }
-
     private static void setupTables() throws SQLException {
-        try (Statement statement = connection.createStatement()) {
+        try (Connection connection = DATABASE.getConnection();
+             Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
 
             statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL, material VARCHAR(50) NOT NULL );");
@@ -62,34 +39,16 @@ class DatabaseHelper {
         }
     }
 
-    static void disconnect() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static boolean isConnected() {
-        boolean connected = false;
-        try {
-            connected = connection != null && connection.isValid(30);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return connected;
-    }
-
     static void commit(Claim claim) {
         deque.add(claim);
     }
 
     static void push() {
-        connect();
 
         List<String> content = deque.stream().map(claim -> ">>> [" + claim.getChunk().getX() + "|" + claim.getChunk().getZ() + "] -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
 
-        try (PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
+        try (Connection connection = DATABASE.getConnection();
+             PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
              PreparedStatement statementRem = connection.prepareStatement("DELETE FROM claims WHERE x = ? AND z = ?")) {
 
             while (!deque.isEmpty()) {
@@ -139,9 +98,9 @@ class DatabaseHelper {
     }*/
 
     static Claim getClaim(@Nonnull Chunk chunk) {
-        connect();
 
-        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
+        try(Connection connection = DATABASE.getConnection();
+            ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
             if(resultSet.next()) {
                 Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
                 new Claim(Bukkit.getPlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7)));
@@ -154,10 +113,10 @@ class DatabaseHelper {
     }
 
     static Map<ChunkCoordinate, Claim> getClaims(@Nonnull World world, @Nonnull Set<ChunkCoordinate> set) {
-        connect();
 
         HashMap<ChunkCoordinate, Claim> result = new HashMap<>();
-        try(ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims;")) {
+        try(Connection connection = DATABASE.getConnection();
+            ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims;")) {
             while(resultSet.next()) {
                 ChunkCoordinate coordinate = new ChunkCoordinate(resultSet.getInt(1), resultSet.getInt(2));
                 if(set.contains(coordinate)) {
@@ -173,10 +132,10 @@ class DatabaseHelper {
     }
 
     static Set<Claim> getClaims(@Nonnull World world, @Nonnull OfflinePlayer player) {
-        connect();
 
         Set<Claim> claims = new HashSet<>();
-        try(PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM claims WHERE player = ?;")) {
+        try(Connection connection = DATABASE.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM claims WHERE player = ?;")) {
             pstmt.setString(1, player.getUniqueId().toString());
             ResultSet resultSet = pstmt.executeQuery();
 
@@ -192,7 +151,8 @@ class DatabaseHelper {
     }
 
     static void updateMaterial(@Nonnull Claim claim, @Nonnull Material baseMaterial) {
-        try(PreparedStatement pstmt = connection.prepareStatement("UPDATE claims SET material = ? WHERE x = ? AND z = ?;")) {
+        try(Connection connection = DATABASE.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("UPDATE claims SET material = ? WHERE x = ? AND z = ?;")) {
             pstmt.setString(1, baseMaterial.name());
             pstmt.setInt(2, claim.getChunkCoordinate().getX());
             pstmt.setInt(3, claim.getChunkCoordinate().getZ());
