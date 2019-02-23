@@ -30,12 +30,16 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e){
         ItemStack stack = e.getCurrentItem();
+        Player player = (Player)e.getWhoClicked();
+        Inventory topInventory = player.getOpenInventory().getTopInventory();
+        if(topInventory != null && pcs_economy.inventoryManager.getInventories().containsKey(topInventory)){
+            e.setCancelled(true);
+        }
         if(pcs_economy.inventoryManager.getInventories().containsKey(e.getClickedInventory()) && e.getWhoClicked() instanceof Player
             && stack != null && stack.getType() != Material.AIR){
             InventoryMeta information = pcs_economy.inventoryManager.getInventories().get(e.getClickedInventory());
             Trader trader = information.getTrader();
             TradeItem item = pcs_economy.adminShopItemManager.getTradeItem(information.getMaterial());
-            Player player = (Player)e.getWhoClicked();
             Account account = pcs_economy.accountManager.getAccount(e.getWhoClicked().getUniqueId());
             switch(information.getType()){
                 case CONFIG:
@@ -113,51 +117,6 @@ public class InventoryListener implements Listener {
                         }
                     }
                     break;
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryDrag(InventoryDragEvent e){
-        if(pcs_economy.inventoryManager.getInventories().containsKey(e.getInventory())){
-            InventoryMeta information = pcs_economy.inventoryManager.getInventories().get(e.getInventory());
-            switch (information.getType()){
-                case TRADE:
-                    e.setCancelled(true);
-                    break;
-                case SELECTION:
-                    e.setCancelled(true);
-                    break;
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInventoryMove(InventoryMoveItemEvent e){
-        Inventory from = e.getInitiator();
-        Inventory to = e.getDestination();
-        if(pcs_economy.inventoryManager.getInventories().containsKey(from) || pcs_economy.inventoryManager.getInventories().containsKey(to)){
-            InventoryMeta fromMeta = pcs_economy.inventoryManager.getInventories().get(from);
-            InventoryMeta toMeta = pcs_economy.inventoryManager.getInventories().get(to);
-            if(fromMeta != null){
-                switch (fromMeta.getType()){
-                    case SELECTION:
-                        e.setCancelled(true);
-                        break;
-                    case TRADE:
-                        e.setCancelled(true);
-                        break;
-                }
-            }
-            if(toMeta != null){
-                switch (toMeta.getType()){
-                    case SELECTION:
-                        e.setCancelled(true);
-                        break;
-                    case TRADE:
-                        e.setCancelled(true);
-                        break;
-                }
             }
         }
     }
