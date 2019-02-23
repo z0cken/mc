@@ -32,12 +32,15 @@ public class InventoryListener implements Listener {
         ItemStack stack = e.getCurrentItem();
         Player player = (Player)e.getWhoClicked();
         Inventory topInventory = player.getOpenInventory().getTopInventory();
+        InventoryMeta information = null;
         if(topInventory != null && pcs_economy.inventoryManager.getInventories().containsKey(topInventory)){
-            e.setCancelled(true);
+            information = pcs_economy.inventoryManager.getInventories().get(e.getClickedInventory());
+            if(information.getType() == TradeInventoryType.TRADE || information.getType() == TradeInventoryType.SELECTION){
+                e.setCancelled(true);
+            }
         }
         if(pcs_economy.inventoryManager.getInventories().containsKey(e.getClickedInventory()) && e.getWhoClicked() instanceof Player
             && stack != null && stack.getType() != Material.AIR){
-            InventoryMeta information = pcs_economy.inventoryManager.getInventories().get(e.getClickedInventory());
             Trader trader = information.getTrader();
             TradeItem item = pcs_economy.adminShopItemManager.getTradeItem(information.getMaterial());
             Account account = pcs_economy.accountManager.getAccount(e.getWhoClicked().getUniqueId());
