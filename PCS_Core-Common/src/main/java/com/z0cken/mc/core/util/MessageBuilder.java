@@ -71,13 +71,13 @@ public class MessageBuilder implements Cloneable {
     }
 
     private TextComponent parseComponent(String literalComponent) {
-        Matcher matcher = Pattern.compile("(?<=\\[).+?(?=])").matcher(literalComponent);
+        Matcher matcher = Pattern.compile("(?<=\\[).+?(?=(?<!\\\\)])").matcher(literalComponent);
         List<String> allMatches = new ArrayList<>();
         while (matcher.find()) {
             allMatches.add(matcher.group());
         }
         int index = allMatches.size() - 1;
-        TextComponent component = new TextComponent(allMatches.get(index));
+        TextComponent component = new TextComponent(allMatches.get(index).replaceAll(Pattern.quote("\\]"), "]"));
         allMatches.remove(index);
 
         if(allMatches.size() < 1 || allMatches.size() > 2) throw new IllegalArgumentException("Illegal amount of Event arguments: " + literalComponent);
