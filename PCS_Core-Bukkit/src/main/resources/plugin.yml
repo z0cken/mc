@@ -1,4 +1,4 @@
 name: PCS_Core
 author: Flare
-main: com.z0cken.mc.core.bukkit.PCS_Core
 version: ${project.version}
+main: com.z0cken.mc.core.bukkit.PCS_Core
