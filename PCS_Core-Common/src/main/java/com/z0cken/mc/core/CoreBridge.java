@@ -10,6 +10,7 @@ final class CoreBridge {
 
         //Setup Tables
         FriendsAPI.setupTables();
+        Shadow.setupTables();
     }
 
     static ICore getPlugin() {
