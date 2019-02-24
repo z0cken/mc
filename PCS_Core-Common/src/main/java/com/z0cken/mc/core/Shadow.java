@@ -1,8 +1,10 @@
 package com.z0cken.mc.core;
 
+import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public enum Shadow {
     NAME(JDBCType.VARCHAR, 40), IP(JDBCType.VARCHAR, 15), SEEN(JDBCType.TIMESTAMP, 0);
 
@@ -14,7 +16,7 @@ public enum Shadow {
         this.arg = arg;
     }
 
-    public Integer getInt(UUID uuid) throws SQLException {
+    public Integer getInt(@Nonnull UUID uuid) throws SQLException {
         try(Connection connection = Database.MAIN.getConnection();
             PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
@@ -26,7 +28,7 @@ public enum Shadow {
         }
     }
 
-    public void setInt(UUID uuid, int i) throws SQLException {
+    public void setInt(@Nonnull UUID uuid, int i) throws SQLException {
         try (Connection connection = Database.MAIN.getConnection();
             Statement statement = connection.createStatement()){
             final String s = name().toLowerCase() + " = " + i;
@@ -34,7 +36,7 @@ public enum Shadow {
         }
     }
 
-    public String getString(UUID uuid) throws SQLException {
+    public String getString(@Nonnull UUID uuid) throws SQLException {
         try(Connection connection = Database.MAIN.getConnection();
             PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
@@ -46,7 +48,7 @@ public enum Shadow {
         }
     }
 
-    public void setString(UUID uuid, String string) throws SQLException {
+    public void setString(@Nonnull UUID uuid, String string) throws SQLException {
         try (Connection connection = Database.MAIN.getConnection();
              Statement statement = connection.createStatement()) {
             final String s = name().toLowerCase() + " = '" + string + "'";
@@ -54,7 +56,7 @@ public enum Shadow {
         }
     }
 
-    public Timestamp getTimestamp(UUID uuid) throws SQLException {
+    public Timestamp getTimestamp(@Nonnull UUID uuid) throws SQLException {
         try(Connection connection = Database.MAIN.getConnection();
             PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
@@ -66,7 +68,7 @@ public enum Shadow {
         }
     }
 
-    public UUID getUUID(UUID uuid) throws SQLException {
+    public UUID getUUID(@Nonnull UUID uuid) throws SQLException {
         try(Connection connection = Database.MAIN.getConnection();
             PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
@@ -78,7 +80,7 @@ public enum Shadow {
         }
     }
 
-    public static UUID getByName(String name) throws SQLException {
+    public static UUID getByName(@Nonnull String name) throws SQLException {
         ResultSet resultSet = null;
         try(Connection connection = Database.MAIN.getConnection();
             PreparedStatement pstmt = connection.prepareStatement("SELECT uuid FROM shadow WHERE lower(name) = ?;")) {

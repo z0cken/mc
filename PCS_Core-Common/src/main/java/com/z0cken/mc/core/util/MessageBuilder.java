@@ -2,6 +2,8 @@ package com.z0cken.mc.core.util;
 
 import net.md_5.bungee.api.chat.*;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +35,7 @@ public class MessageBuilder implements Cloneable {
     public MessageBuilder() {}
 
 
-    public BaseComponent[] build(String message) {
+    public BaseComponent[] build(@Nonnull String message) {
 
         message = setValues(message);
 
@@ -61,7 +63,7 @@ public class MessageBuilder implements Cloneable {
         return builder.reset().append(message).create();
     }
 
-    public String setValues(String message) {
+    public String setValues(@Nonnull String message) {
         for(Map.Entry<String, String> entry : values.entrySet()) {
             message = message.replaceAll("(?i)\\{" + entry.getKey() + "}", entry.getValue() == null ? "" : entry.getValue());
         }
@@ -88,7 +90,7 @@ public class MessageBuilder implements Cloneable {
             String s = array[0].toUpperCase();
 
             if(array.length == 1) {
-                Object event = events.get(s);
+                Object event = events.getOrDefault(s, null);
 
                 if(event != null) {
 
@@ -116,19 +118,19 @@ public class MessageBuilder implements Cloneable {
         return component;
     }
 
-    public MessageBuilder define(String key, String value) {
+    public MessageBuilder define(String key, @Nullable String value) {
         MessageBuilder clone = clone();
         clone.values.put(key.toUpperCase(), value);
         return clone;
     }
 
-    public MessageBuilder define(String key, ClickEvent value) {
+    public MessageBuilder define(String key, @Nullable ClickEvent value) {
         MessageBuilder clone = clone();
         clone.events.put(key.toUpperCase(), value);
         return clone;
     }
 
-    public MessageBuilder define(String key, HoverEvent value) {
+    public MessageBuilder define(String key, @Nullable HoverEvent value) {
         MessageBuilder clone = clone();
         clone.events.put(key.toUpperCase(), value);
         return clone;
