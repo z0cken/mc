@@ -1,8 +1,11 @@
 package com.z0cken.mc.core.bungee;
 
+import com.google.common.io.ByteStreams;
 import com.z0cken.mc.core.ICore;
-import com.z0cken.mc.core.bungee.commands.CommandFriend;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.*;
 import java.util.logging.Level;
@@ -10,22 +13,37 @@ import java.util.logging.Level;
 @SuppressWarnings("unused")
 public class PCS_Core extends Plugin implements ICore {
 
+    private static PCS_Core instance;
+    private static Configuration config;
+
+    public static PCS_Core getInstance() {
+        return instance;
+    }
+
     @Override
     public void onLoad() {
-
+        saveResource("config.yml", false);
+        saveResource("hikari.properties", false);
+        loadConfig();
     }
 
     @Override
     public void onEnable() {
-        saveResource("hikari.properties", false);
+        instance = this;
+
         ICore.super.init();
 
+        getProxy().getPluginManager().registerListener(this, new ShadowListener());
         getProxy().getPluginManager().registerCommand(this, new CommandFriend());
     }
 
     @Override
     public void onDisable() {
         ICore.super.shutdown();
+
+        //saveConfig();
+
+        instance = null;
     }
 
     @Override
@@ -68,5 +86,40 @@ public class PCS_Core extends Plugin implements ICore {
         } else {
             throw new IllegalArgumentException("ResourcePath cannot be null or empty");
         }
+    }
+
+    void loadConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+
+        try {
+
+            if (configFile.createNewFile()) {
+
+                try (InputStream is = getResourceAsStream("config.yml");
+                     OutputStream os = new FileOutputStream(configFile)) {
+                    ByteStreams.copy(is, os);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    void saveConfig() {
+        try {
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, new File(getDataFolder(), "config.yml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static Configuration getConfig() {
+        return config;
     }
 }

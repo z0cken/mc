@@ -2,10 +2,11 @@ package com.z0cken.mc.core;
 
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
-public class FriendsAPI {
+public final class FriendsAPI {
 
     private static final Database DATABASE = Database.MAIN;
 
@@ -32,7 +33,7 @@ public class FriendsAPI {
         ResultSet resultSet = pstmt.executeQuery();
 
         if (resultSet.first()) {
-            boolean result = resultSet.getInt(1) == 0;
+            boolean result = resultSet.getInt(1) > 0;
 
             try {
                 connection.close();
@@ -46,8 +47,8 @@ public class FriendsAPI {
         return false;
     }
 
-    public static HashMap<UUID, Timestamp> getFriends(UUID uuid) throws SQLException {
-        HashMap<UUID, Timestamp> friends = new HashMap<>();
+    public static Map<UUID, Timestamp> getFriends(UUID uuid) throws SQLException {
+        Map<UUID, Timestamp> friends = new HashMap<>();
 
         Connection connection = DATABASE.getConnection();
         PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM friends WHERE p1 = ? OR p2 = ?");
@@ -69,11 +70,27 @@ public class FriendsAPI {
         return friends;
     }
 
-    public static void makeFriends(UUID first, UUID second) throws SQLException {
+    public static void friend(UUID first, UUID second) throws SQLException {
         Connection connection = DATABASE.getConnection();
         PreparedStatement pstmt = connection.prepareStatement("INSERT INTO friends(p1, p2) VALUES (?, ?)");
         pstmt.setString(1, first.toString());
         pstmt.setString(2, second.toString());
+        pstmt.executeUpdate();
+
+        try {
+            connection.close();
+            pstmt.close();
+        } catch (SQLException ignore) {}
+    }
+
+    public static void unfriend(UUID first, UUID second) throws SQLException {
+        Connection connection = DATABASE.getConnection();
+        PreparedStatement pstmt = connection.prepareStatement("DELETE FROM friends WHERE (p1 = ? AND p2 = ?) OR (p1 = ? AND p2 = ?)");
+        pstmt.setString(1, first.toString());
+        pstmt.setString(2, second.toString());
+        pstmt.setString(3, second.toString());
+        pstmt.setString(4, first.toString());
+
         pstmt.executeUpdate();
 
         try {
