@@ -210,7 +210,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
         }
     }
 
-    public class PricedButton extends Button {
+    public static class PricedButton extends Button {
 
         protected int price;
 
