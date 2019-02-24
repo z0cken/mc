@@ -15,8 +15,8 @@ public enum Shadow {
     }
 
     public Integer getInt(UUID uuid) throws SQLException {
-        try(Connection connection = Database.MAIN.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;");
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
             ResultSet resultSet = pstmt.executeQuery();
             if(!resultSet.next()) return null;
@@ -35,8 +35,8 @@ public enum Shadow {
     }
 
     public String getString(UUID uuid) throws SQLException {
-        try(Connection connection = Database.MAIN.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;");
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
             ResultSet resultSet = pstmt.executeQuery();
             if(!resultSet.next()) return null;
@@ -55,8 +55,8 @@ public enum Shadow {
     }
 
     public Timestamp getTimestamp(UUID uuid) throws SQLException {
-        try(Connection connection = Database.MAIN.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;");
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
             ResultSet resultSet = pstmt.executeQuery();
             if (!resultSet.next()) return null;
@@ -67,8 +67,8 @@ public enum Shadow {
     }
 
     public UUID getUUID(UUID uuid) throws SQLException {
-        try(Connection connection = Database.MAIN.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;");
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
             pstmt.setString(1, uuid.toString());
             ResultSet resultSet = pstmt.executeQuery();
             if(!resultSet.next()) return null;
@@ -80,8 +80,8 @@ public enum Shadow {
 
     public static UUID getByName(String name) throws SQLException {
         ResultSet resultSet = null;
-        try(Connection connection = Database.MAIN.getConnection()) {
-            PreparedStatement pstmt = connection.prepareStatement("SELECT uuid FROM shadow WHERE lower(name) = ?;");
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT uuid FROM shadow WHERE lower(name) = ?;")) {
             pstmt.setString(1, name.toLowerCase());
             resultSet = pstmt.executeQuery();
             if(!resultSet.next()) return null;
