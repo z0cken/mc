@@ -43,7 +43,7 @@ public class MessageBuilder implements Cloneable {
         ComponentBuilder builder = new ComponentBuilder("");
         if(matcher.find()) {
             do {
-                builder.append(message.substring(index, matcher.start() - 2));
+                builder.append(message.substring(index + (index == 0 ? 0 : 2), matcher.start() - 2));
                 index = matcher.end();
 
                 builder.reset().append(parseComponent(message.substring(matcher.start(), matcher.end())));
