@@ -1,0 +1,6 @@
+name: PCS_Shout
+version: 1.0-SNAPSHOT
+main: com.z0cken.mc.shout.PCS_Shout
+author: Florilu
+api-version: 1.13
+depend: [PCS_Core, Vault, WorldGuard]
