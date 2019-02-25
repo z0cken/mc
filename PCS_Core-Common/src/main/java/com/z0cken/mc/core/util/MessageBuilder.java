@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class MessageBuilder implements Cloneable {
 
+    public static final MessageBuilder DEFAULT = new MessageBuilder();
+
     private static final Pattern PATTERN_COMPONENT = Pattern.compile("(?<=\\{#).+?(?=#})");
 
     private HashMap<String, String> values = new HashMap<>();
