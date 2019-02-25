@@ -14,28 +14,32 @@ import java.util.stream.IntStream;
 
 class DatabaseHelper {
 
+    private static final Database DATABASE = Database.MAIN;
+    private static final Logger log = PCS_Claim.getInstance().getLogger();
+    private static final ConcurrentLinkedDeque<Claim> deque = new ConcurrentLinkedDeque<>();
+
     static {
+        setupTables();
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 push();
             }
-        }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, PCS_Claim.getInstance().getConfig().getInt("push-interval")*20);
+        }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, Math.max(PCS_Claim.getInstance().getConfig().getInt("push-interval")*20, 100));
     }
-
-    private static final Database DATABASE = Database.MAIN;
-    private static final Logger log = PCS_Claim.getInstance().getLogger();
-    private static final ConcurrentLinkedDeque<Claim> deque = new ConcurrentLinkedDeque<>();
 
     private DatabaseHelper() {}
 
-    private static void setupTables() throws SQLException {
+    private static void setupTables() {
         try (Connection connection = DATABASE.getConnection();
              Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
 
             statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL, material VARCHAR(50) NOT NULL );");
             statement.executeBatch();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -44,8 +48,9 @@ class DatabaseHelper {
     }
 
     static void push() {
+        if(deque.isEmpty()) return;
 
-        List<String> content = deque.stream().map(claim -> ">>> [" + claim.getChunk().getX() + "|" + claim.getChunk().getZ() + "] -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
+        List<String> content = deque.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
 
         try (Connection connection = DATABASE.getConnection();
              PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
@@ -74,7 +79,7 @@ class DatabaseHelper {
             int[] add = statementAdd.executeBatch();
             int[] rem = statementRem.executeBatch();
 
-            log.fine("[PUSH] ADD " + IntStream.of(add).sum() + " | " + IntStream.of(rem).sum() + " REM");
+            log.info("[PUSH] ADD " + IntStream.of(add).sum() + " | " + IntStream.of(rem).sum() + " REM");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -103,7 +108,7 @@ class DatabaseHelper {
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
             if(resultSet.next()) {
                 Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                new Claim(Bukkit.getPlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7)));
+                return new Claim(Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7)));
             }
         } catch (SQLException e) {
             e.printStackTrace();

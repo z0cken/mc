@@ -1,13 +1,8 @@
 push-interval: 20
 main-world: world
 eye-timer: 10
-database:
-  ip:
-  db:
-  user:
-  password:
 messages:
-  protected: §c§l>_ §7Dieser Chunk gehört {NAME}
+  protected: §c§l>_ §7Dieser Chunk gehört §f{NAME}
   success: §a§l>_ §7Du hast erfolgreich den Chunk {CHUNK} beansprucht
   denied-self: §c§l>_ §7Dieser Chunk gehört dir bereits
   right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick, um ihn abzubauen
@@ -17,3 +12,9 @@ messages:
   enter-self: §f§l>_ §7Du hast dein eigenes Gebiet betreten
   leave: §f§l>_ §7Du hast das Gebiet von {NAME} verlassen
   leave-self: §f§l>_ §7Du hast dein eigenes Gebiet verlassen
+  not-owned: §c§l>_ §7Dieser Chunk ist nicht geclaimt!
+  info-claim:
+    - "§7---------<§f Hilfemenü - Claims §7>---------"
+    - "§7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten"
+    - "§7> Der §fKompass §7zeigt dir alle deine Claims und deren Position an"
+    - "§7> Alle deine Freunde haben §fBaurechte §7auf sämtlichen Claims"

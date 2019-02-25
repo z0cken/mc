@@ -71,9 +71,9 @@ class ClaimListener implements Listener {
                 frame.setEye(true);
                 blockPlaced.setBlockData(frame);
 
-                PCS_Claim.getInstance().getLogger().info("[" + chunk.getX() + "|" + chunk.getZ() + "]" + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
-                PCS_Claim.claim(player, blockPlaced.getRelative(BlockFace.DOWN));
-                player.spigot().sendMessage(new MessageBuilder().define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]").build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
+                Claim claim = PCS_Claim.claim(player, blockPlaced.getRelative(BlockFace.DOWN));
+                PCS_Claim.getInstance().getLogger().info(claim.getName() + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
+                player.spigot().sendMessage(new MessageBuilder().define("CHUNK", claim.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
         }
     }
@@ -81,7 +81,6 @@ class ClaimListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public static void onInteract(PlayerInteractEvent event) {
         if(event.isCancelled() || event.getHand() == EquipmentSlot.OFF_HAND) return;
-        event.getPlayer().sendMessage(event.getAction().toString() + event.getClickedBlock().getType().name());
 
         Block block = event.getClickedBlock();
         if(block != null && block.getType() == Material.END_PORTAL_FRAME) {
@@ -113,12 +112,12 @@ class ClaimListener implements Listener {
                         block.breakNaturally();
                         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.END_PORTAL_FRAME, 1));
 
-                        PCS_Claim.claim(null, block);
-                        PCS_Claim.getInstance().getLogger().info("[" + chunk.getX()+"|" + chunk.getZ() + "]" + " REM -> " + owner.getUniqueId() + " (" + owner.getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
+                        Claim claim = PCS_Claim.claim(null, block);
+                        PCS_Claim.getInstance().getLogger().info(claim.getName() + " REM -> " + owner.getUniqueId() + " (" + owner.getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
 
                         trespassers.remove(player);
                         String path = isOwner ? "messages.unclaim" : "messages.unclaim-override";
-                        message = builder.define("CHUNK", "[" + chunk.getX() + "|" + chunk.getZ() + "]").build(PCS_Claim.getInstance().getConfig().getString(path));
+                        message = builder.define("CHUNK", claim.getName()).define("NAME", owner.getName()).build(PCS_Claim.getInstance().getConfig().getString(path));
                     }
                 } else {
                     frame.setEye(!hasEye);

@@ -8,6 +8,11 @@
     <artifactId>PCS_Claim</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
+    </properties>
+
     <distributionManagement>
         <repository>
             <id>z0cken-repo</id>
@@ -48,11 +53,5 @@
             </resource>
         </resources>
     </build>
-
-    <properties>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
-    </properties>
-
 
 </project>

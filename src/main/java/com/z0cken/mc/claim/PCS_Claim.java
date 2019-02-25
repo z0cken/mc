@@ -1,11 +1,12 @@
 package com.z0cken.mc.claim;
 
-import com.z0cken.mc.core.FriendsAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import com.z0cken.mc.core.util.MessageBuilder;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -15,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,8 +57,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
-
-        DatabaseHelper.connect();
 
         /* TODO Make optional?
         try {
@@ -109,14 +107,52 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         DatabaseHelper.push();
-        DatabaseHelper.disconnect();
 
         instance = null;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if(sender instanceof Player) {
+            Player player = (Player) sender;
+
+            if(command.getName().equalsIgnoreCase("unclaim")) {
+
+                if(sender.hasPermission("pcs.claim.unclaim")) {
+                    Claim claim = getClaim(player.getLocation().getChunk());
+
+                    if(claim != null) {
+                        //Success
+                        claim(null, claim.getBaseBlock());
+                        Block b = claim.getBaseBlock().getRelative(BlockFace.UP);
+                        if(b.getType() == Material.END_PORTAL_FRAME) b.setType(Material.AIR);
+
+                         player.spigot().sendMessage(new MessageBuilder()
+                                                     .define("CHUNK", claim.getName())
+                                                     .define("NAME", claim.getOwner().getName())
+                                                     .build(PCS_Claim.getInstance().getConfig().getString("messages.unclaim-override")));
+                    } else {
+                        player.sendMessage(PCS_Claim.getInstance().getConfig().getString("messages.not-owned"));
+                    }
+
+                } else {
+                    //No permission
+                }
+
+            } else if(command.getName().equalsIgnoreCase("claim")) {
+                MessageBuilder builder = MessageBuilder.DEFAULT;
+                PCS_Claim.getInstance().getConfig().getStringList("messages.claim-info").forEach(s -> player.spigot().sendMessage(builder.build(s)));
+            }
+            return true;
+        }
+
+        return false;
     }
 
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
+        if(chunk.getWorld() != Bukkit.getWorld(getConfig().getString("main-world"))) return;
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(chunk);
 
         if (!claimedChunks.containsKey(chunkCoordinate)) {
@@ -125,7 +161,10 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
                 @Override
                 public void run() {
                     Claim claim = DatabaseHelper.getClaim(chunk);
-                    if(claim != null) claimedChunks.put(chunkCoordinate, claim);
+                    if(claim != null) {
+                        claimedChunks.put(chunkCoordinate, claim);
+                        claim.updateBaseMaterial();
+                    }
                     lockedChunks.remove(chunkCoordinate);
                 }
             }.runTaskAsynchronously(this);
@@ -135,37 +174,18 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(event.getChunk());
-
-        Claim claim = claimedChunks.getOrDefault(chunkCoordinate, null);
-        if(claim != null) claim.updateBaseMaterial();
         claimedChunks.remove(chunkCoordinate);
     }
 
-    public static void claim(@Nullable OfflinePlayer player, @Nonnull Block baseBlock) {
+    public static Claim claim(@Nullable OfflinePlayer player, @Nonnull Block baseBlock) {
         Claim claim = new Claim(player, baseBlock);
         DatabaseHelper.commit(claim);
 
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
         if(player == null) claimedChunks.remove(chunkCoordinate);
         else claimedChunks.put(chunkCoordinate, claim);
-    }
 
-    public static boolean canBuild(@Nonnull OfflinePlayer player, @Nonnull Chunk chunk) {
-        OfflinePlayer owner = getOwner(chunk);
-
-        if(player.isOnline() && player.getPlayer().hasPermission("pcs.claim.override")) return true;
-
-        boolean friends = false;
-
-        if(owner != null) {
-            try {
-                friends = FriendsAPI.areFriends(player.getUniqueId(), owner.getUniqueId());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return owner == null || owner.equals(player) || friends;
+        return claim;
     }
 
     public static OfflinePlayer getOwner(@Nonnull Chunk chunk) {
@@ -182,7 +202,16 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return claim;
     }
 
-    public static Set<Claim> getClaims(@Nonnull World world, @Nonnull OfflinePlayer player) {
-        return DatabaseHelper.getClaims(world, player);
+    public static boolean canOverride(@Nonnull Player player) {
+        return player.getPlayer().hasPermission("pcs.claim.override");
+    }
+
+    public static class Unsafe {
+
+        //Disregards unpushed changes - accuracy of result not guaranteed
+        public static Set<Claim> getClaims(@Nonnull World world, @Nonnull OfflinePlayer player) {
+            return DatabaseHelper.getClaims(world, player);
+        }
+
     }
 }
