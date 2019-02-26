@@ -3,6 +3,7 @@ package com.z0cken.mc.essentials.modules;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -18,13 +19,16 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ModuleSnowball extends Module implements Listener {
 
     private HashMap<Player, Integer> ammo = new HashMap<>();
     private HashMap<Player, Integer> reloading = new HashMap<>();
+    private HashMap<Player, List<Long>> timer = new HashMap<>();
 
     private int maxAmmo;
     private int reloadTime;
@@ -45,12 +49,12 @@ public class ModuleSnowball extends Module implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         ammo.put(event.getPlayer(), maxAmmo);
+        timer.put(event.getPlayer(), new ArrayList<>());
     }
 
     @EventHandler
     public void onHit(ProjectileHitEvent event) {
         Entity hitEntity = event.getHitEntity();
-
 
         if(hitEntity != null && event.getEntity().getType() == EntityType.SNOWBALL) {
             if(hitEntity.equals(event.getEntity().getShooter())) return;
@@ -82,7 +86,18 @@ public class ModuleSnowball extends Module implements Listener {
         if(ammo.get(player) > 0 || hasPermission) {
 
             if(!hasPermission) {
+
+                final List<Long> times = timer.get(player);
                 if(ammo.get(player) == maxAmmo) reloading.put(player, reloadTime);
+
+                Long time = System.currentTimeMillis();
+                times.add(time);
+                if(times.size() >= 5) {
+                    Long start = times.get(times.size() - 5);
+                    Bukkit.broadcastMessage(time - start + "");
+                    if(time - start < getConfig().getInt("kick-threshold")) player.kickPlayer("429 - RATE LIMIT REACHED");
+                }
+
                 ammo.put(player, ammo.get(player)-1);
                 MessageBuilder builder = new MessageBuilder().define("VALUE", Integer.toString(ammo.get(player)));
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.ammo")));
@@ -103,6 +118,7 @@ public class ModuleSnowball extends Module implements Listener {
                 entry.setValue(entry.getValue() - 1);
             } else if(entry.getValue() == 0) {
                 ammo.put(entry.getKey(), maxAmmo);
+                timer.get(entry.getKey()).clear();
             }
         }
     }
