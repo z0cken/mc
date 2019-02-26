@@ -63,7 +63,6 @@ public class Claim {
     public void updateBaseMaterial() {
         baseMaterial = getBaseBlock().getType();
         DatabaseHelper.updateMaterial(this, getBaseMaterial());
-        Bukkit.broadcastMessage("UPDATE: " + getBaseMaterial().name() + " : " + getBaseBlock().getLocation().toString());
     }
 
     public boolean canBuild(@Nonnull OfflinePlayer player) {

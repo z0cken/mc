@@ -240,9 +240,9 @@ class ProtectionListener implements Listener {
         if(claim.canBuild((OfflinePlayer) damager)) return;
 
         //Exclude players in alien claims
-        if(event.getEntity().getType() != EntityType.PLAYER ||claim.canBuild((OfflinePlayer) event.getEntity())) {
+        if(event.getEntity().getType() != EntityType.PLAYER || claim.canBuild((OfflinePlayer) event.getEntity())) {
             event.setCancelled(true);
-            sendProtected((Player) damager, claim.getOwner());
+            //sendProtected((Player) damager, claim.getOwner());
         }
     }
 
