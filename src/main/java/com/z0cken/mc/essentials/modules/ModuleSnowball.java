@@ -66,7 +66,7 @@ public class ModuleSnowball extends Module implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity().getType() == EntityType.SNOWBALL) event.setCancelled(true);
+        if(event.getDamager().getType() == EntityType.SNOWBALL) event.setCancelled(true);
     }
 
     @EventHandler
@@ -81,18 +81,14 @@ public class ModuleSnowball extends Module implements Listener {
         boolean hasPermission = player.hasPermission("pcs.essentials.snowball");
         if(ammo.get(player) > 0 || hasPermission) {
 
-            if(ammo.get(player) == maxAmmo && !hasPermission) {
-                reloading.put(player, reloadTime);
-            }
-
-            ammo.put(player, ammo.get(player)-1);
-
-            player.launchProjectile(Snowball.class, player.getEyeLocation().getDirection());
-
             if(!hasPermission) {
+                if(ammo.get(player) == maxAmmo) reloading.put(player, reloadTime);
+                ammo.put(player, ammo.get(player)-1);
                 MessageBuilder builder = new MessageBuilder().define("VALUE", Integer.toString(ammo.get(player)));
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.ammo")));
             }
+
+            player.launchProjectile(Snowball.class, player.getEyeLocation().getDirection());
 
         } else {
             int remaining = reloading.get(player);
@@ -118,7 +114,7 @@ public class ModuleSnowball extends Module implements Listener {
 
     @Override
     public void load() {
-        maxAmmo = getConfig().getInt("maxAmmo");
-        reloadTime = getConfig().getInt("reloadTime");
+        maxAmmo = getConfig().getInt("max-ammo");
+        reloadTime = getConfig().getInt("reload-time");
     }
 }
