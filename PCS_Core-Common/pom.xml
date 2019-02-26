@@ -41,6 +41,21 @@
             <version>2.4.0</version>
         </dependency>
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20180813</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.6</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.0</version>
@@ -61,7 +76,9 @@
                 </executions>
                 <configuration>
                     <includes>
+                        <include>core.yml</include>
                         <include>hikari.properties</include>
+                        <include>main.properties</include>
                     </includes>
                 </configuration>
             </plugin>

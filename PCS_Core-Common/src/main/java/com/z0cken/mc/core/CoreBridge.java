@@ -1,6 +1,6 @@
 package com.z0cken.mc.core;
 
-final class CoreBridge {
+public final class CoreBridge {
 
     private static ICore plugin;
 
@@ -13,7 +13,7 @@ final class CoreBridge {
         Shadow.setupTables();
     }
 
-    static ICore getPlugin() {
+    public static ICore getPlugin() {
         if(plugin == null) throw new IllegalStateException("CoreBridge not yet initialized");
         return plugin;
     }

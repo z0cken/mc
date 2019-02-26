@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public enum Shadow {
-    NAME(JDBCType.VARCHAR, 40), IP(JDBCType.VARCHAR, 15), SEEN(JDBCType.TIMESTAMP, 0);
+    NAME(JDBCType.VARCHAR, 40), IP(JDBCType.VARCHAR, 15), SEEN(JDBCType.TIMESTAMP, 0), MARK(JDBCType.TINYINT, 0);
 
     private JDBCType type;
     private int arg;

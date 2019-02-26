@@ -1,0 +1,3 @@
+persona-api:
+  cache-interval: 30
+  update-interval: 180

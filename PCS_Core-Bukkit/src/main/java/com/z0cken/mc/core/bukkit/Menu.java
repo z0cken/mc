@@ -78,7 +78,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
     }
 
     public void showPage(int page) {
-        if(page < 0 || page >= pages.size()) throw new ArrayIndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
+        if(page < 0 || page >= pages.size()) throw new IndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
         currentPage = page;
         setContents(pages.get(page));
     }
