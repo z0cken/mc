@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 public final class PersonaAPI {
 
     private static boolean initialized = false;
-    private static long cacheInterval, updateInterval;
+    private static long cacheInterval;
     private static final Map<UUID, Persona> cache = new ConcurrentHashMap<>();
 
 
     public static void init(long cacheInterval, long updateInterval) {
         if(initialized) throw new IllegalStateException(PersonaAPI.class.getName() + " already initialized!");
-        PersonaAPI.cacheInterval = cacheInterval;
-        PersonaAPI.updateInterval = updateInterval;
+        PersonaAPI.cacheInterval = Math.max(cacheInterval, 5);
+        updateInterval = Math.max(updateInterval, 30);
         initialized = true;
 
         new CoreTask(true, TimeUnit.SECONDS, updateInterval, updateInterval) {
