@@ -140,8 +140,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
                 }
 
             } else if(command.getName().equalsIgnoreCase("claim")) {
-                MessageBuilder builder = MessageBuilder.DEFAULT;
-                PCS_Claim.getInstance().getConfig().getStringList("messages.claim-info").forEach(s -> player.spigot().sendMessage(builder.build(s)));
+                PCS_Claim.getInstance().getConfig().getStringList("messages.info-claim").forEach(s -> player.spigot().sendMessage(MessageBuilder.DEFAULT.build(s)));
             }
             return true;
         }
