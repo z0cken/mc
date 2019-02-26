@@ -64,7 +64,7 @@ public enum Database {
     private void failFast() {
         if (crucial) {
             plugin.getLogger().severe("Database \"" + name().toLowerCase() + "\" is crucial -> Server shutting down");
-            plugin.stopServer("Database Error");
+            plugin.stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
         }
     }
 }

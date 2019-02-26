@@ -21,7 +21,7 @@ import java.util.logging.Level;
 public class PCS_Core extends Plugin implements ICore, Listener {
 
     private static PCS_Core instance;
-    private static Configuration config;
+    private static Configuration config, coreConfig;
 
     public static PCS_Core getInstance() {
         return instance;
@@ -33,14 +33,16 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         saveResource("core.yml", false);
         saveResource("hikari.properties", false);
         saveResource("main.properties", false);
-        loadConfig();
+
+        config = getConfiguration("config.yml");
+        coreConfig = getConfiguration("core.yml");
     }
 
     @Override
     public void onEnable() {
         ICore.super.init();
 
-        PersonaAPI.init(getConfig().getLong("persona-api.cache-interval"), getConfig().getLong("persona-api.update-interval"));
+        PersonaAPI.init(coreConfig.getLong("persona-api.cache-interval"), coreConfig.getLong("persona-api.update-interval"));
 
         getProxy().getPluginManager().registerListener(this, this);
         getProxy().getPluginManager().registerListener(this, new ShadowListener());
@@ -86,7 +88,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         return player != null && player.isConnected();
     }
 
-    void saveResource(String resourcePath, boolean replace) {
+    private void saveResource(String resourcePath, boolean replace) {
         if (resourcePath != null && !resourcePath.equals("")) {
             resourcePath = resourcePath.replace('\\', '/');
             InputStream in = this.getResourceAsStream(resourcePath);
@@ -123,14 +125,14 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         }
     }
 
-    void loadConfig() {
-        File configFile = new File(getDataFolder(), "config.yml");
+    private Configuration getConfiguration(String name) {
+        File configFile = new File(getDataFolder(), name);
 
         try {
 
             if (configFile.createNewFile()) {
 
-                try (InputStream is = getResourceAsStream("config.yml");
+                try (InputStream is = getResourceAsStream(name);
                      OutputStream os = new FileOutputStream(configFile)) {
                     ByteStreams.copy(is, os);
                 } catch (IOException ex) {
@@ -138,17 +140,19 @@ public class PCS_Core extends Plugin implements ICore, Listener {
                 }
             }
 
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            return ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return null;
     }
 
 
-    void saveConfig() {
+    private void saveConfig(Configuration configuration, String name) {
         try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, new File(getDataFolder(), "config.yml"));
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, new File(getDataFolder(), name));
         } catch (IOException e) {
             e.printStackTrace();
         }
