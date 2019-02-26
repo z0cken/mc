@@ -59,6 +59,7 @@ public final class CommandFriend extends Command {
 
                             try {
                                 FriendsAPI.friend(player.getUniqueId(), target.getUniqueId());
+                                requests.get(target).remove(player);
                                 player.sendMessage(new MessageBuilder().define("PLAYER", target.getName()).build(config.getString("messages.accept-first")));
                                 target.sendMessage(new MessageBuilder().define("PLAYER", player.getName()).build(config.getString("messages.accept-third")));
                             } catch (SQLException e) {
