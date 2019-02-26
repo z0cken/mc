@@ -1,5 +1,11 @@
 package com.z0cken.mc.claim;
 
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -67,6 +73,12 @@ class ClaimListener implements Listener {
 
             OfflinePlayer owner = PCS_Claim.getOwner(chunk);
             if(owner == null) {
+                if(!isClaimable(chunk)) {
+                    event.setCancelled(true);
+                    player.spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.unclaimable")));
+                    return;
+                }
+
                 EndPortalFrame frame = (EndPortalFrame) blockPlaced.getBlockData();
                 frame.setEye(true);
                 blockPlaced.setBlockData(frame);
@@ -76,6 +88,14 @@ class ClaimListener implements Listener {
                 player.spigot().sendMessage(new MessageBuilder().define("CHUNK", claim.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
         }
+    }
+
+    private static boolean isClaimable(Chunk chunk) {
+        RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(chunk.getWorld()));
+        BlockVector3 v1 = BlockVector3.at(chunk.getX() << 4, 0, chunk.getZ() << 4);
+        BlockVector3 v2 = BlockVector3.at((chunk.getX() << 4) + 15, chunk.getWorld().getMaxHeight(), (chunk.getZ() << 4) + 15);
+        ApplicableRegionSet set = regionManager.getApplicableRegions(new ProtectedCuboidRegion("dummy", v1, v2));
+        return set.testState(null, PCS_Claim.CLAIM_FLAG);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

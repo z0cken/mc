@@ -1,5 +1,7 @@
 package com.z0cken.mc.claim;
 
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -39,6 +41,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return instance;
     }
 
+    public static final StateFlag CLAIM_FLAG = new StateFlag("claimable", true);
     private static final ConcurrentHashMap<ChunkCoordinate, Claim> claimedChunks = new ConcurrentHashMap<>();
     private static final Set<ChunkCoordinate> lockedChunks = Collections.synchronizedSet(new HashSet<>());
 
@@ -52,6 +55,8 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         saveConfig();
+
+        WorldGuard.getInstance().getFlagRegistry().register(CLAIM_FLAG);
     }
 
     @Override

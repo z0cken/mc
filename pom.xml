@@ -25,6 +25,10 @@
             <id>z0cken-repo</id>
             <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
         </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>http://maven.sk89q.com/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -38,6 +42,18 @@
             <groupId>com.z0cken.mc.core</groupId>
             <artifactId>PCS_Core-Bukkit</artifactId>
             <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-core</artifactId>
+            <version>7.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-legacy</artifactId>
+            <version>7.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
