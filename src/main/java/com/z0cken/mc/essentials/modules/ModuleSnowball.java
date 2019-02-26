@@ -15,6 +15,7 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -50,6 +51,13 @@ public class ModuleSnowball extends Module implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         ammo.put(event.getPlayer(), maxAmmo);
         timer.put(event.getPlayer(), new ArrayList<>());
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        ammo.remove(event.getPlayer());
+        reloading.remove(event.getPlayer());
+        timer.remove(event.getPlayer());
     }
 
     @EventHandler
