@@ -1,5 +1,7 @@
 name: PCS_Essentials
-main: com.z0cken.mc.essentials.PCS_Essentials
-version: ${project.version}
-api-version: 1.13
 author: Flare
+version: ${project.version}
+main: com.z0cken.mc.essentials.PCS_Essentials
+depend: [PCS_Core, PCS_Claim]
+soft-depend: [Vault]
+api-version: 1.13
