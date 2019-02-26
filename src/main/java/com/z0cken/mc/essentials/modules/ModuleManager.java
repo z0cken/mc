@@ -13,7 +13,8 @@ public class ModuleManager {
 
     private static final Map<String, Class<? extends Module>> MODULES = Map.of(
         "chat", ModuleChat.class,
-        "snowball", ModuleSnowball.class
+        "snowball", ModuleSnowball.class,
+        "compass", ModuleCompass.class
     );
 
     private static final Collection<Module> activeModules = new ArrayList<>();
@@ -23,7 +24,7 @@ public class ModuleManager {
     public static void loadModules() {
 
         for(Map.Entry<String, Class<? extends Module>> entry : MODULES.entrySet()) {
-            boolean isEnabled = PCS_Essentials.getInstance().getConfig().getBoolean(entry.getKey() + ".enabled");
+            boolean isEnabled = PCS_Essentials.getInstance().getConfig().getBoolean("modules." + entry.getKey());
             boolean isRunning = false;
 
             Iterator<Module> iterator = activeModules.iterator();

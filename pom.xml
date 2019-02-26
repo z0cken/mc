@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.z0cken.mc.essentials</groupId>
+    <groupId>com.z0cken.mc</groupId>
     <artifactId>PCS_Essentials</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -22,8 +22,8 @@
 
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
         </repository>
         <repository>
             <id>vault-repo</id>
@@ -33,9 +33,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>com.z0cken.mc.thirdparty.executable</groupId>
+            <artifactId>spigot</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.z0cken.mc.core</groupId>
+            <artifactId>PCS_Core-Bukkit</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.z0cken.mc</groupId>
+            <artifactId>PCS_Claim</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -43,13 +55,23 @@
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.z0cken.mc</groupId>
-            <artifactId>PCS_Util</artifactId>
-            <version>1.0-SNAPSHOT</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
 
 </project>
