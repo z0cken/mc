@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -49,6 +50,11 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         PersonaAPI.cachePlayer(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        if(getConfig().getStringList("crucial-plugins").contains(event.getPlugin().getName())) stopServer("§c- Automatischer Shutdown -\\n\\nBitte benachrichtige ein Teammitglied!");
     }
 
     @Override

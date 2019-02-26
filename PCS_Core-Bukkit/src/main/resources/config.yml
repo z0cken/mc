@@ -1,1 +1,3 @@
 button-pricetag: "Preis: {PRICE}"
+crucial-plugins:
+  - "PCS_Claim"
