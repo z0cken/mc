@@ -1,9 +1,9 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.z0cken.mc.core.persona.Persona;
+import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
-import com.z0cken.mc.persona.PCS_Persona;
-import com.z0cken.mc.persona.Persona;
-import com.z0cken.mc.util.MessageBuilder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -17,27 +17,41 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 
 public class ModuleChat extends Module implements Listener {
 
-    private static boolean instantiated = false;
     private static Chat chat = null;
 
     private static final Pattern PATTERN_URL = Pattern.compile("^(?:(https?)://)([-\\w_.]{2,}\\.[a-z]{2,4})([/?]\\S*)?$");
-    private String FORMAT;
+    private String FORMAT, JOIN, QUIT;
     private boolean LOG_CONSOLE;
+
+    private List<String> hoverGuest = getConfig().getStringList("hover-event.guest");
+    private List<String> hoverMember = getConfig().getStringList("hover-event.member");
 
     public ModuleChat(String configPath) {
         super(configPath);
-        if(instantiated) throw new IllegalStateException(getClass().getName() + " cannot be instantiated twice!");
-        instantiated = true;
 
-        this.load();
         setupVaultChat();
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        event.setJoinMessage(null);
+        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(format(JOIN, event.getPlayer())));
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
+        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(format(QUIT, event.getPlayer())));
     }
 
     @EventHandler
@@ -45,27 +59,24 @@ public class ModuleChat extends Module implements Listener {
         event.setCancelled(true);
 
         BaseComponent[] message = parseMessage(event.getMessage());
-        event.getRecipients().forEach(r -> r.spigot().sendMessage((BaseComponent[]) ArrayUtils.addAll(getFormat(event.getPlayer()), message)));
+        event.getRecipients().forEach(r -> r.spigot().sendMessage((BaseComponent[]) ArrayUtils.addAll(format(FORMAT, event.getPlayer()), message)));
         if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
+
+        //Without log4j
+        //if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
     }
 
-    private BaseComponent[] getFormat(Player player) {
+    private BaseComponent[] format(String s, Player player) {
 
-        MessageBuilder builder = new MessageBuilder()
-                .define("PLAYER", player.getName())
-                .define("G", ChatColor.GOLD.toString());
+        MessageBuilder builder = new MessageBuilder().define("PLAYER", player.getName()).define("PREFIX", chat == null ? null : chat.getPlayerPrefix(player));
 
-        builder = builder.define("PREFIX", chat == null ? null : chat.getPlayerPrefix(player));
-
-        Persona persona = PCS_Persona.getPersona(player);
+        Persona persona = PersonaAPI.getPersona(player.getUniqueId());
         if(persona != null) {
-            if(!persona.isGuest()) {
-                builder = builder.define("MARK", " " + persona.getMark().getSymbol());
-            }
-            builder = builder.define("PERSONA", persona.getHoverEvent());
+            if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
+            builder = builder.define("PERSONA", persona.getHoverEvent(hoverGuest, hoverMember));
         }
 
-        return builder.build(FORMAT);
+        return builder.build(s);
 
     }
 
@@ -93,8 +104,8 @@ public class ModuleChat extends Module implements Listener {
 
             if(player != null) {
 
-                Persona persona = PCS_Persona.getPersona(player);
-                if(persona != null) component.setHoverEvent(persona.getHoverEvent());
+                Persona persona = PersonaAPI.getPersona(player.getUniqueId());
+                if(persona != null) component.setHoverEvent(persona.getHoverEvent(hoverGuest, hoverMember));
 
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + player.getName()));
                 component.setColor(ChatColor.AQUA);
@@ -123,8 +134,10 @@ public class ModuleChat extends Module implements Listener {
 
     @Override
     public void load() {
-        FORMAT = config.getString("format");
-        LOG_CONSOLE = config.getBoolean("log-console");
+        FORMAT = getConfig().getString("format");
+        JOIN = getConfig().getString("messages.join");
+        QUIT = getConfig().getString("messages.quit");
+        LOG_CONSOLE = getConfig().getBoolean("log-console");
     }
 
     private void setupVaultChat() {
