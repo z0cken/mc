@@ -116,6 +116,9 @@ class ProtectionListener implements Listener {
         Material.PAINTING,
         Material.LEAD,
         Material.ITEM_FRAME,
+        Material.BUCKET,
+        Material.LAVA_BUCKET,
+        Material.WATER_BUCKET,
 
         //Boats
         Material.ACACIA_BOAT,
