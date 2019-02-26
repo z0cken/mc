@@ -1,7 +1,7 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
-import com.z0cken.mc.util.MessageBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -22,8 +23,6 @@ import java.util.Map;
 
 public class ModuleSnowball extends Module implements Listener {
 
-    private static boolean instantiated = false;
-
     private HashMap<Player, Integer> ammo = new HashMap<>();
     private HashMap<Player, Integer> reloading = new HashMap<>();
 
@@ -32,11 +31,8 @@ public class ModuleSnowball extends Module implements Listener {
 
     public ModuleSnowball(String configPath) {
         super(configPath);
-        if(instantiated) throw new IllegalStateException(getClass().getName() + " cannot be instantiated twice!");
-        instantiated = true;
 
-        this.load();
-
+        //TODO Make async
         tasks.add(new BukkitRunnable() {
             @Override
             public void run() {
@@ -55,15 +51,22 @@ public class ModuleSnowball extends Module implements Listener {
     public void onHit(ProjectileHitEvent event) {
         Entity hitEntity = event.getHitEntity();
 
+
         if(hitEntity != null && event.getEntity().getType() == EntityType.SNOWBALL) {
+            if(hitEntity.equals(event.getEntity().getShooter())) return;
             if(hitEntity instanceof LivingEntity && !(hitEntity instanceof Monster)) {
-                ((LivingEntity) hitEntity).addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 1, 0));
+                if(Math.random() < getConfig().getDouble("heal-chance")) ((LivingEntity) hitEntity).addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 1, 6));
                 if(hitEntity instanceof Player) {
                     MessageBuilder builder = new MessageBuilder().define("PLAYER", ((Player)event.getEntity().getShooter()).getName());
-                    ((Player)hitEntity).spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(config.getString("messages.hit")));
+                    ((Player)hitEntity).spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.hit")));
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDamageByEntity(EntityDamageByEntityEvent event) {
+        if(event.getEntity().getType() == EntityType.SNOWBALL) event.setCancelled(true);
     }
 
     @EventHandler
@@ -75,7 +78,7 @@ public class ModuleSnowball extends Module implements Listener {
     }
 
     private void launchSnowball(Player player) {
-        boolean hasPermission = player.hasPermission("test");
+        boolean hasPermission = player.hasPermission("pcs.essentials.snowball");
         if(ammo.get(player) > 0 || hasPermission) {
 
             if(ammo.get(player) == maxAmmo && !hasPermission) {
@@ -88,13 +91,13 @@ public class ModuleSnowball extends Module implements Listener {
 
             if(!hasPermission) {
                 MessageBuilder builder = new MessageBuilder().define("VALUE", Integer.toString(ammo.get(player)));
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(config.getString("messages.ammo")));
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.ammo")));
             }
 
         } else {
             int remaining = reloading.get(player);
             MessageBuilder builder = new MessageBuilder().define("VALUE", Integer.toString(remaining));
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(config.getString("messages.wait")));
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.wait")));
         }
     }
 
@@ -115,7 +118,7 @@ public class ModuleSnowball extends Module implements Listener {
 
     @Override
     public void load() {
-        maxAmmo = config.getInt("maxAmmo");
-        reloadTime = config.getInt("reloadTime");
+        maxAmmo = getConfig().getInt("maxAmmo");
+        reloadTime = getConfig().getInt("reloadTime");
     }
 }
