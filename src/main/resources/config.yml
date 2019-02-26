@@ -3,3 +3,4 @@ modules:
   chat: true
   snowball: true
   compass: true
+  discover: true

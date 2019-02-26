@@ -14,7 +14,8 @@ public class ModuleManager {
     private static final Map<String, Class<? extends Module>> MODULES = Map.of(
         "chat", ModuleChat.class,
         "snowball", ModuleSnowball.class,
-        "compass", ModuleCompass.class
+        "compass", ModuleCompass.class,
+        "discover", ModuleDiscover.class
     );
 
     private static final Collection<Module> activeModules = new ArrayList<>();
