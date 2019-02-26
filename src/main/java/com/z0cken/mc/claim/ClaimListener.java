@@ -61,10 +61,8 @@ class ClaimListener implements Listener {
         }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, 40);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public static void onBlockPlace(BlockPlaceEvent event) {
-        if(event.isCancelled()) return;
-
         final Block blockPlaced = event.getBlockPlaced();
 
         if(blockPlaced.getType() == Material.END_PORTAL_FRAME) {
@@ -98,9 +96,9 @@ class ClaimListener implements Listener {
         return set.testState(null, PCS_Claim.CLAIM_FLAG);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public static void onInteract(PlayerInteractEvent event) {
-        if(event.isCancelled() || event.getHand() == EquipmentSlot.OFF_HAND) return;
+        if(event.getHand() == EquipmentSlot.OFF_HAND) return;
 
         Block block = event.getClickedBlock();
         if(block != null && block.getType() == Material.END_PORTAL_FRAME) {

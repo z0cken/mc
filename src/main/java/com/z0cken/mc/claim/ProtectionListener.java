@@ -148,16 +148,14 @@ class ProtectionListener implements Listener {
     }
 
     private void handleManipulation(Cancellable event, Chunk chunk, Player player) {
-        if(event.isCancelled()) return;
         Claim claim = PCS_Claim.getClaim(chunk);
         if(claim == null || claim.canBuild(player)) return;
         event.setCancelled(true);
         sendProtected(player, claim.getOwner());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if(event.isCancelled()) return;
         final Claim claim = PCS_Claim.getClaim(event.getBlockPlaced().getChunk());
         if(claim == null) return;
 
@@ -177,12 +175,12 @@ class ProtectionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         handleManipulation(event, event.getBlock().getChunk(), event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if(block == null || !INTERACTABLE_BLOCKS.contains(block.getType()) && !INTERACTABLE_ITEMS.contains(block.getType())) return;
@@ -190,22 +188,22 @@ class ProtectionListener implements Listener {
         handleManipulation(event, event.getClickedBlock().getChunk(), event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
         handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeashEntity(PlayerLeashEntityEvent event) {
         handleManipulation(event, event.getEntity().getLocation().getChunk(), event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
         handleManipulation(event, event.getCaught().getLocation().getChunk(), event.getPlayer());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEggThrow(PlayerEggThrowEvent event) {
         final Claim claim = PCS_Claim.getClaim(event.getEgg().getLocation().getChunk());
         if(claim == null) return;
@@ -217,17 +215,16 @@ class ProtectionListener implements Listener {
         sendProtected(player, claim.getOwner());
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onItemPickup(EntityPickupItemEvent event) {
-        if (event.isCancelled()) return;
         final Entity entity = event.getEntity();
         if(entity.getType() != EntityType.PLAYER) return;
         handleManipulation(event, event.getItem().getLocation().getChunk(), (Player) entity);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.isCancelled() || event.getEntity() instanceof Monster || event.getEntity().getType() == EntityType.SLIME) return;
+        if(event.getEntity() instanceof Monster || event.getEntity().getType() == EntityType.SLIME) return;
 
         final Entity damager = event.getDamager();
         if(damager.getType() != EntityType.PLAYER) return;
@@ -244,7 +241,7 @@ class ProtectionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event) {
         if(event.getFrom().getWorld().getEnvironment() != World.Environment.NETHER) return;
         event.getPortalTravelAgent().setCanCreatePortal(false);
