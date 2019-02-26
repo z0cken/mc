@@ -1,9 +1,7 @@
 package com.z0cken.mc.claim;
 
 import com.z0cken.mc.core.util.MessageBuilder;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,10 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
-import org.bukkit.event.player.PlayerEggThrowEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.*;
 
 import java.util.Set;
 
@@ -244,6 +239,24 @@ class ProtectionListener implements Listener {
             event.setCancelled(true);
             //sendProtected((Player) damager, claim.getOwner());
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerPortal(PlayerPortalEvent event) {
+        if(event.getFrom().getWorld().getEnvironment() != World.Environment.NETHER) return;
+        event.getPortalTravelAgent().setCanCreatePortal(false);
+
+        Location portal = event.getPortalTravelAgent().findPortal(event.getTo());
+        Claim claim;
+
+        if(portal != null) {
+            claim = PCS_Claim.getClaim(portal.getChunk());
+            if(claim != null && !claim.canBuild(event.getPlayer())) {
+                event.setCancelled(true);
+                event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", claim.getOwner().getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.portal-claimed")));
+            }
+        }
+        else event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.portal-new")));
     }
 
 }

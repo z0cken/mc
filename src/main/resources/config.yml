@@ -13,6 +13,8 @@ messages:
   leave: §f§l>_ §7Du hast das Gebiet von {NAME} verlassen
   leave-self: §f§l>_ §7Du hast dein eigenes Gebiet verlassen
   not-owned: §c§l>_ §7Dieser Chunk ist nicht geclaimt!
+  portal-claimed: §c§l>_ §7Der Chunk an deinem Zielort gehört §f{NAME}!
+  portal-new: §c§l>_ §7Netherportale können nur von der Oberwelt aus erstellt werden!
   info-claim:
     - "§7---------<§f Hilfemenü - Claims §7>---------"
     - "§7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten"
