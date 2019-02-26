@@ -2,7 +2,6 @@ package com.z0cken.mc.essentials.modules;
 
 import com.z0cken.mc.essentials.PCS_Essentials;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
@@ -10,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,6 +29,8 @@ public abstract class Module {
         if(this instanceof Listener) {
             Bukkit.getPluginManager().registerEvents((Listener) this, PCS_Essentials.getInstance());
         }
+
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' enabled");
     }
 
     private void loadConfig() {
@@ -49,11 +49,15 @@ public abstract class Module {
         if(this instanceof Listener) HandlerList.unregisterAll((Listener) this);
         if(this instanceof CommandExecutor) commands.forEach(cmd -> PCS_Essentials.getInstance().getCommand(cmd).setExecutor(null));
         tasks.forEach(BukkitTask::cancel);
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' disabled");
+
     }
 
     public final void reload() {
         loadConfig();
         load();
+
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' reloaded");
     }
 
     protected abstract void load();

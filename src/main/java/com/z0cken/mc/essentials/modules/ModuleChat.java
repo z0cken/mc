@@ -143,7 +143,10 @@ public class ModuleChat extends Module implements Listener {
     private void setupVaultChat() {
         if(Bukkit.getServer().getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Chat> rsp = Bukkit.getServer().getServicesManager().getRegistration(Chat.class);
-            chat = rsp.getProvider();
+            if(rsp != null) {
+                chat = rsp.getProvider();
+                PCS_Essentials.getInstance().getLogger().info("Vault-Chat ServiceProvider: " + chat.getName());
+            }
         } else PCS_Essentials.getInstance().getLogger().warning("Failed to hook into Vault-Chat");
     }
 }
