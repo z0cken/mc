@@ -1,0 +1,5 @@
+shout:
+  messagePrefix: "[SHOUT]"
+  messages:
+    errorGeneral: "{PREFIX} Irgendwas ist richtig schief gelaufen. Bitte kontaktiere einen Admin"
+    successGeneral: "{PREFIX} Irgendwas ist gut gelaufen!"
