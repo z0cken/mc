@@ -36,7 +36,7 @@ class DatabaseHelper {
              Statement statement = connection.createStatement()) {
             String prefix = "CREATE TABLE IF NOT EXISTS ";
 
-            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL, material VARCHAR(50) NOT NULL );");
+            statement.addBatch(prefix + "claims (x INT NOT NULL, z INT NOT NULL, player CHAR(36) NOT NULL, block_x INT NOT NULL , block_y INT NOT NULL , block_z INT NOT NULL, material VARCHAR(50) NOT NULL, CONSTRAINT pk PRIMARY KEY (x, z));");
             statement.executeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,7 +73,7 @@ class DatabaseHelper {
                 }
 
                 pstmt.addBatch();
-                deque.pop();
+                deque.remove();
             }
 
             int[] add = statementAdd.executeBatch();
