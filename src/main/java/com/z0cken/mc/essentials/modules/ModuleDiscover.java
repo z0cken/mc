@@ -29,8 +29,15 @@ public class ModuleDiscover extends Module implements Listener {
     private static int INTERVAL, MAX_DISTANCE_SQ;
     private final Set<Place> places = new HashSet<>();
 
-    public ModuleDiscover(String configPath) {
+    ModuleDiscover(String configPath) {
         super(configPath);
+
+        if(!Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            PCS_Essentials.getInstance().getLogger().severe(configPath + "> WorldGuard not found");
+            disable();
+            return;
+        }
+
         setupTables();
         importPlaces();
 
