@@ -28,12 +28,12 @@ public class Menu extends CraftInventoryCustom implements Listener {
     private final List<ItemStack[]> pages = new ArrayList<>();
     private int currentPage = 0;
 
-    public Menu(JavaPlugin plugin, int rows) {
-        this(plugin, rows, null);
+    public Menu(JavaPlugin plugin, int rows, String title) {
+        this(plugin, rows, title, null);
     }
 
-    public Menu(JavaPlugin plugin, int rows, Menu parent) {
-        super(null, rows * 9);
+    public Menu(JavaPlugin plugin, int rows, String title, Menu parent) {
+        super(null, rows * 9, title);
         pages.add(new ItemStack[getSize()]);
         this.parent = parent;
 
@@ -99,7 +99,6 @@ public class Menu extends CraftInventoryCustom implements Listener {
     public void onDrag(InventoryDragEvent event) {
         if(!event.getInventory().equals(this)) return;
         int hashCode = this.hashCode();
-        boolean cancel;
         for(Integer i : event.getRawSlots()) {
             Inventory inventory = event.getView().getInventory(i);
             if(inventory.hashCode() == hashCode && inventory.equals(this)) {
@@ -112,9 +111,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         Inventory inv = event.getView().getTopInventory();
-        if (inv == null || !inv.equals(this)) {
-            return;
-        }
+        if (inv == null || !inv.equals(this)) return;
 
         if(event.getClick().isShiftClick()) event.setCancelled(true);
         if(event.getClick() == ClickType.DOUBLE_CLICK && this.contains(event.getCursor().getType())) event.setCancelled(true);
