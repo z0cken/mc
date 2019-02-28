@@ -90,6 +90,7 @@ class ClaimListener implements Listener {
 
     private static boolean isClaimable(Chunk chunk) {
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(chunk.getWorld()));
+        if(regionManager == null) return false;
         BlockVector3 v1 = BlockVector3.at(chunk.getX() << 4, 0, chunk.getZ() << 4);
         BlockVector3 v2 = BlockVector3.at((chunk.getX() << 4) + 15, chunk.getWorld().getMaxHeight(), (chunk.getZ() << 4) + 15);
         ApplicableRegionSet set = regionManager.getApplicableRegions(new ProtectedCuboidRegion("dummy", v1, v2));
