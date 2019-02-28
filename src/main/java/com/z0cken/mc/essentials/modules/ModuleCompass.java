@@ -108,7 +108,7 @@ public class ModuleCompass extends Module implements Listener {
         final int rows = calculateRows(friends.size());
         final boolean multiPage = friends.size() > 9*6;
 
-        Menu friendMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, menu);
+        Menu friendMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, getConfig().getString("titles.friends"), menu);
 
         int i = 0;
         int price = getConfig().getInt("friend-price");
@@ -145,7 +145,7 @@ public class ModuleCompass extends Module implements Listener {
 
         final boolean multiPage = claims.size() > 9*6;
 
-        Menu chunkMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, menu);
+        Menu chunkMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, getConfig().getString("titles.claims"), menu);
 
         int i = 0;
         int price = getConfig().getInt("claim-price");
@@ -215,7 +215,7 @@ public class ModuleCompass extends Module implements Listener {
         Player player;
 
         public CompassMenu(Player player) {
-            super(PCS_Essentials.getInstance(), getConfig().getInt("menu.rows"));
+            super(PCS_Essentials.getInstance(), getConfig().getInt("menu.rows"), getConfig().getString("titles.compass"));
             this.player = player;
 
             populate();

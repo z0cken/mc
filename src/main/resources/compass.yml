@@ -26,6 +26,10 @@ targets:
       - "Seht her ich habe Freunde"
 claim-price: 20
 friend-price: 20
+titles:
+  compass: "Kompass"
+  friends: "Freunde"
+  claims: "Claims"
 menu:
   rows: 1
 messages:
