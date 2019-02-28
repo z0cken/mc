@@ -7,7 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -16,7 +16,7 @@ class DatabaseHelper {
 
     private static final Database DATABASE = Database.MAIN;
     private static final Logger log = PCS_Claim.getInstance().getLogger();
-    private static final ConcurrentLinkedDeque<Claim> deque = new ConcurrentLinkedDeque<>();
+    private static final Queue<Claim> queue = new ConcurrentLinkedQueue<>();
 
     static {
         setupTables();
@@ -44,20 +44,20 @@ class DatabaseHelper {
     }
 
     static void commit(Claim claim) {
-        deque.add(claim);
+        queue.add(claim);
     }
 
     static void push() {
-        if(deque.isEmpty()) return;
+        if(queue.isEmpty()) return;
 
-        List<String> content = deque.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
+        List<String> content = queue.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
 
         try (Connection connection = DATABASE.getConnection();
              PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
              PreparedStatement statementRem = connection.prepareStatement("DELETE FROM claims WHERE x = ? AND z = ?")) {
 
-            while (!deque.isEmpty()) {
-                Claim claim = deque.peek();
+            while (!queue.isEmpty()) {
+                Claim claim = queue.peek();
 
                 boolean hasOwner = claim.getOwner() != null;
 
@@ -73,7 +73,7 @@ class DatabaseHelper {
                 }
 
                 pstmt.addBatch();
-                deque.remove();
+                queue.remove();
             }
 
             int[] add = statementAdd.executeBatch();
@@ -83,7 +83,7 @@ class DatabaseHelper {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            log.severe(">>> Failed to push deque - dumping content <<<");
+            log.severe(">>> Failed to push queue - dumping content <<<");
             content.forEach(log::severe);
         }
     }
