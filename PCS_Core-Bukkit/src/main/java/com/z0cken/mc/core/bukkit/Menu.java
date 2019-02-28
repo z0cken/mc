@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,11 +30,11 @@ public class Menu extends CraftInventoryCustom implements Listener {
     private final List<ItemStack[]> pages = new ArrayList<>();
     private int currentPage = 0;
 
-    public Menu(JavaPlugin plugin, int rows, String title) {
+    public Menu(@Nonnull JavaPlugin plugin, int rows, @Nonnull String title) {
         this(plugin, rows, title, null);
     }
 
-    public Menu(JavaPlugin plugin, int rows, String title, Menu parent) {
+    public Menu(@Nonnull JavaPlugin plugin, int rows, @Nonnull String title, Menu parent) {
         super(null, rows * 9, title);
         pages.add(new ItemStack[getSize()]);
         this.parent = parent;
@@ -50,29 +52,32 @@ public class Menu extends CraftInventoryCustom implements Listener {
     }
 
     @Override
-    public void setItem(int index, ItemStack item) {
+    public void setItem(int index, @Nullable ItemStack item) {
         setItem(currentPage, index, item);
     }
 
-    public void setItem(int page, int index, ItemStack item) {
+    public void setItem(int page, int index, @Nullable ItemStack item) {
         while (pages.size() <= page) pages.add(new ItemStack[getSize()]);
         pages.get(page)[index] = item;
         if (page == currentPage) super.setItem(index, item);
     }
 
     @Override
-    public void setContents(ItemStack[] items) {
+    public void setContents(@Nullable ItemStack[] items) {
         setContents(currentPage, items);
     }
 
-    public void setContents(int page, ItemStack[] items) {
-        if (this.getSize() < items.length) {
-            throw new IllegalArgumentException("Invalid inventory size; expected " + this.getSize() + " or less");
-        } else {
-            for (int i = 0; i < this.getSize(); ++i) {
-                ItemStack itemStack = items[i];
-                if(itemStack == null) itemStack = new ItemStack(Material.AIR);
-                this.setItem(page, i, itemStack);
+    public void setContents(int page, @Nullable ItemStack[] items) {
+        if(items == null) clearPage(page);
+
+        else {
+            if (this.getSize() < items.length) {
+                throw new IllegalArgumentException("Invalid inventory size; expected " + this.getSize() + " or less");
+            } else {
+                for (int i = 0; i < this.getSize(); ++i) {
+                    ItemStack itemStack = items[i];
+                    this.setItem(page, i, itemStack);
+                }
             }
         }
     }
@@ -81,6 +86,12 @@ public class Menu extends CraftInventoryCustom implements Listener {
         if(page < 0 || page >= pages.size()) throw new IndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
         currentPage = page;
         setContents(pages.get(page));
+    }
+
+    public void clearPage(int page) {
+        ItemStack[] empty = new ItemStack[getSize()];
+        pages.set(page, empty);
+        if(page == currentPage) clear();
     }
 
     public int getCurrentPage() {
@@ -154,17 +165,17 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         protected Button.ClickEvent clickEvent;
 
-        public Button(ClickEvent clickEvent) {
+        public Button(@Nullable ClickEvent clickEvent) {
             super();
             this.clickEvent = clickEvent;
         }
 
-        public Button(ClickEvent clickEvent, Material material) {
+        public Button(@Nullable ClickEvent clickEvent, @Nonnull Material material) {
             super(material);
             this.clickEvent = clickEvent;
         }
 
-        public Button(ClickEvent clickEvent, Material material, int amount) {
+        public Button(@Nullable ClickEvent clickEvent, @Nonnull Material material, int amount) {
             super(material, amount);
             this.clickEvent = clickEvent;
         }
@@ -173,7 +184,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
             return clickEvent;
         }
 
-        public void setClickEvent(ClickEvent clickEvent) {
+        public void setClickEvent(@Nullable ClickEvent clickEvent) {
             this.clickEvent = clickEvent;
         }
 
@@ -211,17 +222,17 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         protected int price;
 
-        public PricedButton(ClickEvent clickEvent, int price) {
+        public PricedButton(@Nullable ClickEvent clickEvent, int price) {
             super(clickEvent);
             this.price = price;
         }
 
-        public PricedButton(ClickEvent clickEvent, int price, Material material) {
+        public PricedButton(@Nullable ClickEvent clickEvent, int price, Material material) {
             super(clickEvent, material);
             this.price = price;
         }
 
-        public PricedButton(ClickEvent clickEvent, int price, Material material, int amount) {
+        public PricedButton(@Nullable ClickEvent clickEvent, int price, Material material, int amount) {
             super(clickEvent, material, amount);
             this.price = price;
         }
@@ -243,7 +254,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
         }
 
         @Override
-        public boolean setItemMeta(ItemMeta itemMeta) {
+        public boolean setItemMeta(@Nonnull ItemMeta itemMeta) {
             MessageBuilder builder = new MessageBuilder().define("PRICE", Integer.toString(price));
             List<String> lore = itemMeta.getLore();
 
