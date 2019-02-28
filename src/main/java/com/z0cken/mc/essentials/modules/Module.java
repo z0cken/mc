@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class Module {
@@ -46,6 +47,7 @@ public abstract class Module {
     }
 
     public final void disable() {
+        onDisable();
         if(this instanceof Listener) HandlerList.unregisterAll((Listener) this);
         if(this instanceof CommandExecutor) commands.forEach(cmd -> PCS_Essentials.getInstance().getCommand(cmd).setExecutor(null));
         tasks.forEach(BukkitTask::cancel);
@@ -62,8 +64,12 @@ public abstract class Module {
 
     protected abstract void load();
 
+    protected void onDisable() {}
+
     protected final YamlConfiguration getConfig() {
         return config;
     }
+
+    protected static Logger getLogger() { return PCS_Essentials.getInstance().getLogger(); }
 
 }
