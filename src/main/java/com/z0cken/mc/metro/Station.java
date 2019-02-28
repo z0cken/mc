@@ -177,7 +177,7 @@ public class Station implements Listener {
         @EventHandler(ignoreCancelled = true)
         public void onDrag(InventoryDragEvent event) {
             if(!event.getInventory().equals(inventory)) return;
-            int hashCode = this.hashCode();
+            int hashCode = inventory.hashCode();
             for(Integer i : event.getRawSlots()) {
                 Inventory inv = event.getView().getInventory(i);
                 if(inv.hashCode() == hashCode && inv.equals(inventory)) {
