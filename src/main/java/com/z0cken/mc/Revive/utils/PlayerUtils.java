@@ -46,4 +46,26 @@ public class PlayerUtils {
         return false;
     }
 
+    public static void clearPlayerInvAll(Player player) {
+        for (int i = 0; i < player.getInventory().getSize(); ++i) {
+            player.getInventory().setItem(i, AIR);
+        }
+
+        player.getInventory().setItemInOffHand(AIR);
+        player.getInventory().setHelmet(AIR);
+        player.getInventory().setChestplate(AIR);
+        player.getInventory().setLeggings(AIR);
+        player.getInventory().setBoots(AIR);
+
+
+        player.setItemOnCursor(AIR);
+
+        //Crafting slots leeren
+        player.getOpenInventory().getTopInventory().setItem(0, AIR);
+        player.getOpenInventory().getTopInventory().setItem(1, AIR);
+        player.getOpenInventory().getTopInventory().setItem(2, AIR);
+        player.getOpenInventory().getTopInventory().setItem(3, AIR);
+        player.getOpenInventory().getTopInventory().setItem(4, AIR);
+    }
+
 }

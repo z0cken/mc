@@ -2,6 +2,7 @@ package com.z0cken.mc.Revive.listener;
 
 import com.z0cken.mc.Revive.RespawnHandler;
 import com.z0cken.mc.Revive.RespawnPhase;
+import com.z0cken.mc.Revive.Revive;
 import com.z0cken.mc.Revive.utils.PacketUtils;
 import com.z0cken.mc.Revive.utils.PlayerUtils;
 import com.z0cken.mc.Revive.utils.TargetUtils;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -45,9 +47,12 @@ public class PlayerMoveListener implements Listener {
                 return;
             }
 
-            LivingEntity targetEntity = TargetUtils.getTargetEntity(event.getPlayer(), 10D);
-            if (RespawnHandler.getHandler().isRespawning(targetEntity.getUniqueId())) {
-                highlightPlayer(event.getPlayer(), RespawnHandler.getHandler().getRespawnInstance((Player) targetEntity));
+            LivingEntity targetEntity = TargetUtils.getTargetEntity(event.getPlayer());
+            if (targetEntity != null && RespawnHandler.getHandler().isRespawning(targetEntity)) {
+                highlightPlayer(event.getPlayer(), RespawnHandler.getHandler().getRespawnInstance(targetEntity));
+            } else {
+                //Remove highlight, because we aren't targetting anything valid
+                removeHighlightPlayer(event.getPlayer());
             }
         } else {
             removeHighlightPlayer(event.getPlayer());
@@ -67,25 +72,40 @@ public class PlayerMoveListener implements Listener {
     }
 
     private void highlightPlayer(Player viewer, RespawnPhase target) {
-        //Remove previous entries
-        if(highlightedPlayer.containsKey(viewer.getUniqueId()) && highlightedPlayer.get(viewer.getUniqueId()) != target) {
-            removeHighlightPlayer(viewer, highlightedPlayer.get(viewer.getUniqueId()).getPlayer());
+        if (highlightedPlayer.containsKey(viewer.getUniqueId())) {
+            if(highlightedPlayer.get(viewer.getUniqueId()) != target) {
+                //Remove previous entries
+                removeHighlightPlayer(viewer, highlightedPlayer.get(viewer.getUniqueId()));
+            } else {
+                //We are already handling that player
+                return;
+            }
         }
 
         highlightedPlayer.put(viewer.getUniqueId(), target);
 
-        PacketUtils.setGlowing(viewer, target.getPlayer(), true);
+        //We need to update it constantly even if the player is not moving
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (highlightedPlayer.get(viewer.getUniqueId()) == target) {
+                    PacketUtils.setGlowing(viewer, (Player) target.getNPC().getEntity(), true);
+                } else {
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(Revive.getPlugin(), 0L, 1L);
     }
 
     private void removeHighlightPlayer(Player viewer) {
-        if(highlightedPlayer.containsKey(viewer.getUniqueId())) {
-            removeHighlightPlayer(viewer, highlightedPlayer.get(viewer.getUniqueId()).getPlayer());
+        if (highlightedPlayer.containsKey(viewer.getUniqueId())) {
+            removeHighlightPlayer(viewer, highlightedPlayer.get(viewer.getUniqueId()));
         }
     }
 
-    private void removeHighlightPlayer(Player viewer, Player target) {
+    private void removeHighlightPlayer(Player viewer, RespawnPhase target) {
         highlightedPlayer.remove(viewer.getUniqueId(), target);
 
-        PacketUtils.setGlowing(viewer, target.getPlayer(), false);
+        PacketUtils.setGlowing(viewer, (Player) target.getNPC().getEntity(), false);
     }
 }

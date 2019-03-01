@@ -2,6 +2,8 @@ package com.z0cken.mc.Revive;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
@@ -22,7 +24,7 @@ public class RespawnHandler {
     private static HashMap<UUID, RespawnPhase> playerRespawns = new HashMap<>();
 
     public void handlePlayerDeath(Player player, int expToDrop) {
-        if(isRespawning(player)) {
+        if (isRespawning(player)) {
             Bukkit.getLogger().log(Level.WARNING, "Player '" + player.getName() + " is already respawning...");
             return;
         }
@@ -33,7 +35,7 @@ public class RespawnHandler {
     }
 
     public void removeRespawn(Player player) {
-        if(!isRespawning(player.getUniqueId())) {
+        if (!isRespawning(player.getUniqueId())) {
             Bukkit.getLogger().log(Level.WARNING, "Tried to handle respawn even though '" + player.getName() + " is alive...");
             return;
         }
@@ -41,18 +43,25 @@ public class RespawnHandler {
         playerRespawns.remove(player.getUniqueId());
     }
 
-    public RespawnPhase getRespawnInstance(Player player) {
-        if(!isRespawning(player.getUniqueId())) {
-            Bukkit.getLogger().log(Level.WARNING, "Tried to handle respawn even though '" + player.getName() + " is alive...");
-            return null;
+    public RespawnPhase getRespawnInstance(Entity player) {
+        if (player.hasMetadata("NPC") || player instanceof ArmorStand) {
+            Player target = Bukkit.getPlayer(player.getName());
+
+            if (target != null) {
+                RespawnPhase respawnPhase = getRespawnInstance(target);
+
+                if(respawnPhase != null && (respawnPhase.getNPC().getEntity() == player || respawnPhase.getArmorStand() == player)) {
+                    return respawnPhase;
+                }
+            }
         }
 
         return playerRespawns.get(player.getUniqueId());
     }
 
     public boolean hasNearbyDeadPlayer(Location location, double rangeSquared) {
-        for(RespawnPhase respawnPhase : playerRespawns.values()) {
-            if(respawnPhase.getPlayer().getLocation().distanceSquared(location) <= rangeSquared) {
+        for (RespawnPhase respawnPhase : playerRespawns.values()) {
+            if (respawnPhase.getPlayer().getLocation().distanceSquared(location) <= rangeSquared) {
                 return true;
             }
         }
@@ -64,13 +73,14 @@ public class RespawnHandler {
         return playerRespawns;
     }
 
-    public boolean isRespawning(Player player) {
-        return isRespawning(player.getUniqueId());
+    public boolean isRespawning(Entity player) {
+        return getRespawnInstance(player) != null;
     }
 
     public boolean isRespawning(UUID uuid) {
         return playerRespawns.containsKey(uuid);
     }
+
 
     public static RespawnHandler getHandler() {
         return handler;

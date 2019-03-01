@@ -13,7 +13,6 @@ public class PlayerDeathListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
-
         int exp = event.getDroppedExp();
 
         event.setKeepInventory(true);

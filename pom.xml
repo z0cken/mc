@@ -36,6 +36,14 @@
             <id>dmulloy2-repo</id>
             <url>http://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
+        <repository>
+            <id>everything</id>
+            <url>http://repo.citizensnpcs.co/</url>
+        </repository>
+        <repository>
+            <id>z0cken-repo</id>
+            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
+        </repository>
     </repositories>
 
 
@@ -53,6 +61,20 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib-API</artifactId>
             <version>4.4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.citizensnpcs</groupId>
+            <artifactId>citizens</artifactId>
+            <version>2.0.24-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.z0cken.mc.core</groupId>
+            <artifactId>PCS_Core-Bukkit</artifactId>
+            <version>LATEST</version>
         </dependency>
     </dependencies>
 </project>

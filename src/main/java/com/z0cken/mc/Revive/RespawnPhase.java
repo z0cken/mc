@@ -1,9 +1,12 @@
 package com.z0cken.mc.Revive;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import com.z0cken.mc.Revive.utils.PlayerUtils;
+import com.z0cken.mc.core.util.MessageBuilder;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
+import net.md_5.bungee.api.chat.ClickEvent;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -29,6 +32,7 @@ public class RespawnPhase {
     private final int expToDrop;
 
     private ArmorStand armorStand;
+    private NPC npc;
 
     private BukkitRunnable respawnRunnable;
 
@@ -47,6 +51,48 @@ public class RespawnPhase {
     }
 
     public void startRespawnPhase() {
+        PlayerUtils.clearPlayerInvAll(this.player);
+
+        //Make sure player is on ground
+        Location teleportLocation = this.player.getLocation();
+        while (!teleportLocation.getBlock().getRelative(BlockFace.DOWN).getType().isSolid()) {
+            teleportLocation = teleportLocation.getBlock().getRelative(BlockFace.DOWN).getLocation();
+        }
+
+        if(!teleportLocation.equals(this.player.getLocation())) {
+            this.player.teleport(teleportLocation);
+        }
+
+        this.npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, player.getName());
+        this.npc.spawn(player.getLocation());
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    sendBedPacket(player);
+                }
+            }
+        }.runTaskLater(Revive.getPlugin(), 20L);
+
+        //Try again with more delay because sometimes it bugs when skin loads in
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    try {
+                        Revive.getPlugin().getNmsBridge().sendHumanNPCBed(player, npc);
+                        Revive.getPlugin().getNmsBridge().sendBedRelMove(player, npc);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskLater(Revive.getPlugin(), 40L);
+
+
+        this.player.spigot().sendMessage(new MessageBuilder().define("hier", new ClickEvent(ClickEvent.Action.RUN_COMMAND, "respawn")).build(Revive.getPlugin().getConfig().getString("respawn-command")));
+
         this.player.setGameMode(GameMode.SPECTATOR);
 
         //Spawn entity
@@ -55,14 +101,18 @@ public class RespawnPhase {
         this.armorStand = (ArmorStand) this.player.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
         this.armorStand.setGravity(false);
         this.armorStand.setVisible(false);
-
-        this.player.setSpectatorTarget(this.armorStand);
+        this.armorStand.setCustomName(this.player.getName());
+        this.armorStand.setCustomNameVisible(false);
 
         this.respawnRunnable = new BukkitRunnable() {
             public void run() {
                 updateBossBar();
 
-                if(getTimeTillRespawnForced() <= 0) {
+                if (player.getGameMode() == GameMode.SPECTATOR) {
+                    player.setSpectatorTarget(armorStand);
+                }
+
+                if (getTimeTillRespawnForced() <= 0) {
                     //Task is cancelled in the endRespawnPhase method
                     respawnPlayer();
                 }
@@ -72,21 +122,32 @@ public class RespawnPhase {
     }
 
     public void revivePlayer() {
+        this.player.getInventory().setContents(this.inventoryContents);
+        this.player.getInventory().setArmorContents(this.armorContents);
+
+        this.player.getWorld().playSound(this.player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+
         endRespawnPhase();
     }
 
     public void respawnPlayer() {
-        for(ItemStack itemStack : this.inventoryContents) {
-            this.player.getWorld().dropItemNaturally(this.player.getLocation(), itemStack);
+        for (ItemStack itemStack : this.inventoryContents) {
+            if (itemStack != null) {
+                this.player.getWorld().dropItemNaturally(this.player.getLocation(), itemStack);
+            }
         }
 
-        for(ItemStack itemStack : this.armorContents) {
-            this.player.getWorld().dropItemNaturally(this.player.getLocation(), itemStack);
+        for (ItemStack itemStack : this.armorContents) {
+            if (itemStack != null) {
+                this.player.getWorld().dropItemNaturally(this.player.getLocation(), itemStack);
+            }
         }
 
         //Drop experience
-        this.player.getWorld().spawn(this.player.getLocation(), ExperienceOrb.class).setExperience(this.expToDrop);
-        this.player.setTotalExperience(this.player.getTotalExperience() - this.expToDrop);
+        if (this.expToDrop > 0) {
+            this.player.getWorld().spawn(this.player.getLocation(), ExperienceOrb.class).setExperience(this.expToDrop);
+            this.player.setTotalExperience(this.player.getTotalExperience() - this.expToDrop);
+        }
 
         endRespawnPhase();
         this.player.teleport(this.player.getWorld().getSpawnLocation());
@@ -102,9 +163,15 @@ public class RespawnPhase {
 
         this.personalBossBar.removePlayer(player);
 
-        for(Player player : this.externalBossBar.getPlayers()) {
+        for (Player player : this.externalBossBar.getPlayers()) {
             this.externalBossBar.removePlayer(player);
         }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Revive.getPlugin().getNmsBridge().sendBedBlockChange(player, this.npc, true);
+        }
+
+        this.npc.destroy();
     }
 
     private void updateBossBar() {
@@ -116,13 +183,13 @@ public class RespawnPhase {
 
         BarColor barColor = BarColor.GREEN;
 
-        if(timeTillForce < RespawnHandler.SECONDS_TILL_RESPAWN_FORCE*0.25) {
+        if (timeTillForce < RespawnHandler.SECONDS_TILL_RESPAWN_FORCE * 0.25) {
             barColor = BarColor.RED;
-        } else if(timeTillForce < RespawnHandler.SECONDS_TILL_RESPAWN_FORCE*0.5) {
+        } else if (timeTillForce < RespawnHandler.SECONDS_TILL_RESPAWN_FORCE * 0.5) {
             barColor = BarColor.YELLOW;
         }
 
-        if(this.externalBossBar.getColor() != barColor) {
+        if (this.externalBossBar.getColor() != barColor) {
             this.externalBossBar.setColor(barColor);
 
             //We only update both bars at the same time which means if external has the wrong colour the personal has the wrong colour too
@@ -132,9 +199,9 @@ public class RespawnPhase {
 
     public void tryShowBossBarTo(Player reviver) {
         //The player at least needs one totem of undying
-        if(!reviver.getInventory().contains(Material.TOTEM_OF_UNDYING, 1)) {
+        if (!reviver.getInventory().contains(Material.TOTEM_OF_UNDYING, 1)) {
             //If the player sees the boss bar we need to hide it
-            if(this.externalBossBar.getPlayers().contains(reviver)) {
+            if (this.externalBossBar.getPlayers().contains(reviver)) {
                 hideBossBarFrom(reviver);
             }
 
@@ -146,6 +213,16 @@ public class RespawnPhase {
 
     public void hideBossBarFrom(Player reviver) {
         this.externalBossBar.removePlayer(reviver);
+    }
+
+    public void sendBedPacket(Player player) {
+        try {
+            Revive.getPlugin().getNmsBridge().sendBedBlockChange(player, this.npc, false);
+            Revive.getPlugin().getNmsBridge().sendHumanNPCBed(player, this.npc);
+            Revive.getPlugin().getNmsBridge().sendBedRelMove(player, this.npc);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 
@@ -185,4 +262,11 @@ public class RespawnPhase {
         return this.externalBossBar;
     }
 
+    public NPC getNPC() {
+        return npc;
+    }
+
+    public ArmorStand getArmorStand() {
+        return armorStand;
+    }
 }
