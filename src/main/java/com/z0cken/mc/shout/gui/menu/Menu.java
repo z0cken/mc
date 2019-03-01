@@ -18,10 +18,12 @@ public class Menu extends CraftInventoryCustom implements Listener {
     private final PCS_Shout pcs_shout = PCS_Shout.getInstance();
     private final List<Page> pages;
     private int currentPage = 0;
+    private Player player;
 
-    public Menu(int rows, String title){
+    public Menu(int rows, String title, Player player){
         super(null, rows * 9, title);
         pages = new ArrayList<>();
+        this.player = player;
         pcs_shout.getServer().getPluginManager().registerEvents(this, pcs_shout);
     }
 
@@ -82,6 +84,10 @@ public class Menu extends CraftInventoryCustom implements Listener {
             currentPage = i;
             setContents(pages.get(i).getContents());
         }
+    }
+
+    public Player getPlayer(){
+        return this.player;
     }
 
     public List<Page> getPages(){

@@ -21,7 +21,7 @@ public class ShoutPage extends Page{
         menu.addPage(this);
         ShoutGroup group = ShoutManager.SHOUTS.get(groupID);
         for(Shout shout : group.getShouts().values()){
-            ShoutButton button = new ShoutButton(shout.getMaterial(), groupID, shout.getId());
+            ShoutButton button = new ShoutButton(shout.getMaterial(), p, groupID, shout.getId());
             this.addItem(button);
         }
     }

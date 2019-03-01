@@ -47,10 +47,7 @@ public class MainPage extends Page{
             int keyIndex = i % 9;
             if(keyIndex < keys.length){
                 ShoutGroup group = ShoutManager.SHOUTS.get(keys[keyIndex]);
-                CategoryButton groupStack = new CategoryButton(group.getMaterial(), keys[keyIndex]);
-                ItemMeta groupMeta = groupStack.getItemMeta();
-                groupMeta.setDisplayName(group.getName());
-                groupStack.setItemMeta(groupMeta);
+                CategoryButton groupStack = new CategoryButton(group.getMaterial(), keys[keyIndex], p);
                 this.setItem(i, groupStack);
                 new ShoutPage(slots, group.getId()).build(menu, p);
             }

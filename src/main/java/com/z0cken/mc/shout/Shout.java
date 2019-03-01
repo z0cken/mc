@@ -32,7 +32,7 @@ public class Shout {
     }
 
     public boolean hasPermission(){
-        if(this.permission == null){
+        if(this.permission == null || this.permission.isEmpty()){
             return false;
         }
         return true;

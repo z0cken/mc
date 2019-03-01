@@ -27,6 +27,9 @@ public class ShoutManager {
 
     @SuppressWarnings("Duplicates")
     public static void load(){
+        if(SHOUTS.size() > 0){
+            SHOUTS.clear();
+        }
         configFile = new File(PCS_Shout.getInstance().getDataFolder() + "/shouts.yml");
         if(!configFile.exists()){
             PCS_Shout.getInstance().saveResource("shouts.yml", false);
@@ -43,11 +46,12 @@ public class ShoutManager {
             String groupName = groupSection.getString("name");
             String groupPermission = groupSection.contains("permission") ? groupSection.getString("permission") : null;
             String groupMaterialString = groupSection.getString("material");
+            double groupPrice = groupSection.contains("price") ? groupSection.getDouble("price") : -1;
             Material groupMaterial = null;
             if(Material.valueOf(groupMaterialString) != null){
                 groupMaterial = Material.valueOf(groupMaterialString);
             }
-            ShoutGroup group = new ShoutGroup(groupID, groupName, groupPermission, groupMaterial);
+            ShoutGroup group = new ShoutGroup(groupID, groupPrice, groupName, groupPermission, groupMaterial);
             ConfigurationSection shoutsSection = groupSection.getConfigurationSection("shouts");
             for(String shoutKey : shoutsSection.getKeys(false)){
                 ConfigurationSection shoutSection = shoutsSection.getConfigurationSection(shoutKey);
@@ -62,7 +66,7 @@ public class ShoutManager {
                 if(Material.valueOf(shoutMaterialString) != null){
                     shoutMaterial = Material.valueOf(shoutMaterialString);
                 }
-                double shoutPrice = shoutSection.contains("price") ? shoutSection.getDouble("price") : 0;
+                double shoutPrice = shoutSection.contains("price") ? shoutSection.getDouble("price") : -1;
                 Shout shout = new Shout(shoutID, shoutName, shoutPath, shoutPermission, shoutMaterial, shoutPrice, volume, pitch);
                 group.addShout(shoutID, shout);
             }

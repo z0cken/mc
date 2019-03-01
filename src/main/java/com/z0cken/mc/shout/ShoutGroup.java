@@ -9,13 +9,15 @@ public class ShoutGroup {
     private String permission;
     private HashMap<Integer, Shout> shouts;
     private Material material;
+    private double price;
     private int id;
 
-    public ShoutGroup(int id, String name, String permission, Material material){
+    public ShoutGroup(int id, double price, String name, String permission, Material material){
         this.id = id;
         this.name = name;
         this.permission = permission;
         this.material = material;
+        this.price = price;
         this.shouts = new HashMap<>();
     }
 
@@ -50,5 +52,9 @@ public class ShoutGroup {
 
     public int getId(){
         return this.id;
+    }
+
+    public double getPrice(){
+        return this.price;
     }
 }
