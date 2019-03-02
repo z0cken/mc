@@ -119,6 +119,7 @@ class ProtectionListener implements Listener {
         Material.BUCKET,
         Material.LAVA_BUCKET,
         Material.WATER_BUCKET,
+        Material.FLINT_AND_STEEL,
 
         //Boats
         Material.ACACIA_BOAT,
@@ -183,7 +184,7 @@ class ProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
-        if(block == null || !INTERACTABLE_BLOCKS.contains(block.getType()) && !INTERACTABLE_ITEMS.contains(block.getType())) return;
+        if(block == null || !INTERACTABLE_BLOCKS.contains(block.getType()) && !INTERACTABLE_ITEMS.contains(event.getItem().getType())) return;
 
         handleManipulation(event, event.getClickedBlock().getChunk(), event.getPlayer());
     }
