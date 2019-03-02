@@ -10,9 +10,11 @@ public class Shout {
     private double price;
     private float volume;
     private float pitch;
+    private int groupID;
     private int id;
 
-    public Shout(int id, String name, String path, String permission, Material mat, double price, float volume, float pitch){
+    public Shout(int groupID, int id, String name, String path, String permission, Material mat, double price, float volume, float pitch){
+        this.groupID = groupID;
         this.id = id;
         this.name = name;
         this.path = path;
@@ -60,5 +62,9 @@ public class Shout {
 
     public int getId(){
         return this.id;
+    }
+
+    public int getGroupID(){
+        return this.groupID;
     }
 }

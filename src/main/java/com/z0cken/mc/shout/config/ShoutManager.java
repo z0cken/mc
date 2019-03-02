@@ -20,6 +20,7 @@ import java.util.Set;
 public class ShoutManager {
     private static File configFile;
     private static FileConfiguration config;
+    private static String bypassPermission;
     public static final HashMap<Integer, ShoutGroup> SHOUTS = new HashMap<>();
 
     public static void init(){
@@ -67,7 +68,7 @@ public class ShoutManager {
                     shoutMaterial = Material.valueOf(shoutMaterialString);
                 }
                 double shoutPrice = shoutSection.contains("price") ? shoutSection.getDouble("price") : -1;
-                Shout shout = new Shout(shoutID, shoutName, shoutPath, shoutPermission, shoutMaterial, shoutPrice, volume, pitch);
+                Shout shout = new Shout(groupID, shoutID, shoutName, shoutPath, shoutPermission, shoutMaterial, shoutPrice, volume, pitch);
                 group.addShout(shoutID, shout);
             }
             SHOUTS.put(groupID, group);

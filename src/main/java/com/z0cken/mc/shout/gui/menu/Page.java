@@ -44,7 +44,7 @@ public abstract class Page {
         return this.stacks;
     }
 
-    public void click(Menu menu, InventoryClickEvent e){
+    public void click(Menu menu, InventoryClickEvent e, Player p){
         ItemStack clickedStack = getItem(e.getSlot());
         e.setCancelled(true);
         if(clickedStack != null && clickedStack instanceof Button){
@@ -83,4 +83,5 @@ public abstract class Page {
 
     public abstract boolean close(InventoryCloseEvent e);
     public abstract void build(Menu menu, Player p);
+    public abstract void load(Menu menu, Player p);
 }

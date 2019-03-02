@@ -5,10 +5,14 @@ import com.z0cken.mc.shout.Shout;
 import com.z0cken.mc.shout.ShoutGroup;
 import com.z0cken.mc.shout.config.ShoutManager;
 import com.z0cken.mc.shout.gui.ShoutFavorite;
+import com.z0cken.mc.shout.gui.ShoutFavoriteManager;
 import com.z0cken.mc.shout.gui.ShoutFavorites;
+import com.z0cken.mc.shout.gui.button.Button;
 import com.z0cken.mc.shout.gui.button.CategoryButton;
+import com.z0cken.mc.shout.gui.button.FavoriteButton;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.Set;
 
+@SuppressWarnings("Duplicates")
 public class MainPage extends Page{
     public MainPage(int slots) {
         super(slots, "Main");
@@ -25,13 +30,18 @@ public class MainPage extends Page{
     @Override
     public void build(Menu menu, Player p){
         menu.addPage(this);
+        load(menu, p);
+    }
+
+    @Override
+    public void load(Menu menu, Player p) {
         ShoutFavorites favorites = PCS_Shout.getInstance().getFavoriteManager().getFavorites(p.getUniqueId().toString());
         if(favorites != null){
             for(int i = 0; i < 9; i++){
                 ShoutFavorite favorite = favorites.getFavorite(i);
                 if(favorite != null){
                     Shout shout = ShoutManager.SHOUTS.get(favorite.getGroupID()).getShouts().get(favorite.getShoutID());
-                    this.setItem(i, new ItemStack(shout.getMaterial()));
+                    this.setItem(i, new FavoriteButton(shout.getMaterial(), p, shout.getGroupID(), shout.getId()));
                 }
             }
         }
@@ -57,5 +67,33 @@ public class MainPage extends Page{
     @Override
     public boolean close(InventoryCloseEvent e) {
         return true;
+    }
+
+    @Override
+    public void click(Menu menu, InventoryClickEvent e, Player p){
+        ItemStack clickedStack = getItem(e.getSlot());
+        e.setCancelled(true);
+        if(clickedStack != null && clickedStack instanceof Button){
+            Button button = (Button)clickedStack;
+            if(clickedStack instanceof FavoriteButton){
+                FavoriteButton fButton = (FavoriteButton)button;
+                ClickType clickType = e.getClick();
+                if(clickType == ClickType.LEFT){
+                    fButton.click(menu, e);
+                }
+                if(clickType == ClickType.SHIFT_RIGHT){
+                    int groupID = fButton.getGroupID();
+                    int shoutID = fButton.getShoutID();
+                    ShoutFavorites favorites = PCS_Shout.getInstance().getFavoriteManager().getFavorites(p.getUniqueId().toString());
+                    if(favorites.hasFavorite(groupID, shoutID)){
+                        favorites.removeFavorite(groupID, shoutID);
+                    }
+                    this.setItem(e.getSlot(), null);
+                    menu.showPage(menu.getCurrentPage());
+                }
+            }else{
+                button.click(menu, e);
+            }
+        }
     }
 }

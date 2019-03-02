@@ -104,7 +104,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
                 if(topInventory != null && bottomInventory != null && topInventory.equals(this)){
                     e.setCancelled(true);
                     if(!e.getClickedInventory().equals(bottomInventory)){
-                        pages.get(currentPage).click(this, e);
+                        pages.get(currentPage).click(this, e, p);
                     }
                 }
             }
@@ -113,18 +113,20 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
     @EventHandler
     public void onClose(InventoryCloseEvent e){
-        if(!pages.get(currentPage).close(e)){
-            if(e.getPlayer() instanceof Player) {
-                Player p = (Player) e.getPlayer();
-                if(pages.get(currentPage) instanceof ShoutPage){
-                    this.showPage(0);
-                    Menu menu = this;
-                    pcs_shout.getServer().getScheduler().scheduleSyncDelayedTask(pcs_shout, new Runnable() {
-                        @Override
-                        public void run() {
-                            p.openInventory(menu);
-                        }
-                    }, 1);
+        if(e.getInventory().equals(this)){
+            if(!pages.get(currentPage).close(e)){
+                if(e.getPlayer() instanceof Player) {
+                    Player p = (Player) e.getPlayer();
+                    if(pages.get(currentPage) instanceof ShoutPage){
+                        this.showPage(0);
+                        Menu menu = this;
+                        pcs_shout.getServer().getScheduler().scheduleSyncDelayedTask(pcs_shout, new Runnable() {
+                            @Override
+                            public void run() {
+                                p.openInventory(menu);
+                            }
+                        }, 1);
+                    }
                 }
             }
         }

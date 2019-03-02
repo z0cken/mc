@@ -35,30 +35,27 @@ public class CategoryButton extends Button{
 
     @Override
     protected ClickEvent createClickEvent() {
-        ClickEvent event = ((menu, e) -> {
-            if(e.getWhoClicked() instanceof Player){
-                Player p = (Player)e.getWhoClicked();
-                ShoutGroup group = ShoutManager.SHOUTS.get(groupID);
-                Page page = menu.getPages().stream().filter(page1 -> page1.getName().equals(group.getName())).findFirst().orElse(null);
-                if(page != null){
-                    if(group.hasPermission()){
-                        if(p.hasPermission(group.getPermission())){
-                            menu.showPage(menu.getCurrentPage());
-                        }else{
-                            if(group.getPrice() > 0 && PCS_Shout.getInstance().getEconomy().has(p, group.getPrice())){
-                                if(PCS_Shout.getInstance().getEconomy().withdrawPlayer(p, group.getPrice()).type == EconomyResponse.ResponseType.SUCCESS){
-                                    this.setType(group.getMaterial());
-                                    ItemMeta meta = this.getItemMeta();
-                                    meta.setLore(null);
-                                    this.setItemMeta(meta);
-                                    PCS_Shout.getInstance().getPermissions().playerAdd(p, group.getPermission());
-                                    menu.showPage(menu.getCurrentPage());
-                                }
+        ClickEvent event = ((menu, e, p) -> {
+            ShoutGroup group = ShoutManager.SHOUTS.get(groupID);
+            Page page = menu.getPages().stream().filter(page1 -> page1.getName().equals(group.getName())).findFirst().orElse(null);
+            if(page != null){
+                if(group.hasPermission()){
+                    if(p.hasPermission(group.getPermission())){
+                        menu.showPage(page.getIndex());
+                    }else{
+                        if(group.getPrice() > 0 && PCS_Shout.getInstance().getEconomy().has(p, group.getPrice())){
+                            if(PCS_Shout.getInstance().getEconomy().withdrawPlayer(p, group.getPrice()).type == EconomyResponse.ResponseType.SUCCESS){
+                                this.setType(group.getMaterial());
+                                ItemMeta meta = this.getItemMeta();
+                                meta.setLore(null);
+                                this.setItemMeta(meta);
+                                PCS_Shout.getInstance().getPermissions().playerAdd(p, group.getPermission());
+                                menu.showPage(menu.getCurrentPage());
                             }
                         }
-                    }else{
-                        menu.showPage(page.getIndex());
                     }
+                }else{
+                    menu.showPage(page.getIndex());
                 }
             }
         });

@@ -8,6 +8,7 @@ import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.shout.commands.ShoutCommand;
 import com.z0cken.mc.shout.config.ConfigManager;
 import com.z0cken.mc.shout.config.ShoutManager;
+import com.z0cken.mc.shout.events.PlayerListener;
 import com.z0cken.mc.shout.gui.ShoutFavoriteManager;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -38,15 +39,10 @@ public class PCS_Shout extends JavaPlugin {
 
     @Override
     public void onEnable(){
-        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
-        if(permissionProvider != null){
-            vaultPermission = permissionProvider.getProvider();
-        }
-        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
-        if(economyProvider != null){
-            vaultEconomy = economyProvider.getProvider();
-        }
+        registerPermissions();
+        registerEconomy();
         registerCommands();
+        registerListeners();
         getLogger().info("Enabled");
     }
 
@@ -54,6 +50,24 @@ public class PCS_Shout extends JavaPlugin {
     public void onDisable(){
         saveFavorites();
         getLogger().info("Disabled");
+    }
+
+    private void registerPermissions(){
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+        if(permissionProvider != null){
+            vaultPermission = permissionProvider.getProvider();
+        }
+    }
+
+    private void registerEconomy(){
+        RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
+        if(economyProvider != null){
+            vaultEconomy = economyProvider.getProvider();
+        }
+    }
+
+    private void registerListeners(){
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
     }
 
     private void registerCommands(){

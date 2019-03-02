@@ -20,7 +20,34 @@ public class ShoutFavorites {
         return null;
     }
 
+    public int firstFree(){
+        for(int i = 0; i < favorites.length; i++){
+            if(favorites[i] == null){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public ShoutFavorite[] getFavorites(){
         return this.favorites;
+    }
+
+    public boolean hasFavorite(int groupID, int shoutID){
+        for(ShoutFavorite favorite : favorites){
+            if(favorite != null && favorite.getGroupID() == groupID && favorite.getShoutID() == shoutID){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeFavorite(int groupID, int shoutID){
+        for(int i = 0; i < favorites.length; i++){
+            ShoutFavorite favorite = favorites[i];
+            if(favorite != null && favorite.getGroupID() == groupID && favorite.getShoutID() == shoutID){
+                favorites[i] = null;
+            }
+        }
     }
 }
