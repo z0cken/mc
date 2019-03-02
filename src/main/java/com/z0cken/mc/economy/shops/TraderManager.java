@@ -56,7 +56,17 @@ public class TraderManager {
     }
 
     public int generateTraderID(){
-        return traders.size() + 1;
+        boolean found = false;
+        int traderID = traders.size() + 1;
+        while(!found){
+            int lPreTraderID = traderID;
+            if(traders.stream().filter(t -> t.getTraderID() == lPreTraderID).findFirst().orElse(null) != null){
+                traderID++;
+            }else{
+                found = true;
+            }
+        }
+        return traderID;
     }
 
     public ArrayList<Trader> getTraders(){

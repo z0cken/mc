@@ -34,7 +34,7 @@ public class InventoryListener implements Listener {
         Inventory topInventory = player.getOpenInventory().getTopInventory();
         InventoryMeta information = null;
         if(topInventory != null && pcs_economy.inventoryManager.getInventories().containsKey(topInventory)){
-            information = pcs_economy.inventoryManager.getInventories().get(e.getClickedInventory());
+            information = pcs_economy.inventoryManager.getInventories().get(topInventory);
             if(information.getType() == TradeInventoryType.TRADE || information.getType() == TradeInventoryType.SELECTION){
                 e.setCancelled(true);
             }
