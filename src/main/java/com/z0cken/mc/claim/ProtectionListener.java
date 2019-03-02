@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -260,4 +261,13 @@ class ProtectionListener implements Listener {
         else event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.portal-new")));
     }
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onFlow(BlockFromToEvent event) {
+        if(event.getBlock().getChunk() == event.getToBlock().getChunk()) return;
+        final Claim to = PCS_Claim.getClaim(event.getToBlock().getChunk());
+        if(to == null) return;
+        final Claim from = PCS_Claim.getClaim(event.getBlock().getChunk());
+        if(from != null && to.canBuild(from.getOwner())) return;
+        event.setCancelled(true);
+    }
 }
