@@ -185,7 +185,8 @@ class ProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
-        if(block == null || !INTERACTABLE_BLOCKS.contains(block.getType()) && !INTERACTABLE_ITEMS.contains(event.getItem().getType())) return;
+        if((block == null || !INTERACTABLE_BLOCKS.contains(block.getType()))
+        && (event.getItem() == null || !INTERACTABLE_ITEMS.contains(event.getItem().getType()))) return;
 
         handleManipulation(event, event.getClickedBlock().getChunk(), event.getPlayer());
     }
