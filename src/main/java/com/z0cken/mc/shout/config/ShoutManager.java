@@ -3,25 +3,22 @@ package com.z0cken.mc.shout.config;
 import com.z0cken.mc.shout.PCS_Shout;
 import com.z0cken.mc.shout.Shout;
 import com.z0cken.mc.shout.ShoutGroup;
-import com.z0cken.mc.shout.gui.menu.Menu;
-import io.netty.util.internal.SuppressJava6Requirement;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 public class ShoutManager {
     private static File configFile;
     private static FileConfiguration config;
     private static String bypassPermission;
+    private static int defaultCooldown;
     public static final HashMap<Integer, ShoutGroup> SHOUTS = new HashMap<>();
+    public static final ArrayList<String> MAIN_COOLDOWN = new ArrayList<>();
 
     public static void init(){
     }
@@ -39,6 +36,8 @@ public class ShoutManager {
 
         float defaultVolume = (float)config.getDouble("shouts.settings.defaultVolume");
         float defaultPitch = (float)config.getDouble("shouts.settings.defaultPitch");
+        bypassPermission = config.getString("shouts.permissions.bypassCooldown");
+        defaultCooldown = config.getInt("shouts.settings.defaultCooldown");
 
         ConfigurationSection groupsSection = config.getConfigurationSection("shouts.groups");
         for (String groupKey : groupsSection.getKeys(false)){
@@ -63,20 +62,25 @@ public class ShoutManager {
                 String shoutMaterialString = shoutSection.getString("material");
                 float volume = shoutSection.contains("volume") ? (float)shoutSection.getDouble("volume") : defaultVolume;
                 float pitch = shoutSection.contains("pitch") ? (float)shoutSection.getDouble("pitch") : defaultPitch;
+                int timeInSeconds = shoutSection.contains("time") ? shoutSection.getInt("time") : -1;
+                int cooldown = shoutSection.contains("cooldown") ? shoutSection.getInt("cooldown") : defaultCooldown;
                 Material shoutMaterial = null;
                 if(Material.valueOf(shoutMaterialString) != null){
                     shoutMaterial = Material.valueOf(shoutMaterialString);
                 }
                 double shoutPrice = shoutSection.contains("price") ? shoutSection.getDouble("price") : -1;
-                Shout shout = new Shout(groupID, shoutID, shoutName, shoutPath, shoutPermission, shoutMaterial, shoutPrice, volume, pitch);
+                Shout shout = new Shout(groupID, shoutID, shoutName, shoutPath, shoutPermission, shoutMaterial, shoutPrice, volume, pitch, timeInSeconds, cooldown);
                 group.addShout(shoutID, shout);
             }
             SHOUTS.put(groupID, group);
         }
     }
 
-    public static Menu getShoutMenu(Player player){
+    public static String getBypassPermission(){
+        return bypassPermission;
+    }
 
-        return null;
+    public static int getDefaultCooldown(){
+        return defaultCooldown;
     }
 }

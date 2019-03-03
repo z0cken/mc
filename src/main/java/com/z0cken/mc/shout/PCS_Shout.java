@@ -1,6 +1,7 @@
 package com.z0cken.mc.shout;
 
 import co.aikar.commands.BukkitCommandManager;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.z0cken.mc.core.bukkit.PCS_Core;
@@ -78,6 +79,16 @@ public class PCS_Shout extends JavaPlugin {
            }
            return true;
         }));
+        commandManager.getCommandCompletions().registerCompletion("slots", c -> ImmutableList.of(
+                String.valueOf(1),
+                String.valueOf(2),
+                String.valueOf(3),
+                String.valueOf(4),
+                String.valueOf(5),
+                String.valueOf(6),
+                String.valueOf(7),
+                String.valueOf(8),
+                String.valueOf(9)));
     }
 
     private void saveFavorites(){

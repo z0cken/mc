@@ -38,9 +38,9 @@ public class ShoutButton extends Button{
     protected ClickEvent createClickEvent(){
         ClickEvent event = ((menu, e, p) -> {
             Shout shout = ShoutManager.SHOUTS.get(groupID).getShouts().get(shoutID);
-            if(shout.hasPermission()){
+            if(shout.hasPermission() && !p.isOp()){
                 if(p.hasPermission(shout.getPermission())){
-                    p.getWorld().playSound(p.getLocation(), shout.getPath(), shout.getVolume(), shout.getPitch());
+                    shout.play(p);
                 }else{
                     if(shout.getPrice() > 0 && PCS_Shout.getInstance().getEconomy().has(p, shout.getPrice())){
                         if(PCS_Shout.getInstance().getEconomy().withdrawPlayer(p, shout.getPrice()).type == EconomyResponse.ResponseType.SUCCESS){
@@ -54,7 +54,7 @@ public class ShoutButton extends Button{
                     }
                 }
             }else{
-                p.getWorld().playSound(p.getLocation(), shout.getPath(), shout.getVolume(), shout.getPitch());
+                shout.play(p);
             }
         });
         return event;

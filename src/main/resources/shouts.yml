@@ -44,6 +44,7 @@ shouts:
   settings:
     defaultVolume: 1
     defaultPitch: 1
+    defaultCooldown: 5
   groups:
     ronny:
       id: 1
