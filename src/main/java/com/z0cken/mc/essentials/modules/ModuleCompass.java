@@ -6,7 +6,10 @@ import com.z0cken.mc.core.FriendsAPI;
 import com.z0cken.mc.core.bukkit.Menu;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,12 +53,10 @@ public class ModuleCompass extends Module implements Listener {
         if(event.getMaterial() == Material.COMPASS && player.getWorld().getEnvironment() == World.Environment.NORMAL) {
 
             if(event.getAction().name().startsWith("L")) {
-                if(player.getGameMode() == GameMode.CREATIVE && player.hasPermission("worldedit.navigation.jumpto.tool")) return;
                 MessageBuilder builder = new MessageBuilder().define("DISTANCE", Integer.toString((int) player.getCompassTarget().distance(player.getLocation())));
                 player.spigot().sendMessage(builder.build(getConfig().getString("messages.left-click")));
 
             } else {
-                if(player.getGameMode() == GameMode.CREATIVE && player.hasPermission("worldedit.navigation.thru.tool")) return;
                 player.openInventory(new CompassMenu(player));
             }
         }
@@ -202,7 +203,6 @@ public class ModuleCompass extends Module implements Listener {
             if(items % (i * 9) == 0) return i;
 
             int val = i * 9 - items % (i * 9);
-            Bukkit.broadcastMessage(i + "|" + val + "|" + max);
             if(val < max) {
                 max = val;
                 result = i;
