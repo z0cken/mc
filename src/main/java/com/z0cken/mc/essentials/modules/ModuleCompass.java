@@ -116,14 +116,14 @@ public class ModuleCompass extends Module implements Listener {
             int page = Math.max(0, (int)((double) i / (friendMenu.getSize() - (multiPage ? 9 : 0))));
             int slot = i % (friendMenu.getSize() - (multiPage ? 9 : 0));
 
-            Menu.Button chunkButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
-                setTarget(player, friend);
-                player.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.selected")));
+            Menu.PricedButton chunkButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
+                setTarget(player1, friend);
+                player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.selected")));
             }, price, Material.PLAYER_HEAD);
 
             SkullMeta itemMeta = (SkullMeta) chunkButton.getItemMeta();
-            itemMeta.setDisplayName(player.getName());
-            itemMeta.setOwningPlayer(player);
+            itemMeta.setDisplayName(friend.getName());
+            itemMeta.setOwningPlayer(friend);
             chunkButton.setItemMeta(itemMeta);
 
             friendMenu.setItem(page, slot, chunkButton);
@@ -161,7 +161,8 @@ public class ModuleCompass extends Module implements Listener {
             }, price, base.isSolid() ? base : Material.END_PORTAL_FRAME);
 
             ItemMeta itemMeta = chunkButton.getItemMeta();
-            itemMeta.setLore(List.of(claim.getChunkCoordinate().getX()+"|"+claim.getChunkCoordinate().getZ()));
+            itemMeta.setDisplayName(claim.getChunkCoordinate().getX()+"|"+claim.getChunkCoordinate().getZ());
+            //TODO Add claim date to lore
             chunkButton.setItemMeta(itemMeta);
 
             chunkMenu.setItem(page, slot, chunkButton);
