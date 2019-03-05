@@ -60,7 +60,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
 
     @EventHandler
     public void onJoin(PostLoginEvent event) {
-        PersonaAPI.cachePlayer(event.getPlayer().getUniqueId());
+        PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
     }
 
     @Override

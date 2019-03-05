@@ -26,6 +26,8 @@ import java.util.*;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class Persona {
 
+    private UUID uuid;
+
     //pr0gramm
     private String name;
     private long registered;
@@ -39,17 +41,26 @@ public final class Persona {
     private UUID host;
     private long invited;
 
-    Persona(@Nonnull UUID uuid) throws HttpResponseException, UnirestException, SQLException {
-        String host = DatabaseHelper.getHost(uuid);
+    SortedSet<Badge> badges;
 
-        if(host != null) {
-            this.host = UUID.fromString(host);
-            invited = DatabaseHelper.getInvited(uuid);
-        } else {
-            name = DatabaseHelper.getUsername(uuid);
+    Persona(@Nonnull UUID uuid) throws SQLException, HttpResponseException, UnirestException  {
+        this.uuid = uuid;
+
+        String name = DatabaseHelper.getUsername(uuid);
+
+        if(name != null) {
+            this.name = name;
             anonymized = DatabaseHelper.isAnonymized(uuid);
             fetchProfile();
+        } else {
+            String host = DatabaseHelper.getHost(uuid);
+            if(host != null) {
+                this.host = UUID.fromString(host);
+                invited = DatabaseHelper.getInvited(uuid);
+            }
         }
+
+        badges = DatabaseHelper.getBadges(uuid);
     }
 
     void fetchProfile() throws HttpResponseException, UnirestException {
@@ -72,10 +83,8 @@ public final class Persona {
         banned = userObject.getInt("banned") == 1;
 
         if(banned) {
-            try {
-                bannedUntil = LocalDateTime.ofInstant(Instant.ofEpochMilli(userObject.getLong("bannedUntil")), TimeZone.getTimeZone(ZoneOffset.ofHours(1)).toZoneId());
-                //bannedUntil might be null
-            } catch (NumberFormatException ignored) { }
+            if(!userObject.isNull("bannedUntil"))
+            bannedUntil = LocalDateTime.ofInstant(Instant.ofEpochMilli(userObject.getLong("bannedUntil")), TimeZone.getTimeZone(ZoneOffset.ofHours(1)).toZoneId());
         }
     }
 
@@ -101,6 +110,28 @@ public final class Persona {
 
     public Mark getMark() {
         return mark;
+    }
+
+    public boolean isGuest() {
+        return host != null;
+    }
+
+    public boolean isAnonymized() {
+        return anonymized;
+    }
+
+    public void setAnonymized(boolean anonymized) {
+        DatabaseHelper.setAnonymized(uuid, anonymized);
+        this.anonymized = anonymized;
+    }
+
+    public SortedSet<Badge> getBadges() {
+        return Collections.unmodifiableSortedSet(badges);
+    }
+
+    public void awardBadge(Badge badge) throws SQLException {
+        DatabaseHelper.awardBadge(uuid, badge);
+        badges.add(badge);
     }
 
     public HoverEvent getHoverEvent(List<String> guest, List<String> member) {
@@ -135,6 +166,11 @@ public final class Persona {
             if(i + 1 < list.size()) componentBuilder.append("\n");
         }
 
+        for(Badge badge : badges) {
+            componentBuilder.append("\n");
+            componentBuilder.append(badge.getTitle()).color(badge.getColor());
+        }
+
         return new HoverEvent(HoverEvent.Action.SHOW_TEXT, componentBuilder.create());
     }
 
@@ -159,15 +195,6 @@ public final class Persona {
         boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
         String result = hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
         return value < 0 ? "-" + result : result;
-    }
-
-
-    public boolean isGuest() {
-        return host != null;
-    }
-
-    public boolean isAnonymized() {
-        return anonymized;
     }
 
     /** @noinspection SpellCheckingInspection*/
@@ -221,6 +248,27 @@ public final class Persona {
 
         public int getMaxInvites() {
             return maxInvites;
+        }
+    }
+
+    public enum Badge {
+        ADMIN("Administrator", ChatColor.GOLD),
+        EARLY_SUPPORTER("Early Supporter", ChatColor.DARK_AQUA);
+
+        private String title;
+        private ChatColor color;
+
+        Badge(String title, ChatColor color) {
+            this.title = title;
+            this.color = color;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public ChatColor getColor() {
+            return color;
         }
     }
 

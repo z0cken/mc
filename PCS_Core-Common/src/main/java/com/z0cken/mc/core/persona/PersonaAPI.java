@@ -34,7 +34,7 @@ public final class PersonaAPI {
                 while(iterator.hasNext()) {
                     Map.Entry<UUID, Persona> entry = iterator.next();
                     if(!CoreBridge.getPlugin().isOnline(entry.getKey())) iterator.remove();
-                    else try {
+                    else if(!entry.getValue().isGuest()) try {
                         entry.getValue().fetchProfile();
                     } catch (HttpResponseException | UnirestException e) {
                         e.printStackTrace();
@@ -44,37 +44,27 @@ public final class PersonaAPI {
         }.schedule();
     }
 
-    public static Persona getPersona(UUID uuid) {
+    public static Persona getPersona(UUID uuid) throws SQLException, UnirestException, HttpResponseException {
         Persona persona = cache.getOrDefault(uuid, null);
         if(persona != null) return persona;
 
-        try {
-            persona = new Persona(uuid);
-        } catch (HttpResponseException | UnirestException | SQLException e) {
-            e.printStackTrace();
+        persona = new Persona(uuid);
+        if(persona.getName() != null || persona.isGuest()) {
+            if(CoreBridge.getPlugin().isOnline(uuid)) cache.put(uuid, persona);
+            return persona;
         }
 
-        return persona;
+        return null;
     }
 
-    public static void cachePlayer(UUID uuid) {
-        if(!initialized) throw new IllegalStateException(PersonaAPI.class.getName() + " not yet initialized!");
-
-        new CoreTask(true, TimeUnit.SECONDS, 0L, cacheInterval) {
-            @Override
-            public void run() {
-                if(CoreBridge.getPlugin().isOnline(uuid)) this.cancel();
-
-                else {
-                    Persona persona = getPersona(uuid);
-
-                    if(persona != null) {
-                        cache.put(uuid, persona);
-                        this.cancel();
-                    }
-                }
+    public static void updateCachedPersona(UUID uuid) {
+        if(cache.containsKey(uuid)) {
+            try {
+                final Persona value = new Persona(uuid);
+                cache.put(uuid, value);
+            } catch (SQLException | HttpResponseException | UnirestException e) {
+                e.printStackTrace();
             }
-        }.schedule();
+        }
     }
-
 }

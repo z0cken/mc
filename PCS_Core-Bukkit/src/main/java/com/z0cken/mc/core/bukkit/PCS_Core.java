@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -39,6 +40,8 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         ICore.super.init();
 
         PersonaAPI.init(coreConfig.getLong("persona-api.cache-interval"), coreConfig.getLong("persona-api.update-interval"));
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     @Override
@@ -47,14 +50,14 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         instance = null;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
-        PersonaAPI.cachePlayer(event.getPlayer().getUniqueId());
+        PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
-        if(getConfig().getStringList("crucial-plugins").contains(event.getPlugin().getName())) stopServer("§c- Automatischer Shutdown -\\n\\nBitte benachrichtige ein Teammitglied!");
+        //if(getConfig().getStringList("crucial-plugins").contains(event.getPlugin().getName())) stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
     }
 
     @Override
