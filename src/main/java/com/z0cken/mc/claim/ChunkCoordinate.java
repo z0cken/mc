@@ -3,6 +3,7 @@ package com.z0cken.mc.claim;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class ChunkCoordinate {
 
     private final int x;
@@ -30,12 +31,14 @@ public class ChunkCoordinate {
         return z;
     }
 
+    @Override
     public int hashCode() {
         int var0 = 1664525 * this.x + 1013904223;
         int var1 = 1664525 * (this.z ^ -559038737) + 1013904223;
         return var0 ^ var1;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
