@@ -255,8 +255,9 @@ public class Menu extends CraftInventoryCustom implements Listener {
 
         @Override
         public boolean setItemMeta(@Nonnull ItemMeta itemMeta) {
-            MessageBuilder builder = new MessageBuilder().define("PRICE", Integer.toString(price));
+            MessageBuilder builder = MessageBuilder.DEFAULT.define("PRICE", Integer.toString(price));
             List<String> lore = itemMeta.getLore();
+            if(lore == null) lore = new ArrayList<>();
 
             for (ListIterator<String> it = lore.listIterator(); it.hasNext(); ) {
                 it.set(builder.setValues(it.next()));
