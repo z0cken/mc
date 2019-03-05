@@ -1,5 +1,6 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.google.common.base.Charsets;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -9,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -35,8 +38,13 @@ public abstract class Module {
     }
 
     private void loadConfig() {
-        PCS_Essentials.getInstance().saveResource(NAME + ".yml", false);
-        config = YamlConfiguration.loadConfiguration(new File(PCS_Essentials.getInstance().getDataFolder(), NAME + ".yml"));
+        File file = new File(PCS_Essentials.getInstance().getDataFolder(), NAME + ".yml");
+        config = YamlConfiguration.loadConfiguration(file);
+        InputStream defConfigStream = PCS_Essentials.getInstance().getResource(file.getName());
+
+        if (defConfigStream != null) {
+            this.config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+        }
     }
 
     protected final void registerCommand(String command) {
