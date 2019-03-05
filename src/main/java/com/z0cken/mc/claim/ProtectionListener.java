@@ -151,7 +151,6 @@ class ProtectionListener implements Listener {
 
     private void handleManipulation(Cancellable event, Chunk chunk, Player player) {
         Claim claim = PCS_Claim.getClaim(chunk);
-        Bukkit.broadcastMessage("null: " + (claim == null));
         if(claim == null || claim.canBuild(player)) return;
         event.setCancelled(true);
         sendProtected(player, claim.getOwner());
