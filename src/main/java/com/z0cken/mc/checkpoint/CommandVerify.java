@@ -1,11 +1,17 @@
 package com.z0cken.mc.checkpoint;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.z0cken.mc.core.persona.Persona;
+import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.config.Configuration;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.http.client.HttpResponseException;
+
+import java.sql.SQLException;
 
 
 class CommandVerify extends Command {
@@ -21,11 +27,22 @@ class CommandVerify extends Command {
     public void execute(CommandSender commandSender, String[] args) {
         if(commandSender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) commandSender;
-            Persona p = PCS_Checkpoint.getPersona(player);
+            Persona persona;
+
+            //noinspection Duplicates
+            try {
+                persona = PersonaAPI.getPersona(player.getUniqueId());
+            } catch (SQLException | HttpResponseException | UnirestException e) {
+                e.printStackTrace();
+
+                player.sendMessage(MessageBuilder.DEFAULT.build(PCS_Checkpoint.getConfig().getString("messages.error")));
+                return;
+            }
+
             MessageBuilder builder = new MessageBuilder().define("A", PCS_Checkpoint.getConfig().getString("messages.accent-color"));
 
-            if(p != null) {
-                builder = builder.define("NAME", p.getUsername());
+            if(persona != null && !persona.isGuest()) {
+                builder = builder.define("NAME", persona.getName());
                 player.sendMessage(builder.build(cfg.getString("denied-isverified")));
 
             } else {
@@ -34,7 +51,7 @@ class CommandVerify extends Command {
 
                 builder = builder.define("HASH", md5Hex);
 
-                for(String s : cfg.getStringList("confirmed")) {
+                for(String s : cfg.getStringList("info")) {
                     player.sendMessage(builder.build(s));
                 }
             }

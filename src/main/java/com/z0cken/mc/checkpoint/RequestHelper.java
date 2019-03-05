@@ -6,8 +6,9 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import net.md_5.bungee.config.Configuration;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.logging.Level;
 
 
 class RequestHelper {
@@ -30,21 +31,19 @@ class RequestHelper {
 
     private static void authenticate() {
         PCS_Checkpoint.getInstance().loadConfig();
-        cfg = PCS_Checkpoint.getConfig().getSection("bot");
         cookie = cfg.getString("cookie");
 
-        String path = "user/login";
         HttpResponse<JsonNode> response;
 
         try {
-            response = Unirest.post(BASE_URL + path).header("content-type", "application/x-www-form-urlencoded").field("name", USERNAME).field("password", password).asJson();
+            response = Unirest.post(BASE_URL + "user/login").header("content-type", "application/x-www-form-urlencoded").field("name", USERNAME).field("password", password).asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
             return;
         }
 
         if(response.getStatus() / 100 != 2) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Authentication failed (HTTP " + response.getStatus() + ")");
+            PCS_Checkpoint.getInstance().getLogger().severe(String.format("Authentication failed (HTTP %d)", response.getStatus()));
         }
 
         if (response.getHeaders().containsKey("Set-Cookie")) {
@@ -63,32 +62,30 @@ class RequestHelper {
                 password = System.getenv(ENV_VAR_PATH);
             }
         }
-
     }
 
     static void fetchMessages() {
         long newTime = (int) (System.currentTimeMillis() / 1000L);
 
-        String path = "inbox/messages";
         HttpResponse<JsonNode> response;
 
         try {
-            response = Unirest.get(BASE_URL + path).header("accept", "application/json").header("cookie", cookie).asJson();
+            response = Unirest.get(BASE_URL + "inbox/messages").header("accept", "application/json").header("cookie", cookie).asJson();
         } catch (UnirestException e) {
-            e.printStackTrace();
+            PCS_Checkpoint.getInstance().getLogger().log(Level.SEVERE, "Failed to fetch messages", e);
             return;
         }
 
         final int status = response.getStatus();
 
         if(status != 200) {
-            PCS_Checkpoint.getInstance().getLogger().severe("Failed to fetch messages (HTTP " + response.getStatus() + ")");
+            PCS_Checkpoint.getInstance().getLogger().severe(String.format("Failed to fetch messages (HTTP %d)", response.getStatus()));
 
             if(status == 403) {
                 if(timeout-- <= 0) {
                     authenticate();
                     timeout = cfg.getInt("login-timeout-multiplier");
-                } else PCS_Checkpoint.getInstance().getLogger().info("Attempting authentication in " + ((timeout + 1) * cfg.getInt("interval")) + " seconds");
+                } else PCS_Checkpoint.getInstance().getLogger().info(String.format("Attempting authentication in %d seconds", ((timeout + 1) * cfg.getInt("interval")) ));
             }
 
 
@@ -106,23 +103,5 @@ class RequestHelper {
 
             timestamp = newTime;
         }
-    }
-
-    public static long getBannedUntil(String name) throws UnirestException {
-        String path = "profile/info?name=" + name;
-        JsonNode jsonBody = Unirest.get(BASE_URL + path).header("accept", "application/json").asJson().getBody();
-        JSONObject json = jsonBody.getObject();
-
-        long bannedUntil = 0;
-
-        try {
-            bannedUntil = json.getJSONObject("user").getLong("bannedUntil");
-        } catch (JSONException ignored) {
-
-        } catch (NumberFormatException e) {
-            bannedUntil = -1;
-        }
-
-        return bannedUntil;
     }
 }
