@@ -28,11 +28,13 @@ public enum Shadow {
         }
     }
 
-    public void setInt(@Nonnull UUID uuid, int i) throws SQLException {
+    public void setInt(@Nonnull UUID uuid, int i) {
         try (Connection connection = Database.MAIN.getConnection();
             Statement statement = connection.createStatement()){
             final String s = name().toLowerCase() + " = " + i;
             statement.executeUpdate("INSERT INTO shadow SET " + s + ", uuid = '" + uuid + "' ON DUPLICATE KEY UPDATE " + s + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,11 +50,13 @@ public enum Shadow {
         }
     }
 
-    public void setString(@Nonnull UUID uuid, String string) throws SQLException {
+    public void setString(@Nonnull UUID uuid, String string) {
         try (Connection connection = Database.MAIN.getConnection();
              Statement statement = connection.createStatement()) {
             final String s = name().toLowerCase() + " = '" + string + "'";
             statement.executeUpdate("INSERT INTO shadow SET " + s + ", uuid = '" + uuid + "' ON DUPLICATE KEY UPDATE " + s + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
