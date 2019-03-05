@@ -98,13 +98,13 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
             } catch (HttpResponseException | UnirestException | SQLException e) {
                 e.printStackTrace();
 
-                if(!event.getPlayer().getServer().getInfo().equals(hub)) event.setTarget(hub);
+                event.setTarget(hub);
                 event.getPlayer().sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                 return;
             }
 
             if(persona == null) {
-                if(!event.getPlayer().getServer().getInfo().equals(hub)) event.setTarget(hub);
+                event.setTarget(hub);
                 event.getPlayer().sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
             }
         }
