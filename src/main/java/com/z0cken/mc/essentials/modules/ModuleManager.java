@@ -15,7 +15,9 @@ public class ModuleManager {
         "chat", ModuleChat.class,
         "snowball", ModuleSnowball.class,
         "compass", ModuleCompass.class,
-        "discover", ModuleDiscover.class
+        "erosion", ModuleErosion.class,
+        "discover", ModuleDiscover.class,
+        "award", ModuleAward.class
     );
 
     private static final Collection<Module> activeModules = new ArrayList<>();
@@ -46,6 +48,7 @@ public class ModuleManager {
                 try {
                     activeModules.add(entry.getValue().getDeclaredConstructor(String.class).newInstance(entry.getKey()));
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    PCS_Essentials.getInstance().getLogger().severe("Failed to enable module '" + entry.getKey() + "'");
                     e.printStackTrace();
                 }
             }

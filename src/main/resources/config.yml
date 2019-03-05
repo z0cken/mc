@@ -4,3 +4,5 @@ modules:
   snowball: true
   compass: true
   discover: true
+  erosion: true
+  award: true

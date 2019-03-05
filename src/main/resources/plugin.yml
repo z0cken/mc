@@ -3,5 +3,18 @@ author: Flare
 version: ${project.version}
 main: com.z0cken.mc.essentials.PCS_Essentials
 depend: [PCS_Core, PCS_Claim]
-soft-depend: [Vault]
+soft-depend: [Vault, WorldGuard]
 api-version: 1.13
+
+commands:
+  award:
+    permission: pcs.essentials.award
+  erosion:
+    permission: pcs.essentials.erosion
+
+permissions:
+  pcs.essentials.*:
+    children:
+      pcs.essentials.snowball: true
+      pcs.essentials.award: true
+      pcs.essentials.erosion: true
