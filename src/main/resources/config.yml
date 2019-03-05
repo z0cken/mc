@@ -16,6 +16,8 @@ messages:
   portal-claimed: §c§l>_ §7Der Chunk an deinem Zielort gehört §f{NAME}!
   portal-new: §c§l>_ §7Netherportale können nur von der Oberwelt aus erstellt werden!
   unclaimable: §c§l>_ §7In diesem Bereich darf nicht geclaimt werden!
+  override-on: §f§l>_ §7Override-Modus §aaktiviert
+  override-off: §f§l>_ §7Override-Modus §cdeaktiviert
   info-claim:
     - "§7---------<§f Hilfemenü - Claims §7>---------"
     - "§7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten"

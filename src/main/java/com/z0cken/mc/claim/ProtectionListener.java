@@ -145,12 +145,13 @@ class ProtectionListener implements Listener {
         instantiated = true;
     }
 
-    private void sendProtected(Player recipient, OfflinePlayer owner) {
+    private void sendProtected(Player recipient, Claim.Owner owner) {
         recipient.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", owner.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.protected")));
     }
 
     private void handleManipulation(Cancellable event, Chunk chunk, Player player) {
         Claim claim = PCS_Claim.getClaim(chunk);
+        Bukkit.broadcastMessage("null: " + (claim == null));
         if(claim == null || claim.canBuild(player)) return;
         event.setCancelled(true);
         sendProtected(player, claim.getOwner());
@@ -268,7 +269,7 @@ class ProtectionListener implements Listener {
         final Claim to = PCS_Claim.getClaim(event.getToBlock().getChunk());
         if(to == null) return;
         final Claim from = PCS_Claim.getClaim(event.getBlock().getChunk());
-        if(from != null && to.canBuild(from.getOwner())) return;
+        if(from != null && to.canBuild(from.getOwner().getOfflinePlayer())) return;
         event.setCancelled(true);
     }
 }

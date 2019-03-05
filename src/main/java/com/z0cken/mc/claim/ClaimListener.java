@@ -8,7 +8,10 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
@@ -28,7 +31,7 @@ import java.util.HashMap;
 class ClaimListener implements Listener {
 
     private static final HashMap<Block, BukkitTask> eyeTimers = new HashMap<>();
-    private static final HashMap<Player, OfflinePlayer> trespassers = new HashMap<>();
+    private static final HashMap<Player, Claim.Owner> trespassers = new HashMap<>();
 
     static {
         new BukkitRunnable() {
@@ -37,19 +40,19 @@ class ClaimListener implements Listener {
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     BaseComponent[] message = null;
-                    OfflinePlayer current = PCS_Claim.getOwner(player.getLocation().getChunk());
+                    Claim.Owner current = PCS_Claim.getOwner(player.getLocation().getChunk());
 
                     if(current != null) {
 
                         if(!trespassers.containsKey(player) || trespassers.containsKey(player) && !trespassers.get(player).equals(current)) {
-                            if(player.equals(current)) {
+                            if(current.isPlayer(player)) {
                                 player.spigot().sendMessage(builder.build(PCS_Claim.getInstance().getConfig().getString("messages.enter-self")));
                             } else message = builder.define("NAME", current.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.enter"));
                         }
 
                         trespassers.put(player, current);
                     } else if(trespassers.containsKey(player)) {
-                            if(player.equals(trespassers.get(player))) {
+                            if(trespassers.get(player).isPlayer(player)) {
                                 message = builder.build(PCS_Claim.getInstance().getConfig().getString("messages.leave-self"));
                             } else message = builder.define("NAME", trespassers.get(player).getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.leave"));
                             trespassers.remove(player);
@@ -69,7 +72,7 @@ class ClaimListener implements Listener {
             final Chunk chunk = blockPlaced.getChunk();
             final Player player = event.getPlayer();
 
-            OfflinePlayer owner = PCS_Claim.getOwner(chunk);
+            Claim.Owner owner = PCS_Claim.getOwner(chunk);
             if(owner == null) {
                 if(!isClaimable(chunk)) {
                     event.setCancelled(true);
@@ -105,14 +108,14 @@ class ClaimListener implements Listener {
         if(block != null && block.getType() == Material.END_PORTAL_FRAME) {
             final Chunk chunk = block.getChunk();
             final Player player = event.getPlayer();
-            final OfflinePlayer owner = PCS_Claim.getOwner(chunk);
-            if(owner == null) return;
+            final Claim claim = PCS_Claim.getClaim(chunk);
+            if(claim == null) return;
 
-            final boolean isOwner = player.equals(owner);
+            final boolean isOwner = claim.getOwner().isPlayer(player);
 
-            if(isOwner || player.hasPermission("pcs.claim.override")) {
+            if(isOwner || PCS_Claim.isOverriding(player)) {
                 BaseComponent[] message = null;
-                MessageBuilder builder = new MessageBuilder().define("NAME", owner.getName());
+                MessageBuilder builder = new MessageBuilder().define("NAME", claim.getOwner().getName());
 
                 EndPortalFrame frame = (EndPortalFrame) block.getBlockData();
                 boolean hasEye = frame.hasEye();
@@ -131,12 +134,12 @@ class ClaimListener implements Listener {
                         block.breakNaturally();
                         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.END_PORTAL_FRAME, 1));
 
-                        Claim claim = PCS_Claim.claim(null, block);
-                        PCS_Claim.getInstance().getLogger().info(claim.getName() + " REM -> " + owner.getUniqueId() + " (" + owner.getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
+                        Claim c = PCS_Claim.claim(null, block);
+                        PCS_Claim.getInstance().getLogger().info(c.getName() + " REM -> " + claim.getOwner().getUniqueId() + " (" + claim.getOwner().getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
 
                         trespassers.remove(player);
                         String path = isOwner ? "messages.unclaim" : "messages.unclaim-override";
-                        message = builder.define("CHUNK", claim.getName()).define("NAME", owner.getName()).build(PCS_Claim.getInstance().getConfig().getString(path));
+                        message = builder.define("CHUNK", c.getName()).define("NAME", claim.getOwner().getName()).build(PCS_Claim.getInstance().getConfig().getString(path));
                     }
                 } else {
                     frame.setEye(!hasEye);

@@ -7,30 +7,30 @@ import org.bukkit.block.Block;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.sql.SQLException;
+import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class Claim {
-    private final OfflinePlayer owner;
+    private final Owner owner;
     private Location baseLocation;
     private Material baseMaterial;
     private ChunkCoordinate chunkCoordinate;
 
-    Claim(@Nullable OfflinePlayer owner, @Nonnull Block baseBlock) {
+    Claim(@Nullable UUID uuid, @Nonnull Block baseBlock) {
         this.baseLocation = baseBlock.getLocation();
-        this.owner = owner;
+        this.owner = uuid == null ? null : new Owner(uuid);
         this.baseMaterial = baseBlock.getType();
         this.chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
     }
 
-    Claim(@Nonnull OfflinePlayer owner, @Nonnull Location baseLocation, @Nonnull Material baseMaterial) {
-        this.owner = owner;
+    Claim(@Nonnull UUID uuid, @Nonnull Location baseLocation, @Nonnull Material baseMaterial) {
+        this.owner = new Owner(uuid);
         this.baseLocation = baseLocation;
         this.baseMaterial = baseMaterial;
         this.chunkCoordinate = new ChunkCoordinate((int) baseLocation.getX() >> 4, (int) baseLocation.getZ() >> 4);
     }
 
-    public OfflinePlayer getOwner() {
-        return owner;
-    }
+    public Owner getOwner() { return owner; }
 
     public Chunk getChunk() {
         return baseLocation.getChunk();
@@ -67,7 +67,7 @@ public class Claim {
 
     public boolean canBuild(@Nonnull OfflinePlayer player) {
 
-        if(player.equals(owner) || player.isOnline() && PCS_Claim.canOverride(player.getPlayer())) return true;
+        if(owner.isPlayer(player) || player.isOnline() && PCS_Claim.isOverriding(player.getPlayer())) return true;
 
         try {
             if(FriendsAPI.areFriends(player.getUniqueId(), owner.getUniqueId())) return true;
@@ -76,5 +76,45 @@ public class Claim {
         }
 
         return false;
+    }
+
+    protected static class Owner {
+        private UUID uuid;
+
+        private Owner(UUID uuid) {
+            this.uuid = uuid;
+        }
+
+        public UUID getUniqueId() {
+            return uuid;
+        }
+
+        public OfflinePlayer getOfflinePlayer() {
+            return Bukkit.getOfflinePlayer(uuid);
+        }
+
+        public String getName() {
+            return getOfflinePlayer().getName();
+        }
+
+        public boolean isPlayer(OfflinePlayer player) {
+            return player.getUniqueId().equals(uuid);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == null || !(obj instanceof Owner)) {
+                return false;
+            }
+            final Owner other = (Owner)obj;
+            return this.getUniqueId() != null && other.getUniqueId() != null && this.getUniqueId().equals(other.getUniqueId());
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 97 * hash + ((this.getUniqueId() != null) ? this.getUniqueId().hashCode() : 0);
+            return hash;
+        }
     }
 }

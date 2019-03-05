@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,6 +45,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     public static final StateFlag CLAIM_FLAG = new StateFlag("claimable", true);
     private static final ConcurrentHashMap<ChunkCoordinate, Claim> claimedChunks = new ConcurrentHashMap<>();
     private static final Set<ChunkCoordinate> lockedChunks = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<Player> overriding = new HashSet<>();
 
     public PCS_Claim() {
         if(instance != null) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
@@ -121,33 +123,46 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         if(sender instanceof Player) {
             Player player = (Player) sender;
 
-            if(command.getName().equalsIgnoreCase("unclaim")) {
+            if(command.getName().equalsIgnoreCase("claim")) {
 
-                if(sender.hasPermission("pcs.claim.unclaim")) {
-                    Claim claim = getClaim(player.getLocation().getChunk());
-
-                    if(claim != null) {
-                        //Success
-                        claim(null, claim.getBaseBlock());
-                        Block b = claim.getBaseBlock().getRelative(BlockFace.UP);
-                        if(b.getType() == Material.END_PORTAL_FRAME) b.setType(Material.AIR);
-
-                         player.spigot().sendMessage(new MessageBuilder()
-                                                     .define("CHUNK", claim.getName())
-                                                     .define("NAME", claim.getOwner().getName())
-                                                     .build(PCS_Claim.getInstance().getConfig().getString("messages.unclaim-override")));
-                    } else {
-                        player.sendMessage(PCS_Claim.getInstance().getConfig().getString("messages.not-owned"));
-                    }
-
+                if (args.length == 0) {
+                    getConfig().getStringList("messages.info-claim").forEach(s -> player.spigot().sendMessage(MessageBuilder.DEFAULT.build(s)));
+                    return true;
                 } else {
-                    //No permission
-                }
+                    if(args[0].equalsIgnoreCase("override") && sender.hasPermission("pcs.claim.override")) {
+                        if(overriding.contains(player)) {
+                            overriding.remove(player);
+                            player.spigot().sendMessage(MessageBuilder.DEFAULT.build(getConfig().getString("messages.override-off")));
 
-            } else if(command.getName().equalsIgnoreCase("claim")) {
-                PCS_Claim.getInstance().getConfig().getStringList("messages.info-claim").forEach(s -> player.spigot().sendMessage(MessageBuilder.DEFAULT.build(s)));
+                        } else {
+                            overriding.add(player);
+                            player.spigot().sendMessage(MessageBuilder.DEFAULT.build(getConfig().getString("messages.override-on")));
+                        }
+
+                        return true;
+
+                    } else if (args[0].equalsIgnoreCase("unclaim") && sender.hasPermission("pcs.claim.unclaim")) {
+                        Claim claim = getClaim(player.getLocation().getChunk());
+
+                        if (claim != null) {
+                            //Success
+                            claim(null, claim.getBaseBlock());
+                            Block b = claim.getBaseBlock().getRelative(BlockFace.UP);
+                            if (b.getType() == Material.END_PORTAL_FRAME) b.setType(Material.AIR);
+
+                            player.spigot().sendMessage(new MessageBuilder()
+                                    .define("CHUNK", claim.getName())
+                                    .define("NAME", claim.getOwner().getName())
+                                    .build(getConfig().getString("messages.unclaim-override")));
+                        } else {
+                            player.sendMessage(getConfig().getString("messages.not-owned"));
+                        }
+
+                        return true;
+                    }
+                }
             }
-            return true;
+
         }
 
         return false;
@@ -181,8 +196,13 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         claimedChunks.remove(chunkCoordinate);
     }
 
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        overriding.remove(event.getPlayer());
+    }
+
     public static Claim claim(@Nullable OfflinePlayer player, @Nonnull Block baseBlock) {
-        Claim claim = new Claim(player, baseBlock);
+        Claim claim = new Claim(player == null ? null : player.getUniqueId(), baseBlock);
         DatabaseHelper.commit(claim);
 
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
@@ -192,7 +212,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return claim;
     }
 
-    public static OfflinePlayer getOwner(@Nonnull Chunk chunk) {
+    public static Claim.Owner getOwner(@Nonnull Chunk chunk) {
         Claim claim = getClaim(chunk);
         return claim == null ? null : claim.getOwner();
     }
@@ -206,8 +226,8 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return claim;
     }
 
-    public static boolean canOverride(@Nonnull Player player) {
-        return player.getPlayer().hasPermission("pcs.claim.override");
+    public static boolean isOverriding(@Nonnull Player player) {
+        return overriding.contains(player);
     }
 
     public static class Unsafe {

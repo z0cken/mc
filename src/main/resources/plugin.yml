@@ -6,4 +6,3 @@ depend: [PCS_Core, WorldGuard]
 api-version: 1.13
 commands:
   claim:
-  unclaim:

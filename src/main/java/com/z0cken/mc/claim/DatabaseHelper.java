@@ -108,7 +108,7 @@ class DatabaseHelper {
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
             if(resultSet.next()) {
                 Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                return new Claim(Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7)));
+                return new Claim(UUID.fromString(resultSet.getString(3)), location, Material.valueOf(resultSet.getString(7)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -126,13 +126,14 @@ class DatabaseHelper {
                 ChunkCoordinate coordinate = new ChunkCoordinate(resultSet.getInt(1), resultSet.getInt(2));
                 if(set.contains(coordinate)) {
                     Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                    result.put(coordinate, new Claim(Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(3))), location, Material.valueOf(resultSet.getString(7))));
+                    result.put(coordinate, new Claim(UUID.fromString(resultSet.getString(3)), location, Material.valueOf(resultSet.getString(7))));
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        result.forEach((chunkCoordinate, claim) -> System.out.println(chunkCoordinate + " : " + claim.getOwner().getUniqueId()));
         return result;
     }
 
@@ -146,7 +147,7 @@ class DatabaseHelper {
 
             while(resultSet.next()) {
                 Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                claims.add(new Claim(player, location, Material.valueOf(resultSet.getString(7))));
+                claims.add(new Claim(player.getUniqueId(), location, Material.valueOf(resultSet.getString(7))));
             }
         } catch (SQLException e) {
             e.printStackTrace();
