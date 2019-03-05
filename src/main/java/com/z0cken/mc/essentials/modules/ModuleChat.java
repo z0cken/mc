@@ -1,16 +1,15 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.milkbowl.vault.chat.Chat;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.http.client.HttpResponseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -21,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -68,12 +68,20 @@ public class ModuleChat extends Module implements Listener {
 
     private BaseComponent[] format(String s, Player player) {
 
-        MessageBuilder builder = new MessageBuilder().define("PLAYER", player.getName()).define("PREFIX", chat == null ? null : chat.getPlayerPrefix(player));
+        MessageBuilder builder = MessageBuilder.DEFAULT.define("PLAYER", player.getName()).define("PREFIX", chat == null ? null : chat.getPlayerPrefix(player));
 
-        Persona persona = PersonaAPI.getPersona(player.getUniqueId());
-        if(persona != null) {
-            if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
-            builder = builder.define("PERSONA", persona.getHoverEvent(hoverGuest, hoverMember));
+        Persona persona;
+        try {
+            persona = PersonaAPI.getPersona(player.getUniqueId());
+            if(persona != null) {
+                if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
+                builder = builder.define("PERSONA", persona.getHoverEvent(hoverGuest, hoverMember));
+            } else {
+                builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cNutzer nicht verifiziert")));
+            }
+        } catch (SQLException | UnirestException | HttpResponseException e) {
+            e.printStackTrace();
+            builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cDaten nicht verfügbar")));
         }
 
         return builder.build(s);
@@ -104,8 +112,15 @@ public class ModuleChat extends Module implements Listener {
 
             if(player != null) {
 
-                Persona persona = PersonaAPI.getPersona(player.getUniqueId());
-                if(persona != null) component.setHoverEvent(persona.getHoverEvent(hoverGuest, hoverMember));
+                Persona persona;
+                try {
+                    persona = PersonaAPI.getPersona(player.getUniqueId());
+                    if(persona != null) component.setHoverEvent(persona.getHoverEvent(hoverGuest, hoverMember));
+                    else component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cNutzer nicht verifiziert")));
+                } catch (SQLException | UnirestException | HttpResponseException e) {
+                    e.printStackTrace();
+                    component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cDaten nicht verfügbar")));
+                }
 
                 component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + player.getName()));
                 component.setColor(ChatColor.AQUA);

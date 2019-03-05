@@ -9,4 +9,4 @@ hover-event:
     - "{MARK}"
 messages:
   join: "§7[§a+§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][{PLAYER}{MARK}]#}"
-  quit: "§7[§c-§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][{PLAYER}{MARK}]#}"
+  quit: "§7[§c-§7] {#[PERSONA][{PLAYER}{MARK}]#}"
