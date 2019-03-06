@@ -2,6 +2,8 @@ package com.z0cken.mc.core.bungee;
 
 import com.z0cken.mc.core.FriendsAPI;
 import com.z0cken.mc.core.Shadow;
+import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -20,7 +22,7 @@ import java.util.*;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class CommandFriend extends Command {
 
-    private static final Configuration config = PCS_Core.getConfig();
+    private static final Configuration config = PCS_Core.getConfig(ConfigurationType.PLUGIN);
     private static final HashMap<ProxiedPlayer, Collection<ProxiedPlayer>> requests = new HashMap<>();
 
     public CommandFriend() {
@@ -39,18 +41,21 @@ public final class CommandFriend extends Command {
                     ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
                     if (target != null) {
                         if(target.equals(player)) {
-                            player.sendMessage(new MessageBuilder().build(config.getString("messages.add-self")));
+                            player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.add-self")));
                             return;
                         }
+                        
+                        MessageBuilder playerBuilder = PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName());
+                        MessageBuilder targetBuilder = PersonaAPI.getPlayerBuilder(target.getUniqueId(), target.getName());
 
                         try {
                             if (FriendsAPI.areFriends(player.getUniqueId(), target.getUniqueId())) {
-                                player.sendMessage(new MessageBuilder().define("PLAYER", target.getName()).build(config.getString("messages.duplicate")));
+                                player.sendMessage(targetBuilder.define("PLAYER", target.getName()).build(config.getString("messages.duplicate")));
                                 return;
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
-                            player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                            player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                             return;
                         }
 
@@ -60,11 +65,11 @@ public final class CommandFriend extends Command {
                             try {
                                 FriendsAPI.friend(player.getUniqueId(), target.getUniqueId());
                                 requests.get(target).remove(player);
-                                player.sendMessage(new MessageBuilder().define("PLAYER", target.getName()).build(config.getString("messages.accept-first")));
-                                target.sendMessage(new MessageBuilder().define("PLAYER", player.getName()).build(config.getString("messages.accept-third")));
+                                player.sendMessage(targetBuilder.build(config.getString("messages.accept-first")));
+                                target.sendMessage(playerBuilder.build(config.getString("messages.accept-third")));
                             } catch (SQLException e) {
                                 e.printStackTrace();
-                                player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                             }
                             return;
                         }
@@ -76,14 +81,14 @@ public final class CommandFriend extends Command {
                         }
                         playerRequests.add(target);
 
-                        player.sendMessage(new MessageBuilder().define("PLAYER", target.getName()).build(config.getString("messages.add-first")));
-                        target.sendMessage(new MessageBuilder().define("PLAYER", player.getName()).build(config.getString("messages.add-third")));
+                        player.sendMessage(targetBuilder.build(config.getString("messages.add-first")));
+                        target.sendMessage(playerBuilder.build(config.getString("messages.add-third")));
 
                     } else {
-                        player.sendMessage(new MessageBuilder().build(config.getString("messages.not-found")));
+                        player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.not-found")));
                     }
                 } else {
-                    player.sendMessage(new MessageBuilder().build(config.getString("messages.syntax-add")));
+                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.syntax-add")));
                 }
             } else if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
                 if (args.length == 2) {
@@ -96,12 +101,12 @@ public final class CommandFriend extends Command {
                         try {
                             uuid = Shadow.getByName(args[1]);
                             if (uuid == null) {
-                                player.sendMessage(new MessageBuilder().build(config.getString("messages.not-found")));
+                                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.not-found")));
                                 return;
                             }
                             name = Shadow.NAME.getString(uuid);
                         } catch (SQLException e) {
-                            player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                            player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                             e.printStackTrace();
                             return;
                         }
@@ -112,32 +117,32 @@ public final class CommandFriend extends Command {
 
                     try {
                         if (!FriendsAPI.areFriends(player.getUniqueId(), uuid)) {
-                            player.sendMessage(new MessageBuilder().define("PLAYER", name).build(config.getString("messages.not-friends")));
+                            player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", name).build(config.getString("messages.not-friends")));
                             return;
                         }
 
                         FriendsAPI.unfriend(player.getUniqueId(), uuid);
-                        player.sendMessage(new MessageBuilder().define("PLAYER", name).build(config.getString("messages.remove-first")));
-                        if(target != null) target.sendMessage(new MessageBuilder().define("PLAYER", player.getName()).build(config.getString("messages.remove-third")));
+                        player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", name).build(config.getString("messages.remove-first")));
+                        if(target != null) target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", player.getName()).build(config.getString("messages.remove-third")));
 
                     } catch (SQLException e) {
-                        player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                        player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                         e.printStackTrace();
                     }
                 } else {
-                    player.sendMessage(new MessageBuilder().build(config.getString("messages.syntax-add")));
+                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.syntax-add")));
                 }
             } else if (args[0].equalsIgnoreCase("list")) {
                 Map<UUID, Timestamp> friends;
                 try {
                     friends = FriendsAPI.getFriends(player.getUniqueId());
                 } catch (SQLException e) {
-                    player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                     e.printStackTrace();
                     return;
                 }
 
-                if (friends.isEmpty()) player.sendMessage(new MessageBuilder().build(config.getString("messages.no-friends")));
+                if (friends.isEmpty()) player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.no-friends")));
                 else {
                     String s = config.getString("messages.list");
 
@@ -145,19 +150,19 @@ public final class CommandFriend extends Command {
                     for(Map.Entry<UUID, Timestamp> entry : friends.entrySet()) {
                         try {
                             ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(entry.getKey());
-                            set.add(new MessageBuilder().define("PLAYER", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
+                            set.add(MessageBuilder.DEFAULT.define("PLAYER", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
                         } catch (SQLException e) {
-                            player.sendMessage(new MessageBuilder().build(config.getString("messages.error")));
+                            player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                             e.printStackTrace();
                             return;
                         }
                     }
-                    player.sendMessage(new MessageBuilder().build(config.getString("messages.list-header")));
+                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.list-header")));
                     set.forEach(player::sendMessage);
                 }
             }
         } else {
-            MessageBuilder builder = new MessageBuilder();
+            MessageBuilder builder = MessageBuilder.DEFAULT;
             config.getStringList("messages.help").forEach(s -> player.sendMessage(builder.build(s)));
         }
     }

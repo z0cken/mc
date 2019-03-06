@@ -7,6 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.z0cken.mc.core.CoreBridge;
 import com.z0cken.mc.core.Shadow;
+import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -25,6 +26,9 @@ import java.util.*;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class Persona {
+
+    private static final List<String> guestList = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.guest");
+    private static final List<String> memberList = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.member");
 
     private UUID uuid;
 
@@ -116,6 +120,14 @@ public final class Persona {
         return host != null;
     }
 
+    public UUID getHost() {
+        return host;
+    }
+
+    public long getInvited() {
+        return invited;
+    }
+
     public boolean isAnonymized() {
         return anonymized;
     }
@@ -130,11 +142,12 @@ public final class Persona {
     }
 
     public void awardBadge(Badge badge) throws SQLException {
+        if(badges.contains(badge)) return;
         DatabaseHelper.awardBadge(uuid, badge);
         badges.add(badge);
     }
 
-    public HoverEvent getHoverEvent(List<String> guest, List<String> member) {
+    public HoverEvent getHoverEvent() {
 
         MessageBuilder messageBuilder = MessageBuilder.DEFAULT;
         ComponentBuilder componentBuilder = new ComponentBuilder("");
@@ -143,7 +156,7 @@ public final class Persona {
         String bubble;
 
         if(isGuest()) {
-            list = guest;
+            list = guestList;
             String hostName = "- Nicht verfügbar -";
             try {
                 hostName = Shadow.NAME.getString(host);
@@ -154,7 +167,7 @@ public final class Persona {
                     .define("PLAYER", hostName)
                     .define("DATE", new SimpleDateFormat("dd.MM.yy").format(new java.util.Date(invited)));
         } else {
-            list = member;
+            list = memberList;
             messageBuilder = messageBuilder
                     .define("PLAYER", anonymized ? ChatColor.MAGIC + "XXXXXXXX" : getName())
                     .define("BENIS", (getBenis() < 0 ? ChatColor.RED : "") + formatBenis(getBenis()))
@@ -166,9 +179,9 @@ public final class Persona {
             if(i + 1 < list.size()) componentBuilder.append("\n");
         }
 
+        if(!badges.isEmpty()) componentBuilder.append("\n");
         for(Badge badge : badges) {
-            componentBuilder.append("\n");
-            componentBuilder.append(badge.getTitle()).color(badge.getColor());
+            componentBuilder.append("\n" + badge.getTitle(), ComponentBuilder.FormatRetention.NONE).color(badge.getColor());
         }
 
         return new HoverEvent(HoverEvent.Action.SHOW_TEXT, componentBuilder.create());
@@ -179,7 +192,7 @@ public final class Persona {
         put(1_000_000, "M");
     }};
 
-    private static String formatBenis(int value) {
+    static String formatBenis(int value) {
         if (Math.abs(value) < 1000) {
             if(value < 0) {
                 return "< 0";
@@ -252,7 +265,6 @@ public final class Persona {
     }
 
     public enum Badge {
-        ADMIN("Administrator", ChatColor.GOLD),
         EARLY_SUPPORTER("Early Supporter", ChatColor.DARK_AQUA);
 
         private String title;

@@ -3,6 +3,10 @@ package com.z0cken.mc.core.persona;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.CoreBridge;
 import com.z0cken.mc.core.util.CoreTask;
+import com.z0cken.mc.core.util.MessageBuilder;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.http.client.HttpResponseException;
 
 import java.sql.SQLException;
@@ -66,5 +70,24 @@ public final class PersonaAPI {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static MessageBuilder getPlayerBuilder(UUID uuid, String name) {
+        MessageBuilder builder = MessageBuilder.DEFAULT.define("PLAYER", name);
+
+        Persona persona;
+        try {
+            persona = PersonaAPI.getPersona(uuid);
+            if(persona != null) {
+                builder = builder.define("PERSONA", persona.getHoverEvent()).define("MARK", " " + persona.getMark().getSymbol());
+            }
+            else builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cNutzer nicht verifiziert")}));
+
+        } catch (SQLException | UnirestException | HttpResponseException e) {
+            e.printStackTrace();
+            builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cDaten nicht verfügbar")}));
+        }
+
+        return builder;
     }
 }

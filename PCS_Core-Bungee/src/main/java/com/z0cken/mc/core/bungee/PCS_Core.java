@@ -168,7 +168,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         switch (type) {
             case CORE: return coreConfig;
             case PLUGIN: return config;
-            default: return null;
+            default: throw new IllegalArgumentException();
         }
     }
 
@@ -177,7 +177,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         switch (type) {
             case CORE: return coreConfigBridge;
             case PLUGIN: return configBridge;
-            default: return null;
+            default: throw new IllegalArgumentException();
         }
     }
 

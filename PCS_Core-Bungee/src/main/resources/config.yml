@@ -1,13 +1,13 @@
 #▔\_(ツ)_/▔
 messages:
-  add-third: "§f§l>_§7 {PLAYER} hat dir eine Freundschaftsanfrage gesendet {#[RUN|/friend add {PLAYER}][§f[Akzeptieren]]#}"
-  add-first: "§a§l>_§7 Du hast {PLAYER} eine Freundschaftsanfrage gesendet!"
+  add-third: "§f§l>_§7 {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7hat dir eine Freundschaftsanfrage gesendet {#[RUN|/friend add {PLAYER}][§f[Akzeptieren\\]]#}"
+  add-first: "§a§l>_§7 Du hast {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7eine Freundschaftsanfrage gesendet!"
   add-self: "§c§l>_§7 Du kannst dich nicht selbst als Freund hinzufügen!"
-  accept-first: "§a§l>_§7 Du bist nun mit {PLAYER} befreundet!"
-  accept-third: "§a§l>_§7 {PLAYER} hat deine Freundschaftsanfrage akzeptiert!"
+  accept-first: "§a§l>_§7 Du bist nun mit {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7befreundet!"
+  accept-third: "§a§l>_§7 {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7hat deine Freundschaftsanfrage akzeptiert!"
   remove-first: "§c§l>_§7 Du bist jetzt nicht mehr mit {PLAYER} befreundet!"
   remove-thid: "§c§l>_§7 {PLAYER} hat dich als Freund entfernt!"
-  duplicate: "§c§l>_§7 Du bist bereits mit {PLAYER} befreundet!"
+  duplicate: "§c§l>_§7 Du bist bereits mit {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7befreundet!"
   not-found: "§c§l>_§7 ZOMG! Spieler nicht gefunden..."
   not-friends: "§c§l>_§7 Du bist nicht mit {PLAYER} befreundet!"
   no-friends: "§c§l>_§7 Deine Freundesliste ist leer!"

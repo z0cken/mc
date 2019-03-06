@@ -1,3 +1,10 @@
 persona-api:
   cache-interval: 30
   update-interval: 180
+hover-event:
+  guest:
+  - 'Eingeladen von {PLAYER} am {DATE}'
+  member:
+  - '{PLAYER}'
+  - 'Benis: {BENIS}'
+  - '{MARK}'
