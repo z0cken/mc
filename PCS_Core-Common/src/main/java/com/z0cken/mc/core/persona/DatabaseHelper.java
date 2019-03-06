@@ -37,8 +37,6 @@ final class DatabaseHelper {
         try(Connection connection = DATABASE.getConnection();
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT host FROM guests WHERE guest = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return resultSet.getString(1);
-        } catch (SQLException e) {
-            throw e;
         }
 
         return null;
@@ -48,8 +46,6 @@ final class DatabaseHelper {
         try(Connection connection = DATABASE.getConnection();
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT invited FROM guests WHERE guest = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return resultSet.getLong(1) * 1000L;
-        } catch (SQLException e) {
-            throw e;
         }
 
         return 0;
@@ -59,8 +55,6 @@ final class DatabaseHelper {
         try(Connection connection = DATABASE.getConnection();
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT username FROM verified WHERE player = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return resultSet.getString(1);
-        } catch (SQLException e) {
-            throw e;
         }
 
         return null;
@@ -70,8 +64,6 @@ final class DatabaseHelper {
         try(Connection connection = DATABASE.getConnection();
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT anonymized FROM verified WHERE player = '" + uuid.toString() + "'")) {
             if(resultSet.next()) return resultSet.getBoolean(1);
-        } catch (SQLException e) {
-            throw e;
         }
         return true;
     }
@@ -81,19 +73,15 @@ final class DatabaseHelper {
              PreparedStatement pstmt = connection.prepareStatement("INSERT IGNORE INTO badges VALUES (?, ?)")) {
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, badge.name());
-
-        } catch (SQLException e) {
-            throw e;
+            pstmt.executeUpdate();
         }
     }
 
     static SortedSet<Persona.Badge> getBadges(@Nonnull UUID uuid) throws SQLException {
         SortedSet<Persona.Badge> set = new TreeSet<>();
         try(Connection connection = DATABASE.getConnection();
-            ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM badges WHERE player = '" + uuid.toString() + "'")) {
+            ResultSet resultSet = connection.createStatement().executeQuery("SELECT badge FROM badges WHERE player = '" + uuid.toString() + "'")) {
             while(resultSet.next()) set.add(Persona.Badge.valueOf(resultSet.getString(1)));
-        } catch (SQLException e) {
-            throw e;
         }
 
         return set;
