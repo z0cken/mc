@@ -21,7 +21,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -33,9 +32,6 @@ public class ModuleChat extends Module implements Listener {
     private String FORMAT, JOIN, QUIT;
     private boolean LOG_CONSOLE;
 
-    private List<String> hoverGuest = getConfig().getStringList("hover-event.guest");
-    private List<String> hoverMember = getConfig().getStringList("hover-event.member");
-
     public ModuleChat(String configPath) {
         super(configPath);
 
@@ -45,13 +41,13 @@ public class ModuleChat extends Module implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(format(JOIN, event.getPlayer())));
+        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(PersonaAPI.getPlayerBuilder(event.getPlayer().getUniqueId(), event.getPlayer().getName()).build(JOIN)));
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(format(QUIT, event.getPlayer())));
+        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(PersonaAPI.getPlayerBuilder(event.getPlayer().getUniqueId(), event.getPlayer().getName()).build(QUIT)));
     }
 
     @EventHandler
@@ -59,33 +55,11 @@ public class ModuleChat extends Module implements Listener {
         event.setCancelled(true);
 
         BaseComponent[] message = parseMessage(event.getMessage());
-        event.getRecipients().forEach(r -> r.spigot().sendMessage((BaseComponent[]) ArrayUtils.addAll(format(FORMAT, event.getPlayer()), message)));
+        event.getRecipients().forEach(r -> r.spigot().sendMessage((BaseComponent[]) ArrayUtils.addAll(PersonaAPI.getPlayerBuilder(event.getPlayer().getUniqueId(), event.getPlayer().getName()).build(FORMAT), message)));
         if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
 
         //Without log4j
         //if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
-    }
-
-    private BaseComponent[] format(String s, Player player) {
-
-        MessageBuilder builder = MessageBuilder.DEFAULT.define("PLAYER", player.getName()).define("PREFIX", chat == null ? null : chat.getPlayerPrefix(player));
-
-        Persona persona;
-        try {
-            persona = PersonaAPI.getPersona(player.getUniqueId());
-            if(persona != null) {
-                if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
-                builder = builder.define("PERSONA", persona.getHoverEvent(hoverGuest, hoverMember));
-            } else {
-                builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cNutzer nicht verifiziert")));
-            }
-        } catch (SQLException | UnirestException | HttpResponseException e) {
-            e.printStackTrace();
-            builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cDaten nicht verfügbar")));
-        }
-
-        return builder.build(s);
-
     }
 
     private BaseComponent[] parseMessage(String message) {
@@ -115,7 +89,7 @@ public class ModuleChat extends Module implements Listener {
                 Persona persona;
                 try {
                     persona = PersonaAPI.getPersona(player.getUniqueId());
-                    if(persona != null) component.setHoverEvent(persona.getHoverEvent(hoverGuest, hoverMember));
+                    if(persona != null) component.setHoverEvent(persona.getHoverEvent());
                     else component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT.build("§cNutzer nicht verifiziert")));
                 } catch (SQLException | UnirestException | HttpResponseException e) {
                     e.printStackTrace();

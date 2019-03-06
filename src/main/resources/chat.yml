@@ -1,12 +1,5 @@
-format: '{#[SUGGEST|/msg {PLAYER}][PERSONA][{PLAYER}{MARK}]#} §7>'
+format: "§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7>"
 log-console: true
-hover-event:
-  guest:
-    - "Eingeladen von {PLAYER} am {DATE}"
-  member:
-    - "{PLAYER}"
-    - "Benis: {BENIS}"
-    - "{MARK}"
 messages:
-  join: "§7[§a+§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][{PLAYER}{MARK}]#}"
-  quit: "§7[§c-§7] {#[PERSONA][{PLAYER}{MARK}]#}"
+  join: "§7[§a+§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#}"
+  quit: "§7[§c-§7] {#[PERSONA][§7{PLAYER}{MARK}]#}"
