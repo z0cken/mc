@@ -1,5 +1,7 @@
 package com.z0cken.mc.core;
 
+import com.z0cken.mc.core.util.ConfigurationBridge;
+import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 
 import java.io.File;
@@ -28,4 +30,8 @@ public interface ICore {
     void cancelTask(int id);
 
     boolean isOnline(UUID uuid);
+
+    ConfigurationBridge getConfigBridge(ConfigurationType type);
+
+    String getPlayerPrefix(UUID uuid);
 }

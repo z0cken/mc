@@ -3,6 +3,8 @@ package com.z0cken.mc.core.bungee;
 import com.google.common.io.ByteStreams;
 import com.z0cken.mc.core.ICore;
 import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.ConfigurationBridge;
+import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -17,11 +19,12 @@ import java.io.*;
 import java.util.UUID;
 import java.util.logging.Level;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "Duplicates"})
 public class PCS_Core extends Plugin implements ICore, Listener {
 
     private static PCS_Core instance;
     private static Configuration config, coreConfig;
+    private static ConfigurationBridge configBridge, coreConfigBridge;
 
     public static PCS_Core getInstance() {
         return instance;
@@ -36,6 +39,9 @@ public class PCS_Core extends Plugin implements ICore, Listener {
 
         config = getConfiguration("config.yml");
         coreConfig = getConfiguration("core.yml");
+
+        configBridge = new BungeeConfigurationBridge(config);
+        coreConfigBridge = new BungeeConfigurationBridge(coreConfig);
     }
 
     @Override
@@ -158,7 +164,26 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         }
     }
 
-    static Configuration getConfig() {
-        return config;
+    static Configuration getConfig(ConfigurationType type) {
+        switch (type) {
+            case CORE: return coreConfig;
+            case PLUGIN: return config;
+            default: return null;
+        }
+    }
+
+    @Override
+    public ConfigurationBridge getConfigBridge(ConfigurationType type) {
+        switch (type) {
+            case CORE: return coreConfigBridge;
+            case PLUGIN: return configBridge;
+            default: return null;
+        }
+    }
+
+    @Override
+    public String getPlayerPrefix(UUID uuid) {
+        //TODO Implement
+        return "";
     }
 }

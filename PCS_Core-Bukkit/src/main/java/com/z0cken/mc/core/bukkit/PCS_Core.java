@@ -2,6 +2,8 @@ package com.z0cken.mc.core.bukkit;
 
 import com.z0cken.mc.core.ICore;
 import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.ConfigurationBridge;
+import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,6 +24,7 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
 
     private static PCS_Core instance;
     private static YamlConfiguration coreConfig;
+    private static ConfigurationBridge coreConfigBridge;
 
     @Override
     public void onLoad() {
@@ -33,6 +36,7 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         saveDefaultConfig();
 
         coreConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "core.yml"));
+        coreConfigBridge = new BukkitConfigurationBridge(coreConfig);
     }
 
     @Override
@@ -91,6 +95,21 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     public boolean isOnline(UUID uuid) {
         Player player = getServer().getPlayer(uuid);
         return player != null && player.isOnline();
+    }
+
+    @Override
+    public ConfigurationBridge getConfigBridge(ConfigurationType type) {
+        switch (type) {
+            case CORE: return coreConfigBridge;
+            case PLUGIN: return null;
+            default: return null;
+        }
+    }
+
+    @Override
+    public String getPlayerPrefix(UUID uuid) {
+        //TODO Implement
+        return "";
     }
 
     public static PCS_Core getInstance() {
