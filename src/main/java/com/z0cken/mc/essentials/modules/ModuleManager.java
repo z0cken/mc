@@ -17,7 +17,8 @@ public class ModuleManager {
         "compass", ModuleCompass.class,
         "erosion", ModuleErosion.class,
         "discover", ModuleDiscover.class,
-        "award", ModuleAward.class
+        "award", ModuleAward.class,
+        "help", ModuleHelp.class
     );
 
     private static final Collection<Module> activeModules = new ArrayList<>();

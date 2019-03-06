@@ -11,6 +11,7 @@ commands:
     permission: pcs.essentials.award
   erosion:
     permission: pcs.essentials.erosion
+  help:
 
 permissions:
   pcs.essentials.*:
