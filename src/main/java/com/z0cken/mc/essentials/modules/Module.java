@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -45,6 +46,18 @@ public abstract class Module {
         if (defConfigStream != null) {
             this.config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
         }
+
+        saveConfig();
+    }
+
+    protected void saveConfig() {
+        File file = new File(PCS_Essentials.getInstance().getDataFolder(), NAME + ".yml");
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected final void registerCommand(String command) {
@@ -60,7 +73,6 @@ public abstract class Module {
         if(this instanceof CommandExecutor) commands.forEach(cmd -> PCS_Essentials.getInstance().getCommand(cmd).setExecutor(null));
         tasks.forEach(BukkitTask::cancel);
         PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' disabled");
-
     }
 
     public final void reload() {
