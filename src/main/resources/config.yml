@@ -6,3 +6,4 @@ modules:
   discover: true
   erosion: true
   award: true
+  help: true
