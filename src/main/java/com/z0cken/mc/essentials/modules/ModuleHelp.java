@@ -23,6 +23,8 @@ public class ModuleHelp extends Module implements CommandExecutor {
             registerCommand(key);
             menus.put(key, new HelpMenu(key, getConfig().getConfigurationSection(key)));
         });
+
+        menus.values().forEach(HelpMenu::build);
     }
 
     @Override
@@ -49,9 +51,9 @@ public class ModuleHelp extends Module implements CommandExecutor {
 
     private static HelpMenu find(HelpMenu menu, String[] nodes, int index) {
         if(index < nodes.length - 1) {
+            ++index;
             for(HelpMenu child : menu.children) {
-                if(child.hasName(nodes[++index])) return find(child, nodes, index);
-                System.out.println(nodes[index]);
+                if(child.hasName(nodes[index])) return find(child, nodes, index);
             }
         } else {
             return menu;
@@ -63,6 +65,7 @@ public class ModuleHelp extends Module implements CommandExecutor {
     static class HelpMenu {
 
         Set<String> alias = new HashSet<>();
+        List<String> textStrings = new ArrayList<>();
         List<BaseComponent[]> text = new ArrayList<>();
         BaseComponent[] description;
         Set<HelpMenu> children = new HashSet<>();
@@ -77,9 +80,9 @@ public class ModuleHelp extends Module implements CommandExecutor {
             messageBuilder = messageBuilder.define(section.getCurrentPath() + "-C", new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + String.join(" ", section.getCurrentPath().split(Pattern.quote(".")))))
                                              .define(section.getCurrentPath() + "-H", new HoverEvent(HoverEvent.Action.SHOW_TEXT, getDescription()));
 
-            text.add(messageBuilder.build(section.getString("title")));
-            section.getStringList("text").forEach(s -> text.add(messageBuilder.build(s)));
 
+            textStrings.add(section.getString("title"));
+            textStrings.addAll(section.getStringList("text"));
 
             for(String s : section.getKeys(false)) {
                 switch (s) {
@@ -107,6 +110,12 @@ public class ModuleHelp extends Module implements CommandExecutor {
 
         public List<BaseComponent[]> getText() {
             return text;
+        }
+
+        public void build() {
+            textStrings.forEach(s -> text.add(messageBuilder.build(s)));
+            textStrings = null;
+            children.forEach(HelpMenu::build);
         }
     }
 
