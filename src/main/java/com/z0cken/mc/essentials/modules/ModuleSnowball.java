@@ -3,7 +3,6 @@ package com.z0cken.mc.essentials.modules;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -102,7 +101,6 @@ public class ModuleSnowball extends Module implements Listener {
                 times.add(time);
                 if(times.size() >= 5) {
                     Long start = times.get(times.size() - 5);
-                    Bukkit.broadcastMessage(time - start + "");
                     if(time - start < getConfig().getInt("kick-threshold")) player.kickPlayer("429 - RATE LIMIT REACHED");
                 }
 
