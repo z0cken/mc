@@ -4,19 +4,15 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.z0cken.mc.metro.Metro;
 import com.z0cken.mc.metro.PCS_Metro;
+import com.z0cken.mc.metro.SpawnProfile;
 import com.z0cken.mc.metro.Station;
-import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.loot.Lootable;
 
 public class MobListener implements Listener {
 
@@ -28,12 +24,19 @@ public class MobListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntitySpawn(EntitySpawnEvent event) {
+    public void onEntitySpawn(CreatureSpawnEvent event) {
         Entity entity = event.getEntity();
-        if(entity instanceof Lootable && Metro.getInstance().contains(event.getLocation())) {
-            //TODO Loot Table & Metro Tag
+        if(event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM && Metro.getInstance().contains(event.getLocation())) {
             entity.getScoreboardTags().add("metro");
-            ((Lootable)entity).setLootTable(Bukkit.getLootTable(new NamespacedKey("metro", "entities/" + event.getEntityType().name().toLowerCase() + "/" + getDifficulty(entity.getLocation()).name().toLowerCase())));
+
+            String flag = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().getApplicableRegions(BukkitAdapter.adapt(event.getLocation())).queryValue(null, PCS_Metro.STRING_FLAG);
+            if(flag != null) {
+                SpawnProfile profile = Metro.getInstance().getProfile(flag);
+                if(profile != null) {
+                    if(profile.spawnMob(entity.getType(), event.getLocation())) event.setCancelled(true);
+                } else PCS_Metro.getInstance().getLogger().warning(String.format("Invalid spawn profile '%s' at %s", flag, event.getLocation().toString()));
+            } else PCS_Metro.getInstance().getLogger().warning(String.format("Spawn profile missing for %s", event.getLocation().toString()));
+
         }
     }
 
@@ -47,9 +50,9 @@ public class MobListener implements Listener {
         }
     }
 
-    private Difficulty getDifficulty(Location location) {
+    /*private Difficulty getDifficulty(Location location) {
         Difficulty difficulty = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryValue(BukkitAdapter.adapt(location), null, PCS_Metro.DIFFICULTY_FLAG);
         if(difficulty == null) return Difficulty.NORMAL;
         return difficulty;
-    }
+    }*/
 }

@@ -6,7 +6,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.z0cken.mc.metro.event.StationActivateEvent;
 import com.z0cken.mc.metro.event.StationDeactivateEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -32,7 +31,7 @@ public class Station implements Listener {
     private final MetroBeacon beacon;
     private boolean active = false;
     private final ProtectedRegion region;
-    private final Difficulty difficulty;
+    //private final Difficulty difficulty;
 
     Station(String id, String name, Location beaconLocation) {
         this.id = id;
@@ -42,7 +41,7 @@ public class Station implements Listener {
         this.beacon = new MetroBeacon(beaconLocation, supply);
 
         this.region = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(beaconLocation.getWorld())).getRegion(id);
-        this.difficulty = region.getFlag(PCS_Metro.DIFFICULTY_FLAG);
+        //this.difficulty = region.getFlag(PCS_Metro.DIFFICULTY_FLAG);
 
         if(supply > 0) {
             active = true;
@@ -74,7 +73,6 @@ public class Station implements Listener {
         String name = section.getString("name");
         Location beacon = section.getSerializable("beacon", Location.class);
         final Station station = new Station(key, name, beacon);
-        System.out.println((PCS_Metro.getInstance() == null) + "");
         Bukkit.getPluginManager().registerEvents(station, PCS_Metro.getInstance());
         Bukkit.getPluginManager().registerEvents(station.getBeacon(), PCS_Metro.getInstance());
 
@@ -101,9 +99,9 @@ public class Station implements Listener {
         return region;
     }
 
-    public Difficulty getDifficulty() {
+    /*public Difficulty getDifficulty() {
         return difficulty == null ? Difficulty.NORMAL : difficulty;
-    }
+    }*/
 
     class MetroBeacon implements Listener {
         private final Location location;
