@@ -7,3 +7,7 @@ modules:
   erosion: true
   award: true
   help: true
+messages:
+  reload: "§a§l>_§7 Plugin neu geladen!"
+  module-reload-success: "§a§l>_§7 Modul neu geladen!"
+  module-reload-fail: "§c§l>_§7 Modul konnte nicht neu geladen werden!"

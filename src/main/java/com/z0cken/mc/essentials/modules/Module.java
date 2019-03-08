@@ -35,7 +35,7 @@ public abstract class Module {
             Bukkit.getPluginManager().registerEvents((Listener) this, PCS_Essentials.getInstance());
         }
 
-        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' enabled");
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' §aenabled");
     }
 
     private void loadConfig() {
@@ -72,14 +72,14 @@ public abstract class Module {
         if(this instanceof Listener) HandlerList.unregisterAll((Listener) this);
         if(this instanceof CommandExecutor) commands.forEach(cmd -> PCS_Essentials.getInstance().getCommand(cmd).setExecutor(null));
         tasks.forEach(BukkitTask::cancel);
-        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' disabled");
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' §cdisabled");
     }
 
     public final void reload() {
         loadConfig();
         load();
 
-        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' reloaded");
+        PCS_Essentials.getInstance().getLogger().info("Module '" + NAME + "' §ereloaded");
     }
 
     protected abstract void load();
@@ -92,4 +92,7 @@ public abstract class Module {
 
     protected static Logger getLogger() { return PCS_Essentials.getInstance().getLogger(); }
 
+    public String getName() {
+        return NAME;
+    }
 }

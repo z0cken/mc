@@ -4,10 +4,7 @@ package com.z0cken.mc.essentials.modules;
 import com.z0cken.mc.essentials.PCS_Essentials;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class ModuleManager {
 
@@ -21,7 +18,7 @@ public class ModuleManager {
         "help", ModuleHelp.class
     );
 
-    private static final Collection<Module> activeModules = new ArrayList<>();
+    private static final Set<Module> activeModules = new HashSet<>();
 
     private ModuleManager() {}
 
@@ -54,5 +51,9 @@ public class ModuleManager {
                 }
             }
         }
+    }
+
+    public static Set<Module> getActiveModules() {
+        return Collections.unmodifiableSet(activeModules);
     }
 }
