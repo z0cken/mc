@@ -3,6 +3,7 @@ package com.z0cken.mc.essentials.modules;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import net.md_5.bungee.api.ChatMessageType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -138,5 +139,6 @@ public class ModuleSnowball extends Module implements Listener {
     public void load() {
         maxAmmo = getConfig().getInt("max-ammo");
         reloadTime = getConfig().getInt("reload-time");
+        Bukkit.getOnlinePlayers().forEach(p -> ammo.put(p, maxAmmo));
     }
 }
