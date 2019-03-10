@@ -43,7 +43,7 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     public void onEnable() {
         ICore.super.init();
 
-        PersonaAPI.init(coreConfig.getLong("persona-api.cache-interval"), coreConfig.getLong("persona-api.update-interval"));
+        PersonaAPI.init(coreConfig.getLong("persona-update-interval"));
 
         Bukkit.getPluginManager().registerEvents(this, this);
     }
@@ -106,11 +106,6 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         }
     }
 
-    @Override
-    public String getPlayerPrefix(UUID uuid) {
-        //TODO Implement
-        return "";
-    }
 
     public static PCS_Core getInstance() {
         return instance;

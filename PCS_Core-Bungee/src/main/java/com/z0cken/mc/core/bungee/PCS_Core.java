@@ -48,7 +48,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
     public void onEnable() {
         ICore.super.init();
 
-        PersonaAPI.init(coreConfig.getLong("persona-api.cache-interval"), coreConfig.getLong("persona-api.update-interval"));
+        PersonaAPI.init(coreConfig.getLong("persona-update-interval"));
 
         getProxy().getPluginManager().registerListener(this, this);
         getProxy().getPluginManager().registerListener(this, new ShadowListener());
@@ -179,11 +179,5 @@ public class PCS_Core extends Plugin implements ICore, Listener {
             case PLUGIN: return configBridge;
             default: throw new IllegalArgumentException();
         }
-    }
-
-    @Override
-    public String getPlayerPrefix(UUID uuid) {
-        //TODO Implement
-        return "";
     }
 }
