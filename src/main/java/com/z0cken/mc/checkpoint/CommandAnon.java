@@ -14,10 +14,15 @@ import java.sql.SQLException;
 
 class CommandAnon extends Command {
 
-    private static final Configuration cfg = PCS_Checkpoint.getConfig().getSection("messages.anon");
+    private static Configuration cfg;
 
     CommandAnon() {
         super("anon");
+        load();
+    }
+
+    static void load() {
+        cfg = PCS_Checkpoint.getConfig().getSection("messages.anon");
     }
 
     @Override

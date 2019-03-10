@@ -15,19 +15,27 @@ class RequestHelper {
 
     private static final String ENV_VAR_PATH = "";
     private static final String BASE_URL = "https://pr0gramm.com/api/";
-    private static Configuration cfg = PCS_Checkpoint.getConfig().getSection("bot");
-    private static final String USERNAME = cfg.getString("username");
-    private static String password = /*System.getenv(ENV_VAR_PATH)*/ cfg.getString("password");
+    private static Configuration cfg;
+    private static String username;
+    private static String password /*System.getenv(ENV_VAR_PATH)*/ ;
     private static String cookie;
     private static int timeout = 0;
 
-    static long timestamp = cfg.getLong("timestamp");
+    static long timestamp;
 
     static {
+        load();
         authenticate();
     }
 
     private RequestHelper() {}
+
+    static void load() {
+        cfg = PCS_Checkpoint.getConfig().getSection("bot");
+        username = cfg.getString("username");
+        password = cfg.getString("password");
+        timestamp = cfg.getLong("timestamp");
+    }
 
     private static void authenticate() {
         PCS_Checkpoint.getInstance().loadConfig();
@@ -36,7 +44,7 @@ class RequestHelper {
         HttpResponse<JsonNode> response;
 
         try {
-            response = Unirest.post(BASE_URL + "user/login").header("content-type", "application/x-www-form-urlencoded").field("name", USERNAME).field("password", password).asJson();
+            response = Unirest.post(BASE_URL + "user/login").header("content-type", "application/x-www-form-urlencoded").field("name", username).field("password", password).asJson();
         } catch (UnirestException e) {
             e.printStackTrace();
             return;

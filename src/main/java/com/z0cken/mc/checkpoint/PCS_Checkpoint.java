@@ -5,12 +5,16 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.LuckPermsApi;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -21,6 +25,7 @@ import java.io.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -34,8 +39,11 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         return instance;
     }
 
+    private static Optional<LuckPermsApi> luckPermsApi;
     private static Configuration config;
     private static ServerInfo hub;
+
+    private static ScheduledTask messageTask;
 
     /*
      * TODO Async REST & SQL ?
@@ -52,16 +60,24 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     @Override
     public void onEnable() {
-        hub = getProxy().getServerInfo(config.getString("hub-name"));
         messageBuilder = new MessageBuilder().define("A", getConfig().getString("messages.accent-color"));
 
+        if(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") == null) {
+            getLogger().severe("LuckPerms not enabled - shutting down");
+            getProxy().stop();
+            return;
+        } else {
+            luckPermsApi = LuckPerms.getApiSafe();
+        }
+
+        getProxy().getPluginManager().registerCommand(this, new CommandCheckpoint());
         getProxy().getPluginManager().registerCommand(this, new CommandVerify());
         getProxy().getPluginManager().registerCommand(this, new CommandInvite());
         getProxy().getPluginManager().registerCommand(this, new CommandAnon());
         getProxy().getPluginManager().registerListener(this,this);
 
         DatabaseHelper.setupTables();
-        getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
     @Override
@@ -88,6 +104,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
+        if(hub == null) hub = getProxy().getServerInfo(config.getString("hub-name"));
 
         if(!event.getTarget().equals(hub)) {
 
@@ -117,25 +134,53 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         Persona persona = null;
         try {
             persona = PersonaAPI.getPersona(uuid);
-        } catch (SQLException | UnirestException | HttpResponseException e) {
+        } catch (UnirestException | HttpResponseException e) {
+            getLogger().severe(e.getMessage());
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if(persona != null && persona.isBanned()) {
-            LocalDateTime bannedUntil = persona.getBannedUntil();
+        if(persona != null) {
+            if(persona.isBanned()) {
+                LocalDateTime bannedUntil = persona.getBannedUntil();
 
-            String msg;
-            String time = null;
+                String msg;
+                String time = null;
 
-            //TODO Separate date and time
-            if(bannedUntil == null) msg = PCS_Checkpoint.getConfig().getString("messages.banned-permanent");
-            else {
-                time = bannedUntil.format(DateTimeFormatter.ofPattern("dd.MM.yy 'um' HH:mm"));
-                msg = PCS_Checkpoint.getConfig().getString("messages.banned");
+                //TODO Separate date and time
+                if(bannedUntil == null) msg = PCS_Checkpoint.getConfig().getString("messages.banned-permanent");
+                else {
+                    time = bannedUntil.format(DateTimeFormatter.ofPattern("dd.MM.yy 'um' HH:mm"));
+                    msg = PCS_Checkpoint.getConfig().getString("messages.banned");
+                }
+
+                player.disconnect(messageBuilder.define("TIME", time).build(msg));
+            } else {
+                if(luckPermsApi.isPresent()) {
+                    final String primaryGroup = luckPermsApi.get().getUserManager().getUser(player.getName()).getPrimaryGroup();
+                    if (primaryGroup.equalsIgnoreCase("default")) {
+                        if(!persona.isGuest()) ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), String.format("lpb user %s parent set %s", player.getName(), getConfig().getString("verify-group")));
+                        else ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), String.format("lpb user %s parent set %s", player.getName(), getConfig().getString("invite-group")));
+                    }
+                }
             }
-
-            player.disconnect(messageBuilder.define("TIME", time).build(msg));
         }
+    }
+
+    void reload() {
+        loadConfig();
+        config.set("bot.timestamp", RequestHelper.timestamp);
+
+        messageBuilder = new MessageBuilder().define("A", getConfig().getString("messages.accent-color"));
+
+        RequestHelper.load();
+
+        messageTask.cancel();
+        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+
+        CommandVerify.load();
+        CommandInvite.load();
+        CommandAnon.load();
     }
 
     void loadConfig() {

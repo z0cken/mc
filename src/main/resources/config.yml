@@ -6,6 +6,8 @@ bot:
   login-timeout-multiplier: 3
   cookie:
 hub-name: hub
+verify-group: member
+invite-group: guest
 messages:
   error: §c§l>_ §7Ein Fehler ist aufgetreten...
   accent-color: §b
@@ -43,13 +45,13 @@ messages:
     denied-isverified: §c§l>_ §7Dein Account §o{NAME} §7ist bereits bestätigt!
     success:
     - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
-    - §8[ - §fDein Account wurde soeben bestätigt
+    - §8[ - §fDein Account {NAME} wurde soeben bestätigt
     - §8[ - §7Nutze {#[RUN|/anon][§f/anon]#} §7um dich zu anonymisieren!
     - §8[ - §7Als {MARK} §7erhältst du zu Beginn §b{AMOUNT} §7Invites!
     - §8[ ------------------------------------------- ]
     info:
     - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
-    - §8[ - §7Sende diesen Code per PN an den Bot {#[URL|pr0gramm.com/user/z0cken][{A}z0cken]#}
+    - §8[ - §7Sende diesen Code per PN an den Bot {#[URL|http://pr0gramm.com/user/z0cken][{A}z0cken]#}
     - §8[ - §7{#[SUGGEST|{HASH}][{A}{HASH}]#}
     - §8[ - §7Klick drauf, um ihn ins Textfeld zu kopieren
     - §8[ - §7Die Bestätigung kann bis zu {A}30 Sekunden §7dauern!

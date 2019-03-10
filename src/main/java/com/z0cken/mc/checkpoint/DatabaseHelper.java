@@ -56,7 +56,7 @@ class DatabaseHelper {
 
         //Double verification alert
         if (isVerified(name)) {
-            log.warning(name + "tried to verify " + uuid + " but is already linked!");
+            log.warning(String.format("%s tried to verify %s but is already linked!", name, uuid));
             return;
         }
 
@@ -67,28 +67,39 @@ class DatabaseHelper {
             statement.executeUpdate("DELETE FROM guests WHERE guest = '" + uuid.toString() + "'");
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-
-        PersonaAPI.updateCachedPersona(uuid);
-
-        Persona persona;
-        try {
-            persona = PersonaAPI.getPersona(uuid);
-            giveInvites(uuid, persona.getMark().getStartInvites());
-        } catch (SQLException | HttpResponseException | UnirestException e) {
-            e.printStackTrace();
-            log.severe(String.format("Failed to give invites to %s", uuid));
-            return;
+            log.severe(String.format("A database error occurred while verifying %s", uuid));
         }
 
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+
+        PersonaAPI.updateCachedPersona(uuid);
+        Persona persona;
+        try {
+            persona = PersonaAPI.getPersona(uuid);
+        } catch (SQLException | HttpResponseException | UnirestException e) {
+            e.printStackTrace();
+            log.severe(String.format("Failed to retrieve Persona for %s while verifying!", uuid));
+            if(player != null) {
+                player.sendMessage(PCS_Checkpoint.getConfig().getString("messages.error"));
+            }
+            return;
+        }
+
         if(player != null) {
             MessageBuilder builder = MessageBuilder.DEFAULT.define("MARK", persona.getMark().getTitle())
-                    .define("AMOUNT", Integer.toString(persona.getMark().getStartInvites()));
+                    .define("AMOUNT", Integer.toString(persona.getMark().getStartInvites())).define("NAME", persona.getName());
 
             for(String s : PCS_Checkpoint.getConfig().getStringList("messages.verify.success")) {
                 player.sendMessage(builder.build(s));
             }
+        }
+
+        try {
+            giveInvites(uuid, persona.getMark().getStartInvites());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            log.severe(String.format("Failed to give %d invites to %s", persona.getMark().getStartInvites(), uuid));
+            return;
         }
 
         PCS_Checkpoint.getInstance().checkPlayer(uuid);
@@ -136,6 +147,7 @@ class DatabaseHelper {
              Statement statement = connection.createStatement()) {
             statement.executeUpdate("INSERT IGNORE INTO guests VALUES ('" + guest.toString() + "','" + host.toString() + "','" + (int) (System.currentTimeMillis() / 1000L) + "');");
             statement.executeUpdate("UPDATE verified SET invites = invites - 1 WHERE player = '" + host.toString() + "'");
+            //setPrimaryGroup(Shadow.NAME.g, PCS_Checkpoint.getConfig().getString("invite-group"));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -156,14 +168,11 @@ class DatabaseHelper {
         return 0;
     }
 
-    static void giveInvites(UUID uuid, int invites) {
+    static void giveInvites(UUID uuid, int invites) throws SQLException {
 
         try (Connection connection = Database.MAIN.getConnection();
              Statement statement = connection.createStatement()) {
             statement.executeUpdate("UPDATE verified SET invites = invites + " + invites + " WHERE player = '" + uuid.toString() + "'");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

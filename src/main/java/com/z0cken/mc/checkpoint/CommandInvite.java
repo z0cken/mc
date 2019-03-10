@@ -21,10 +21,15 @@ class CommandInvite extends Command {
      * TODO /invite list
      */
 
-    private static final Configuration cfg = PCS_Checkpoint.getConfig().getSection("messages.invite");
+    private static Configuration cfg;
 
     CommandInvite() {
         super("invite");
+        load();
+    }
+
+    static void load() {
+        cfg = PCS_Checkpoint.getConfig().getSection("messages.invite");
     }
 
     @Override

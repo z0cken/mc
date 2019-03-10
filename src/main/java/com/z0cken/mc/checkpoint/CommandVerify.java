@@ -16,11 +16,16 @@ import java.sql.SQLException;
 
 class CommandVerify extends Command {
 
-    private static final Configuration cfg = PCS_Checkpoint.getConfig().getSection("messages.verify");
+    private static Configuration cfg;
     private static final String SALT = "dm780";
 
     CommandVerify() {
         super("verify");
+        load();
+    }
+
+    static void load() {
+       cfg = PCS_Checkpoint.getConfig().getSection("messages.verify");
     }
 
     @Override
