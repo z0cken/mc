@@ -33,5 +33,4 @@ public interface ICore {
 
     ConfigurationBridge getConfigBridge(ConfigurationType type);
 
-    String getPlayerPrefix(UUID uuid);
 }

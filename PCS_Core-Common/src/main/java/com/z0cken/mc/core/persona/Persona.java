@@ -214,7 +214,7 @@ public final class Persona {
     public enum Mark {
         SCHWUCHTEL("Schwuchtel", '●', ChatColor.WHITE, 2, 5),
         NEUSCHWUCHTEL("Neuschwuchtel", '●', ChatColor.LIGHT_PURPLE, 1, 2),
-        ALTSCHWUCHTEL("Altschwuchtel", '●', ChatColor.DARK_GRAY, 3, 10),
+        ALTSCHWUCHTEL("Altschwuchtel", '●', ChatColor.DARK_GREEN, 3, 10),
         ADMIN("Admin", '●', ChatColor.GOLD, 1337, Integer.MAX_VALUE),
         GEBANNT("Gebannt", 'X', ChatColor.GRAY, 0, 0),
         MODERATOR("Moderator", '●', ChatColor.DARK_BLUE, 3, 10),

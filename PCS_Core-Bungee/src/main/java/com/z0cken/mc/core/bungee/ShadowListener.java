@@ -21,7 +21,7 @@ public class ShadowListener implements Listener {
 
         try {
             Persona persona = PersonaAPI.getPersona(event.getPlayer().getUniqueId());
-            if(persona != null) Shadow.MARK.setInt(event.getPlayer().getUniqueId(), persona.getMark().ordinal());
+            if(persona != null && !persona.isGuest()) Shadow.MARK.setInt(event.getPlayer().getUniqueId(), persona.getMark().ordinal());
         } catch (SQLException | UnirestException | HttpResponseException e) {
             e.printStackTrace();
         }

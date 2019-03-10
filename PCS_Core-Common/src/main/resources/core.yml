@@ -1,6 +1,4 @@
-persona-api:
-  cache-interval: 30
-  update-interval: 180
+persona-update-interval: 1200
 hover-event:
   guest:
   - 'Eingeladen von {PLAYER} am {DATE}'

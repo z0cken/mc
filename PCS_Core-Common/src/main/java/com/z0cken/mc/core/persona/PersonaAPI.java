@@ -20,13 +20,11 @@ import java.util.concurrent.TimeUnit;
 public final class PersonaAPI {
 
     private static boolean initialized = false;
-    private static long cacheInterval;
     private static final Map<UUID, Persona> cache = new ConcurrentHashMap<>();
 
 
-    public static void init(long cacheInterval, long updateInterval) {
+    public static void init(long updateInterval) {
         if(initialized) throw new IllegalStateException(PersonaAPI.class.getName() + " already initialized!");
-        PersonaAPI.cacheInterval = Math.max(cacheInterval, 5);
         updateInterval = Math.max(updateInterval, 30);
         initialized = true;
 
@@ -41,7 +39,7 @@ public final class PersonaAPI {
                     else if(!entry.getValue().isGuest()) try {
                         entry.getValue().fetchProfile();
                     } catch (HttpResponseException | UnirestException e) {
-                        e.printStackTrace();
+                        CoreBridge.getPlugin().getLogger().severe(e.getMessage());
                     }
                 }
             }
@@ -66,7 +64,9 @@ public final class PersonaAPI {
             try {
                 final Persona value = new Persona(uuid);
                 cache.put(uuid, value);
-            } catch (SQLException | HttpResponseException | UnirestException e) {
+            } catch (HttpResponseException | UnirestException e) {
+                CoreBridge.getPlugin().getLogger().severe(e.getMessage());
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
@@ -79,12 +79,13 @@ public final class PersonaAPI {
         try {
             persona = PersonaAPI.getPersona(uuid);
             if(persona != null) {
-                builder = builder.define("PERSONA", persona.getHoverEvent()).define("MARK", " " + persona.getMark().getSymbol());
+                builder = builder.define("PERSONA", persona.getHoverEvent());
+                if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
             }
             else builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cNutzer nicht verifiziert")}));
 
         } catch (SQLException | UnirestException | HttpResponseException e) {
-            e.printStackTrace();
+            CoreBridge.getPlugin().getLogger().severe(e.getMessage());
             builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cDaten nicht verfügbar")}));
         }
 
