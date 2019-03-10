@@ -7,6 +7,7 @@ import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,7 +26,9 @@ import java.io.*;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -40,10 +43,13 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     }
 
     private static Optional<LuckPermsApi> luckPermsApi;
+    private static Queue<ProxiedPlayer> queue = new LinkedList<>();
     private static Configuration config;
     private static ServerInfo hub;
+    private static ServerInfo main;
+    private static int mainSlots;
 
-    private static ScheduledTask messageTask;
+    private static ScheduledTask messageTask, queueTask;
 
     /*
      * TODO Async REST & SQL ?
@@ -60,7 +66,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     @Override
     public void onEnable() {
-        messageBuilder = new MessageBuilder().define("A", getConfig().getString("messages.accent-color"));
+        load();
 
         if(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") == null) {
             getLogger().severe("LuckPerms not enabled - shutting down");
@@ -77,7 +83,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         getProxy().getPluginManager().registerListener(this,this);
 
         DatabaseHelper.setupTables();
-        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
     }
 
     @Override
@@ -85,7 +90,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         //Discards potential other unsaved invocations of Configuration#set
         //Prevents runtime changes by user to be overwritten
         loadConfig();
-
         config.set("bot.timestamp", RequestHelper.timestamp);
 
         try {
@@ -99,30 +103,47 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        checkPlayer(event.getPlayer().getUniqueId());
+        final ProxiedPlayer player = event.getPlayer();
+        checkPlayer(player.getUniqueId());
+
+        if(player.isConnected()) {
+            if(player.getReconnectServer().equals(main) && main.getPlayers().size() >= mainSlots) {
+                queue.add(player);
+                player.connect(hub);
+                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
+            }
+        }
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if(hub == null) hub = getProxy().getServerInfo(config.getString("hub-name"));
+        if(hub == null) return;
+        final ProxiedPlayer player = event.getPlayer();
 
-        if(!event.getTarget().equals(hub)) {
+        if(event.getTarget().equals(main)) {
 
             Persona persona;
 
             try {
-                persona = PersonaAPI.getPersona(event.getPlayer().getUniqueId());
+                persona = PersonaAPI.getPersona(player.getUniqueId());
             } catch (HttpResponseException | UnirestException | SQLException e) {
                 e.printStackTrace();
 
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
+                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                 return;
             }
 
-            if(persona == null) {
+            if (persona == null) {
                 event.setCancelled(true);
-                event.getPlayer().sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
+                player.sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
+                return;
+            }
+
+            if(main.getPlayers().size() >= mainSlots && !player.hasPermission("essentials.joinfullserver")) {
+                event.setCancelled(true);
+                queue.add(player);
+                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
             }
         }
     }
@@ -167,20 +188,39 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         }
     }
 
-    void reload() {
+
+    private void processQueue() {
+        int freeSlots = mainSlots - main.getPlayers().size();
+
+        for(int i = 0; i < freeSlots; i++) queue.poll().connect(main);
+
+        int i = 1;
+        for(ProxiedPlayer player : queue) {
+            player.sendMessage(ChatMessageType.ACTION_BAR, MessageBuilder.DEFAULT.define("AMOUNT", Integer.toString(i)).build(config.getString("messages.queue.notify")));
+            i++;
+        }
+    }
+
+    void load() {
         loadConfig();
         config.set("bot.timestamp", RequestHelper.timestamp);
+
+        hub = getProxy().getServerInfo(config.getString("hub-name"));
+        main = getProxy().getServerInfo(config.getString("main-name"));
+        mainSlots = config.getInt("main-slots");
 
         messageBuilder = new MessageBuilder().define("A", getConfig().getString("messages.accent-color"));
 
         RequestHelper.load();
-
-        messageTask.cancel();
-        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
-
         CommandVerify.load();
         CommandInvite.load();
         CommandAnon.load();
+
+        if(messageTask != null) messageTask.cancel();
+        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+
+        if(queueTask != null) queueTask.cancel();
+        queueTask = getProxy().getScheduler().schedule(this, this::processQueue, 5 , config.getInt("queue-interval"), TimeUnit.SECONDS);
     }
 
     void loadConfig() {
@@ -208,6 +248,4 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     static Configuration getConfig() {
         return config;
     }
-
-
 }

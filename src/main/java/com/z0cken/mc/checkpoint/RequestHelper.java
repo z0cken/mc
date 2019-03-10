@@ -20,7 +20,6 @@ class RequestHelper {
     private static String password /*System.getenv(ENV_VAR_PATH)*/ ;
     private static String cookie;
     private static int timeout = 0;
-
     static long timestamp;
 
     static {

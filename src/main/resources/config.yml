@@ -8,6 +8,7 @@ bot:
 hub-name: hub
 verify-group: member
 invite-group: guest
+queue-interval: 5
 messages:
   error: §c§l>_ §7Ein Fehler ist aufgetreten...
   accent-color: §b
@@ -56,3 +57,6 @@ messages:
     - §8[ - §7Klick drauf, um ihn ins Textfeld zu kopieren
     - §8[ - §7Die Bestätigung kann bis zu {A}30 Sekunden §7dauern!
     - §8[ ------------------------------------------- ]
+  queue:
+    insert: §e§l>_ §7Du wurdest in die Warteschlange aufgenommen!
+    notify: '§eDu bist auf Platz #{AMOUNT} in der Warteschlange'

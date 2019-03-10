@@ -11,14 +11,13 @@ public class CommandCheckpoint extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if(!sender.hasPermission("pcs.checkpoint.manage")) {
+        if(sender.hasPermission("pcs.checkpoint.manage")) {
             if(args.length > 0) {
                 if(args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
-                    PCS_Checkpoint.getInstance().reload();
+                    PCS_Checkpoint.getInstance().load();
                     sender.sendMessage("§a§l>_ §7Checkpoint neu geladen!");
                 }
             }
-
         }
     }
 }
