@@ -120,6 +120,7 @@ class ProtectionListener implements Listener {
         Material.LAVA_BUCKET,
         Material.WATER_BUCKET,
         Material.FLINT_AND_STEEL,
+        Material.BONE_MEAL,
 
         //Boats
         Material.ACACIA_BOAT,
