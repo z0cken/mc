@@ -49,11 +49,11 @@ public class VaultConnector implements Economy {
     }
 
     public boolean hasAccount(String s, String s1) {
-        return false;
+        return PCS_Economy.pcs_economy.accountManager.hasAccount(s);
     }
 
     public boolean hasAccount(OfflinePlayer offlinePlayer, String s) {
-        return false;
+        return PCS_Economy.pcs_economy.accountManager.hasAccount(offlinePlayer);
     }
 
     public double getBalance(String s) {
@@ -65,11 +65,11 @@ public class VaultConnector implements Economy {
     }
 
     public double getBalance(String s, String s1) {
-        return 0;
+        return PCS_Economy.pcs_economy.accountManager.getAccount(s).getBalance();
     }
 
     public double getBalance(OfflinePlayer offlinePlayer, String s) {
-        return 0;
+        return PCS_Economy.pcs_economy.accountManager.getAccount(offlinePlayer).getBalance();
     }
 
     public boolean has(String s, double v) {
@@ -81,11 +81,11 @@ public class VaultConnector implements Economy {
     }
 
     public boolean has(String s, String s1, double v) {
-        return false;
+        return PCS_Economy.pcs_economy.accountManager.getAccount(s).has(v);
     }
 
     public boolean has(OfflinePlayer offlinePlayer, String s, double v) {
-        return false;
+        return PCS_Economy.pcs_economy.accountManager.getAccount(offlinePlayer).has(v);
     }
 
     public EconomyResponse withdrawPlayer(String s, double v) {
@@ -97,11 +97,11 @@ public class VaultConnector implements Economy {
     }
 
     public EconomyResponse withdrawPlayer(String s, String s1, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "not implemented");
+        return PCS_Economy.pcs_economy.accountManager.getAccount(s).subtract(v);
     }
 
     public EconomyResponse withdrawPlayer(OfflinePlayer offlinePlayer, String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "not implemented");
+        return PCS_Economy.pcs_economy.accountManager.getAccount(offlinePlayer).subtract(v);
     }
 
     public EconomyResponse depositPlayer(String s, double v) {
@@ -113,11 +113,11 @@ public class VaultConnector implements Economy {
     }
 
     public EconomyResponse depositPlayer(String s, String s1, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "not implemented");
+        return PCS_Economy.pcs_economy.accountManager.getAccount(s).add(v);
     }
 
     public EconomyResponse depositPlayer(OfflinePlayer offlinePlayer, String s, double v) {
-        return new EconomyResponse(0, 0, EconomyResponse.ResponseType.NOT_IMPLEMENTED, "not implemented");
+        return PCS_Economy.pcs_economy.accountManager.getAccount(offlinePlayer).add(v);
     }
 
     public EconomyResponse createBank(String s, String s1) {

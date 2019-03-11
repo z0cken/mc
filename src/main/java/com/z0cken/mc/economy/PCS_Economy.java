@@ -26,6 +26,7 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +78,14 @@ public class PCS_Economy extends JavaPlugin {
         DatabaseHelper.createTable();
         registerCommands();
         registerInterfaces();
+
+        if(accountManager.getCurrentAccounts() == 0){
+            if(getServer().getOnlinePlayers().size() > 0){
+                getServer().getOnlinePlayers().forEach(p -> {
+                    accountManager.addAccountFromPlayer(p);
+                });
+            }
+        }
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new InventoryListener(this), this);

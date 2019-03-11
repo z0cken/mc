@@ -4,12 +4,15 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.contexts.OnlinePlayer;
 import com.z0cken.mc.economy.Account;
+import com.z0cken.mc.economy.AccountManager;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.utils.MessageHelper;
+import com.z0cken.mc.economy.utils.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +21,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @CommandAlias("m0ney|m")
 public class MoneyCommand extends BaseCommand {
@@ -56,6 +61,47 @@ public class MoneyCommand extends BaseCommand {
                     .define("AMOUNT", String.valueOf(rounded))
                     .define("PLAYER", player.getPlayer().getName())
                     .build(ConfigManager.accountSuccessBalanceOther));
+        }
+    }
+
+    @Subcommand("balanceoffline|bo")
+    @CommandPermission("pcs.economy.bo")
+    @Description("Kontostand eines Offlinespielers einsehen")
+    public void onBalanceOffline(CommandSender sender, String player){
+        if(sender instanceof Player){
+            Player p = (Player)sender;
+            OfflinePlayer op = pcs_economy.getServer().getOfflinePlayer(player);
+            if(op != null && op.hasPlayedBefore()){
+                Account account = pcs_economy.accountManager.getAccountFromDB(op.getUniqueId());
+                if(account != null){
+                    double rounded = MessageHelper.roundToTwoDecimals(account.getBalance());
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("AMOUNT", String.valueOf(rounded))
+                            .define("PLAYER", op.getName())
+                            .build(ConfigManager.accountSuccessBalanceOther));
+                }
+            }
+        }
+    }
+
+    @Subcommand("top")
+    @CommandPermission("pcs.economy.top")
+    @Description("Balancetop-Command")
+    public void onBalanceTop(CommandSender sender){
+        if(sender instanceof Player){
+            Player player = (Player)sender;
+            List<Pair<String, Double>> set = PCS_Economy.pcs_economy.accountManager.getBalanceTop();
+            String finalString = MessageHelper.convertBcToString(pcs_economy.getMessageBuilder().build(ConfigManager.accountBalanceTop)) + "\n";
+            for(int i = 0; i < set.size(); i++){
+                Pair<String, Double> pair = set.get(i);
+                finalString += MessageHelper.convertBcToString(
+                        pcs_economy.getMessageBuilder()
+                                .define("N", String.valueOf(i + 1))
+                                .define("PLAYER", pair.getLeft())
+                                .define("AMOUNT", String.valueOf(MessageHelper.roundToTwoDecimals(pair.getRight())))
+                                .build(ConfigManager.accountBalanceEntry)) + "\n";
+            }
+            player.sendMessage(finalString);
         }
     }
 
@@ -196,6 +242,15 @@ public class MoneyCommand extends BaseCommand {
             }catch (IOException e){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.errorGeneral));
             }
+        }
+    }
+
+    @Subcommand("debug offlineaccount")
+    @CommandPermission("pcs.economy.debug")
+    public void onDebugOfflineAccount(CommandSender sender, String playerName){
+        if(playerName != null && !playerName.isEmpty() && sender instanceof Player){
+            Player p = (Player)sender;
+
         }
     }
 }

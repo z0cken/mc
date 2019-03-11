@@ -3,14 +3,14 @@ package com.z0cken.mc.economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.core.Database;
 import com.z0cken.mc.economy.utils.DatabaseHelper;
+import com.z0cken.mc.economy.utils.Pair;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import javax.xml.crypto.Data;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class AccountManager {
@@ -57,6 +57,30 @@ public class AccountManager {
         return null;
     }
 
+    public List<Pair<String, Double>> getBalanceTop(){
+        if(DatabaseHelper.checkConnection()){
+            String query = "select uuid, balance from accounts order by balance desc limit 10;";
+            try(Connection con = Database.MAIN.getConnection();
+                Statement stmt = con.createStatement();
+                ResultSet set = stmt.executeQuery(query)){
+                List<Pair<String, Double>> resultSet = new ArrayList<>();
+                int i = 0;
+                while(set.next()){
+                    if(i == 10) break;
+                    String playerName = PCS_Economy.pcs_economy.getServer().getOfflinePlayer(UUID.fromString(set.getString("uuid"))).getName();
+                    double balance = set.getDouble("balance");
+                    resultSet.add(new Pair(playerName, balance));
+                    i++;
+                }
+                return resultSet;
+            }catch (SQLException e){
+                logError(Level.SEVERE, e.getMessage());
+                return null;
+            }
+        }
+        return null;
+    }
+
     public Account getAccountFromDB(String playerName){
         Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
         if(p != null){
@@ -74,7 +98,9 @@ public class AccountManager {
     }
 
     public Account getAccount(UUID uuid){
-        return accounts.get(uuid);
+        Account account = accounts.get(uuid);
+        if(account != null) return account;
+        return getAccountFromDB(uuid);
     }
 
     public Account getAccount(String playerName){
@@ -215,7 +241,6 @@ public class AccountManager {
             try(Connection con = Database.MAIN.getConnection();
                 Statement stmt = con.createStatement()){
                 boolean bool = stmt.execute(query);
-                logError(Level.FINE, "CHECK" + String.valueOf(bool));
                 return bool;
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
@@ -234,9 +259,6 @@ public class AccountManager {
                 OfflinePlayer op = PCS_Economy.pcs_economy.getServer().getOfflinePlayer(uuid);
                 AccountHolder holder;
                 holder = new AccountHolder(op);
-
-                PCS_Economy.pcs_economy.getLogger().info("AccountHolderName: " + holder.getName());
-                PCS_Economy.pcs_economy.getLogger().info("AccountHolderUUID: " + holder.getUUID());
                 account = new Account(holder, set.getDouble("balance"), set.getInt("accountID"));
             }
         }catch (SQLException e){
@@ -248,5 +270,9 @@ public class AccountManager {
 
     private void logError(Level level, String message){
         PCS_Economy.pcs_economy.getLogger().log(level, message);
+    }
+
+    public int getCurrentAccounts(){
+        return accounts.size();
     }
 }

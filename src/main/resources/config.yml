@@ -12,6 +12,7 @@ economy:
     currencySingular: Schekel
     currencyPlural: Schekel
     currencySymbol: ש
+    initialBalance: 1337.0
   permissions:
     admin: pcs.economy.admin
     user: pcs.economy.user
@@ -21,6 +22,8 @@ economy:
     error:
       errorGeneral: Irgendwas ist schief gelaufen. Bitte kontaktiere einen Admin
     action:
+      balTop: "{PREFIX} Top:"
+      balTopEntry: "{N}. {PLAYER} : {AMOUNT}"
       accounts:
         success:
           accountSuccessBalanceSelf: "{PREFIX} Kontostand: §l§6{CSYMBOL}{AMOUNT}§r§f"

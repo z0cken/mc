@@ -1,6 +1,7 @@
 package com.z0cken.mc.economy.events;
 
 import com.z0cken.mc.economy.PCS_Economy;
+import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.shops.InventoryMeta;
 import com.z0cken.mc.economy.shops.TradeInventoryType;
 import com.z0cken.mc.economy.shops.Trader;
@@ -25,6 +26,9 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         Player p = event.getPlayer();
         PCS_Economy.pcs_economy.accountManager.addAccountFromPlayer(p);
+        if(!p.hasPlayedBefore()){
+            PCS_Economy.pcs_economy.accountManager.getAccount(p).add(ConfigManager.config.getDouble("economy.currency.initialBalance"));
+        }
     }
 
     @EventHandler

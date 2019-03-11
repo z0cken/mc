@@ -25,6 +25,9 @@ public class ConfigManager {
     public static String errorGeneral = null;
     public static String successGeneral = null;
 
+    public static String accountBalanceTop = null;
+    public static String accountBalanceEntry = null;
+
     public static String accountSuccessBalanceSelf = null;
     public static String accountErrorBalanceSelf = null;
     public static String accountSuccessBalanceOther = null;
@@ -112,6 +115,9 @@ public class ConfigManager {
 
         errorGeneral = config.getString("economy.messages.error.errorGeneral");
         successGeneral = config.getString("economy.messages.success.successGeneral");
+
+        accountBalanceTop = config.getString("economy.messages.action.balTop");
+        accountBalanceEntry = config.getString("economy.messages.action.balTopEntry");
 
         accountSuccessBalanceSelf = config.getString("economy.messages.action.accounts.success.accountSuccessBalanceSelf");
         accountErrorBalanceSelf = config.getString("economy.messages.action.accounts.error.accountErrorBalanceSelf");

@@ -65,7 +65,6 @@ public class DatabaseHelper {
         if(!deque.isEmpty()){
             String query = "UPDATE accounts SET balance = ? WHERE accountID = ? ;";
             try(Connection con = Database.MAIN.getConnection(); PreparedStatement stmt = con.prepareStatement(query)){
-                PCS_Economy.pcs_economy.getLogger().info("Beginning push to database");
                 while(!deque.isEmpty()){
                     Account acc = deque.peek();
                     stmt.setDouble(1, acc.getBalance());
