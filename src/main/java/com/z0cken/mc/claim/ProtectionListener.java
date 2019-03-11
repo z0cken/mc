@@ -3,6 +3,7 @@ package com.z0cken.mc.claim;
 import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
@@ -17,9 +18,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.*;
 
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 class ProtectionListener implements Listener {
 
@@ -278,21 +277,17 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
-        Claim claim = PCS_Claim.getClaim(event.getBlock().getChunk());
-        Set<Claim> targets = event.getBlocks().stream().map(block -> PCS_Claim.getClaim(block.getChunk())).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        if(claim == null) {
-            if(targets.size() > 0) event.setCancelled(true);
-        } else if(targets.stream().anyMatch(c -> !c.canBuild(claim.getOwner().getOfflinePlayer()))) event.setCancelled(true);
+        if(event.getDirection() == BlockFace.DOWN || event.getDirection() == BlockFace.UP) return;
+        Claim origin = PCS_Claim.getClaim(event.getBlock().getChunk());
+        Claim target = PCS_Claim.getClaim(event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()).getChunk());
+        if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
-        Claim claim = PCS_Claim.getClaim(event.getBlock().getChunk());
-        Set<Claim> targets = event.getBlocks().stream().map(block -> PCS_Claim.getClaim(block.getChunk())).filter(Objects::nonNull).collect(Collectors.toSet());
-
-        if(claim == null) {
-            if(targets.size() > 0) event.setCancelled(true);
-        } else if(targets.stream().anyMatch(c -> !c.canBuild(claim.getOwner().getOfflinePlayer()))) event.setCancelled(true);
+        if(event.getDirection() == BlockFace.DOWN || event.getDirection() == BlockFace.UP) return;
+        Claim origin = PCS_Claim.getClaim(event.getBlock().getChunk());
+        Claim target = PCS_Claim.getClaim(event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()).getChunk());
+        if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 }
