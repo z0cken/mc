@@ -11,15 +11,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.*;
 
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class ProtectionListener implements Listener {
 
@@ -203,6 +203,7 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
+        if(event.getCaught() == null) return;
         handleManipulation(event, event.getCaught().getLocation().getChunk(), event.getPlayer());
     }
 
@@ -259,7 +260,10 @@ class ProtectionListener implements Listener {
                 event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", claim.getOwner().getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.portal-claimed")));
             }
         }
-        else event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.portal-new")));
+        else {
+            event.setCancelled(true);
+            event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.portal-new")));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -270,5 +274,25 @@ class ProtectionListener implements Listener {
         final Claim from = PCS_Claim.getClaim(event.getBlock().getChunk());
         if(from != null && to.canBuild(from.getOwner().getOfflinePlayer())) return;
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPistonExtend(BlockPistonExtendEvent event) {
+        Claim claim = PCS_Claim.getClaim(event.getBlock().getChunk());
+        Set<Claim> targets = event.getBlocks().stream().map(block -> PCS_Claim.getClaim(block.getChunk())).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        if(claim == null) {
+            if(targets.size() > 0) event.setCancelled(true);
+        } else if(targets.stream().anyMatch(c -> !c.canBuild(claim.getOwner().getOfflinePlayer()))) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onPistonRetract(BlockPistonRetractEvent event) {
+        Claim claim = PCS_Claim.getClaim(event.getBlock().getChunk());
+        Set<Claim> targets = event.getBlocks().stream().map(block -> PCS_Claim.getClaim(block.getChunk())).filter(Objects::nonNull).collect(Collectors.toSet());
+
+        if(claim == null) {
+            if(targets.size() > 0) event.setCancelled(true);
+        } else if(targets.stream().anyMatch(c -> !c.canBuild(claim.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 }
