@@ -6,6 +6,7 @@ import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.ConfigurationBridge;
 import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -16,8 +17,10 @@ import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 
 import java.io.*;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "Duplicates"})
 public class PCS_Core extends Plugin implements ICore, Listener {
@@ -66,7 +69,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
 
     @EventHandler
     public void onJoin(PostLoginEvent event) {
-        PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
+        //PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
     }
 
     @Override
@@ -92,6 +95,12 @@ public class PCS_Core extends Plugin implements ICore, Listener {
     public boolean isOnline(UUID uuid) {
         ProxiedPlayer player = getProxy().getPlayer(uuid);
         return player != null && player.isConnected();
+    }
+
+
+    @Override
+    public Set<UUID> getOnlinePlayers() {
+        return ProxyServer.getInstance().getPlayers().stream().map(ProxiedPlayer::getUniqueId).collect(Collectors.toSet());
     }
 
     private void saveResource(String resourcePath, boolean replace) {

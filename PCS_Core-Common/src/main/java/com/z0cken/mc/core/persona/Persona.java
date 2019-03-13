@@ -68,7 +68,7 @@ public final class Persona {
     }
 
     void fetchProfile() throws HttpResponseException, UnirestException {
-        GetRequest request = Unirest.get("https://pr0gramm.com/api/profile/info?name=" + name).header("accept", "application/json");
+        GetRequest request = Unirest.get("https://pr0gramm.com/api/profile/info?name=" + name);
 
         HttpResponse<String> httpResponse = request.asString();
         int status = httpResponse.getStatus();
@@ -222,7 +222,7 @@ public final class Persona {
         LEGENDE("Lebende Legende", '✫', ChatColor.DARK_AQUA, 3, 10),
         WICHTEL("Wichtel", '✉', ChatColor.RED, 3, 10),
         SPENDER("Edler Spender", '⦿', ChatColor.DARK_AQUA, 3, 10),
-        MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.GREEN,3, 10),
+        MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.GREEN, 3, 10),
         ALTMOD("Alt-Moderator", '●', ChatColor.BLUE, 3, 10),
         COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.DARK_RED, 3, 10);
 

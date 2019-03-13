@@ -5,6 +5,7 @@ import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 
 import java.io.File;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -32,5 +33,7 @@ public interface ICore {
     boolean isOnline(UUID uuid);
 
     ConfigurationBridge getConfigBridge(ConfigurationType type);
+
+    Set<UUID> getOnlinePlayers();
 
 }

@@ -2,6 +2,7 @@ package com.z0cken.mc.core.persona;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.CoreBridge;
+import com.z0cken.mc.core.Database;
 import com.z0cken.mc.core.util.CoreTask;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -44,17 +45,36 @@ public final class PersonaAPI {
                 }
             }
         }.schedule();
+
+        new CoreTask(true, TimeUnit.SECONDS, 30L, 60L) {
+            @Override
+            public void run() {
+                for(UUID uuid : CoreBridge.getPlugin().getOnlinePlayers()) {
+                    if(!cache.containsKey(uuid)) {
+                        try {
+                            Persona persona = new Persona(uuid);
+                            if(persona.getName() != null || persona.isGuest()) {
+                                cache.put(uuid, persona);
+                            }
+                        } catch (SQLException | HttpResponseException | UnirestException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }.schedule();
     }
 
     public static Persona getPersona(UUID uuid) throws SQLException, UnirestException, HttpResponseException {
         Persona persona = cache.getOrDefault(uuid, null);
         if(persona != null) return persona;
 
+        /*
         persona = new Persona(uuid);
         if(persona.getName() != null || persona.isGuest()) {
             if(CoreBridge.getPlugin().isOnline(uuid)) cache.put(uuid, persona);
             return persona;
-        }
+        }*/
 
         return null;
     }
@@ -82,7 +102,8 @@ public final class PersonaAPI {
                 builder = builder.define("PERSONA", persona.getHoverEvent());
                 if(!persona.isGuest()) builder = builder.define("MARK", " " + persona.getMark().getSymbol());
             }
-            else builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cNutzer nicht verifiziert")}));
+            else if(DatabaseHelper.getUsername(uuid) == null)builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cNutzer nicht verifiziert")}));
+            else builder = builder.define("PERSONA", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cDaten nicht verfügbar")}));
 
         } catch (SQLException | UnirestException | HttpResponseException e) {
             CoreBridge.getPlugin().getLogger().severe(e.getMessage());

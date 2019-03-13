@@ -7,6 +7,7 @@ import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +18,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class PCS_Core extends JavaPlugin implements ICore, Listener {
@@ -56,7 +59,7 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
-        PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
+        //PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -106,6 +109,10 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         }
     }
 
+    @Override
+    public Set<UUID> getOnlinePlayers() {
+        return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
+    }
 
     public static PCS_Core getInstance() {
         return instance;
