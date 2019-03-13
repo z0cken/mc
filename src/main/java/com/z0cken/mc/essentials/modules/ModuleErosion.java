@@ -110,7 +110,6 @@ public final class ModuleErosion extends Module implements Listener, CommandExec
             } else {
                 //Help
             }
-
         }
 
         return false;
@@ -132,6 +131,7 @@ public final class ModuleErosion extends Module implements Listener, CommandExec
         private static final Database DATABASE = Database.MAIN;
 
         static {
+            //TODO Add to tasks
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -165,12 +165,14 @@ public final class ModuleErosion extends Module implements Listener, CommandExec
                     String s = entry.getValue().name().toLowerCase() + " = " + entry.getValue().name().toLowerCase() + " - 1";
                     erode.addBatch("INSERT INTO erosion SET " + s + ", x = " + entry.getKey().getX() + ", z = " + entry.getKey().getZ() + " ON DUPLICATE KEY UPDATE " + s + ";");
                 }
+                erode.executeBatch();
 
                 while (!restored.isEmpty()) {
                     AbstractMap.SimpleEntry<ChunkCoordinate, Material> entry = restored.poll();
                     String s = entry.getValue().name().toLowerCase() + " = " + entry.getValue().name().toLowerCase() + " + 1";
                     restore.addBatch("INSERT INTO erosion SET " + s + ", x = " + entry.getKey().getX() + ", z = " + entry.getKey().getZ() + " ON DUPLICATE KEY UPDATE " + s + ";");
                 }
+                restore.executeBatch();
             } catch (SQLException e) {
                 e.printStackTrace();
                 getLogger().severe(">>> Failed to push erosion queue <<<");
