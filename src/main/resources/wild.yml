@@ -1,0 +1,7 @@
+min-distance: 1000
+cooldown: 120
+limit: 20
+messages:
+  wait: "§c§l>_ §7Bitte warte noch {VALUE} Sekunden"
+  success: "§a§l>_ §7Du bist nun {VALUE} Meter vom Spawn entfernt"
+  error: "§c§l>_ §7Ein Fehler ist aufgetreten"

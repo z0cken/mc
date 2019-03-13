@@ -15,7 +15,8 @@ public class ModuleManager {
         "erosion", ModuleErosion.class,
         "discover", ModuleDiscover.class,
         "award", ModuleAward.class,
-        "help", ModuleHelp.class
+        "help", ModuleHelp.class,
+        "wild", ModuleWild.class
     );
 
     private static final Set<Module> activeModules = new HashSet<>();
