@@ -1,4 +1,5 @@
 format: "§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7>"
+mention-format: '§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§b{PLAYER}]#}§7'
 log-console: true
 messages:
   join: "§7[§a+§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#}"

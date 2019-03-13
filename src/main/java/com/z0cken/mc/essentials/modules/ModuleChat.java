@@ -65,7 +65,7 @@ public class ModuleChat extends Module implements Listener {
         final Player player = event.getPlayer();
         BaseComponent[] msg = (BaseComponent[]) ArrayUtils.addAll(PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(FORMAT), parseMessage(event.getMessage()));
         event.getRecipients().forEach(p -> p.spigot().sendMessage(msg));
-        if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(player.getName() + " >" + event.getMessage());
+        if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(player.getName() + " > " + event.getMessage());
 
         //Without log4j
         //if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(event.getPlayer().getName() + " >" + new TextComponent(message).toPlainText());
@@ -97,7 +97,7 @@ public class ModuleChat extends Module implements Listener {
 
             if(player != null) {
                 iterator.remove();
-                Arrays.asList(PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build("§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§b{PLAYER}]#}§7")).forEach(iterator::add);
+                Arrays.asList(PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(getConfig().getString("mention-format"))).forEach(iterator::add);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5F, 1.75F);
             }
         }
@@ -128,7 +128,9 @@ public class ModuleChat extends Module implements Listener {
 
     private String getPrefix(Player player) {
         if(chat != null) {
-            return ChatColor.translateAlternateColorCodes('&', chat.getPlayerPrefix(player)).replaceAll(Pattern.quote("]"), Matcher.quoteReplacement("\\\\]")) + " ";
+            String prefix = chat.getPlayerPrefix(player);
+            if(prefix.isEmpty() || prefix.equalsIgnoreCase("")) return prefix;
+            else return ChatColor.translateAlternateColorCodes('&', prefix).replaceAll(Pattern.quote("]"), Matcher.quoteReplacement("\\\\]")) + " ";
         }
         return "";
     }
