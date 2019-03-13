@@ -14,22 +14,22 @@ import java.util.regex.Pattern;
 
 public class ModuleHelp extends Module implements CommandExecutor {
 
-    static Map<String, HelpMenu> menus = new HashMap<>();
-    static MessageBuilder messageBuilder = MessageBuilder.DEFAULT;
+    private static Map<String, HelpMenu> menus = new HashMap<>();
+    private static MessageBuilder messageBuilder = MessageBuilder.DEFAULT;
 
     ModuleHelp(String configPath) {
         super(configPath);
+    }
+
+    @Override
+    protected void load() {
+        menus.clear();
         getConfig().getKeys(false).forEach(key -> {
             registerCommand(key);
             menus.put(key, new HelpMenu(key, getConfig().getConfigurationSection(key)));
         });
 
         menus.values().forEach(HelpMenu::build);
-    }
-
-    @Override
-    protected void load() {
-
     }
 
     @Override
