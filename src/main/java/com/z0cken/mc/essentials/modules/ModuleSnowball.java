@@ -140,5 +140,6 @@ public class ModuleSnowball extends Module implements Listener {
         maxAmmo = getConfig().getInt("max-ammo");
         reloadTime = getConfig().getInt("reload-time");
         Bukkit.getOnlinePlayers().forEach(p -> ammo.put(p, maxAmmo));
+        Bukkit.getOnlinePlayers().forEach(p -> timer.put(p, new ArrayList<>()));
     }
 }
