@@ -6,6 +6,7 @@ import com.z0cken.mc.core.FriendsAPI;
 import com.z0cken.mc.core.bukkit.Menu;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -48,6 +50,11 @@ public class ModuleCompass extends Module implements Listener {
     }
 
     @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        setTarget(event.getPlayer(), event.getPlayer().getWorld().getSpawnLocation());
+    }
+
+    @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         if(event.getMaterial() == Material.COMPASS && player.getWorld().getEnvironment() == World.Environment.NORMAL) {
@@ -67,19 +74,22 @@ public class ModuleCompass extends Module implements Listener {
 
         while(iterator.hasNext()) {
             Map.Entry<Player, CompassTarget> entry = iterator.next();
+            final Location loc = entry.getValue().getLocation();
+            final Player player = entry.getKey();
 
-            if(!entry.getKey().isOnline()) {
+            if(!player.isOnline()) {
                 entry.getValue().disband();
                 iterator.remove();
                 continue;
-            } else if(entry.getValue().getLocation() == null) {
-                entry.getKey().spigot().sendMessage(new MessageBuilder().build(getConfig().getString("messages.target-lost")));
+            } else if(loc == null || !loc.getWorld().equals(player.getWorld())) {
+                player.spigot().sendMessage(new MessageBuilder().build(getConfig().getString("messages.target-lost")));
+                entry.getValue().disband();
                 iterator.remove();
-                entry.getKey().setCompassTarget(entry.getKey().getWorld().getSpawnLocation());
+                player.setCompassTarget(player.getWorld().getSpawnLocation());
                 continue;
             }
 
-            entry.getKey().setCompassTarget(entry.getValue().getLocation());
+            player.setCompassTarget(loc);
         }
     }
 
@@ -117,17 +127,24 @@ public class ModuleCompass extends Module implements Listener {
             int page = Math.max(0, (int)((double) i / (friendMenu.getSize() - (multiPage ? 9 : 0))));
             int slot = i % (friendMenu.getSize() - (multiPage ? 9 : 0));
 
-            Menu.PricedButton chunkButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
-                setTarget(player1, friend);
-                player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.selected")));
+            Menu.PricedButton friendButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
+                if(player1.getWorld().equals(friend.getWorld())){
+                    setTarget(player1, friend);
+                    player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.selected")));
+                } else player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.other-world")));
+
             }, price, Material.PLAYER_HEAD);
 
-            SkullMeta itemMeta = (SkullMeta) chunkButton.getItemMeta();
-            itemMeta.setDisplayName(friend.getName());
+            SkullMeta itemMeta = (SkullMeta) friendButton.getItemMeta();
+            itemMeta.setDisplayName(ChatColor.RESET + friend.getName());
             itemMeta.setOwningPlayer(friend);
-            chunkButton.setItemMeta(itemMeta);
+            if(!friend.getWorld().equals(player.getWorld())) {
+                String s = friend.getWorld().getEnvironment() == World.Environment.NETHER ? "Nether" : "Ende";
+                itemMeta.setLore(List.of(ChatColor.RED + "Befindet sich im " + s));
+            }
+            friendButton.setItemMeta(itemMeta);
 
-            friendMenu.setItem(page, slot, chunkButton);
+            friendMenu.setItem(page, slot, friendButton);
             i++;
         }
 
@@ -175,8 +192,10 @@ public class ModuleCompass extends Module implements Listener {
         player.openInventory(chunkMenu);
     };
 
+    private final List<Menu.Button.ClickEvent> PRESETS = List.of(FRIENDS_EVENT, CLAIMS_EVENT);
+
     private static void setTarget(@Nonnull Player player, @Nonnull Entity entity) {
-        targets.put(player, new CompassTarget(entity.getLocation()));
+        targets.put(player, new CompassTarget(entity));
         player.setCompassTarget(entity.getLocation());
     }
 
@@ -193,7 +212,6 @@ public class ModuleCompass extends Module implements Listener {
         }
     }
 
-    private final List<Menu.Button.ClickEvent> PRESETS = List.of(FRIENDS_EVENT, CLAIMS_EVENT);
 
     private static int calculateRows(int items) {
         if(items <= 9*6) return 6;
@@ -280,10 +298,10 @@ public class ModuleCompass extends Module implements Listener {
                         target = null;
                         return;
                     }
-
                     target = entity.getLocation();
                 }
             }.runTaskTimer(PCS_Essentials.getInstance(), 40, 40);
+            //tasks.add(task);
         }
 
         public Location getLocation() {
