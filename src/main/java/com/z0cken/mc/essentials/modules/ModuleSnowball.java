@@ -97,6 +97,7 @@ public class ModuleSnowball extends Module implements Listener {
 
                 final List<Long> times = timer.get(player);
                 if(ammo.get(player) == maxAmmo) reloading.put(player, reloadTime);
+                ammo.put(player, ammo.get(player)-1);
 
                 Long time = System.currentTimeMillis();
                 times.add(time);
@@ -105,7 +106,6 @@ public class ModuleSnowball extends Module implements Listener {
                     if(time - start < getConfig().getInt("kick-threshold")) player.kickPlayer("429 - RATE LIMIT REACHED");
                 }
 
-                ammo.put(player, ammo.get(player)-1);
                 MessageBuilder builder = new MessageBuilder().define("VALUE", Integer.toString(ammo.get(player)));
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, builder.build(getConfig().getString("messages.ammo")));
             }
