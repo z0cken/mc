@@ -26,9 +26,17 @@ import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+/*
+* TODO
+* Usershops
+* Enchantements in Shops
+* Playerheads in Shops
+* Lineare Steigerung der Claim-Preise
+* InfluxDB (Transaction-Tracking usw)
+* */
 
 public class PCS_Economy extends JavaPlugin {
     private static BukkitCommandManager commandManager;
@@ -141,6 +149,14 @@ public class PCS_Economy extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void createPlayerCommandCompletionHandler(){
+        commandManager.getCommandCompletions().registerAsyncCompletion("cPlayers", c -> {
+            List<String> players = new ArrayList<>();
+            getServer().getOnlinePlayers().forEach(p -> players.add(p.getName()));
+           return ImmutableList.copyOf(players);
+        });
     }
 
     public void createTraderCommandCompletionHandler(){

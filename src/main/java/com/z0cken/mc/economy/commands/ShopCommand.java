@@ -109,7 +109,6 @@ public class ShopCommand extends BaseCommand {
                                 trader.setTraderName(traderName);
                             }
                         }
-
                     }
                 }catch (NumberFormatException e){
                     p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.shopTraderErrorChangeName));
@@ -167,6 +166,24 @@ public class ShopCommand extends BaseCommand {
                     Villager v = (Villager)entity;
                     v.setProfession(Villager.Profession.valueOf(traderLook));
                 }
+            }
+        }
+    }
+
+    @Subcommand("resurrect")
+    @CommandPermission("pcs.economy.admin")
+    @CommandCompletion("@traderID @traderLook")
+    public void onTraderResurrect(CommandSender sender, String sTraderID, @Optional@Values("@traderLook") String traderLook){
+        if(sender instanceof Player){
+            Player p = (Player)sender;
+            Trader trader = getTrader(sTraderID);
+            if(p.getServer().getEntity(trader.getTraderUUID()) == null){
+                Villager v = (Villager)p.getWorld().spawnEntity(p.getLocation(), EntityType.VILLAGER);
+                v.setInvulnerable(true);
+                v.setCustomName(trader.getTraderName());
+                v.setCustomNameVisible(true);
+                v.setProfession(Villager.Profession.valueOf(traderLook));
+                pcs_economy.traderManager.getTrader(trader.getTraderUUID()).setTraderUUID(v.getUniqueId().toString());
             }
         }
     }

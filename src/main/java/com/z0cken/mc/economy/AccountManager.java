@@ -25,8 +25,9 @@ public class AccountManager {
         Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
         if(p != null){
             return hasAccount(p.getUniqueId());
+        }else{
+            return hasAccount(PCS_Economy.pcs_economy.getServer().getOfflinePlayer(playerName));
         }
-        return false;
     }
 
     public boolean hasAccount(OfflinePlayer player){
@@ -38,6 +39,7 @@ public class AccountManager {
     }
 
     public boolean hasAccount(UUID uuid){
+        if(accounts.get(uuid) != null) return true;
         String query = "select count(*) from accounts where uuid = \'" + uuid.toString() + "\';";
         return getRowCount(query) > 0;
     }
@@ -104,7 +106,14 @@ public class AccountManager {
     }
 
     public Account getAccount(String playerName){
-        return getAccount(PCS_Economy.pcs_economy.getServer().getPlayer(playerName).getUniqueId());
+        Player p = PCS_Economy.pcs_economy.getServer().getPlayer(playerName);
+        Account account;
+        if(p != null){
+            account = getAccount(p.getUniqueId());
+        }else{
+            account = getAccount(PCS_Economy.pcs_economy.getServer().getOfflinePlayer(playerName).getUniqueId());
+        }
+        return account;
     }
 
     public Account getAccount(Player player){

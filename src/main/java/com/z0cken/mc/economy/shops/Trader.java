@@ -105,6 +105,10 @@ public class Trader {
         }
     }
 
+    public void setTraderUUID(String uuid){
+        this.traderUUID = uuid;
+    }
+
     public boolean isAdminShop(){
         return this.isAdminShop;
     }

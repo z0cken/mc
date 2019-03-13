@@ -51,35 +51,20 @@ public class MoneyCommand extends BaseCommand {
 
     @Subcommand("balance|b")
     @CommandPermission("pcs.economy.admin")
-    @CommandCompletion("@players")
+    @CommandCompletion("@cPlayers")
     @Description("Kontostand eines anderen Spielers einsehen.")
-    public void onBalancePlayer(CommandSender sender, OnlinePlayer player){
+    public void onBalancePlayer(CommandSender sender, String player){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            double rounded = MessageHelper.roundToTwoDecimals(pcs_economy.accountManager.getAccount(player.getPlayer()).getBalance());
-            p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                    .define("AMOUNT", String.valueOf(rounded))
-                    .define("PLAYER", player.getPlayer().getName())
-                    .build(ConfigManager.accountSuccessBalanceOther));
-        }
-    }
-
-    @Subcommand("balanceoffline|bo")
-    @CommandPermission("pcs.economy.bo")
-    @Description("Kontostand eines Offlinespielers einsehen")
-    public void onBalanceOffline(CommandSender sender, String player){
-        if(sender instanceof Player){
-            Player p = (Player)sender;
-            OfflinePlayer op = pcs_economy.getServer().getOfflinePlayer(player);
-            if(op != null && op.hasPlayedBefore()){
-                Account account = pcs_economy.accountManager.getAccountFromDB(op.getUniqueId());
-                if(account != null){
-                    double rounded = MessageHelper.roundToTwoDecimals(account.getBalance());
-                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                            .define("AMOUNT", String.valueOf(rounded))
-                            .define("PLAYER", op.getName())
-                            .build(ConfigManager.accountSuccessBalanceOther));
-                }
+            Account account = pcs_economy.accountManager.getAccount(player);
+            if(account != null){
+                double rounded = MessageHelper.roundToTwoDecimals(account.getBalance());
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                        .define("AMOUNT", String.valueOf(rounded))
+                        .define("PLAYER", player)
+                        .build(ConfigManager.accountSuccessBalanceOther));
+            }else{
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.paymentErrorAccountNotExisting));
             }
         }
     }
@@ -107,19 +92,24 @@ public class MoneyCommand extends BaseCommand {
 
     @Subcommand("account clear")
     @CommandPermission("pcs.economy.admin")
-    @CommandCompletion("@players")
-    public void onClear(CommandSender sender, OnlinePlayer player){
+    @CommandCompletion("@cPlayers")
+    public void onClear(CommandSender sender, String player){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).clearBalance();
-            if(response.type == EconomyResponse.ResponseType.FAILURE){
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .build(ConfigManager.accountErrorClear));
+            Account account = pcs_economy.accountManager.getAccount(player);
+            if(account != null){
+                EconomyResponse response = account.clearBalance();
+                if(response.type == EconomyResponse.ResponseType.FAILURE){
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .build(ConfigManager.accountErrorClear));
+                }else{
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .build(ConfigManager.accountSuccessClear));
+                }
             }else{
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .build(ConfigManager.accountSuccessClear));
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.paymentErrorAccountNotExisting));
             }
         }
     }
@@ -164,64 +154,78 @@ public class MoneyCommand extends BaseCommand {
 
     @Subcommand("account set")
     @CommandPermission("pcs.economy.admin")
-    @CommandCompletion("@players")
-    public void onAccountSet(CommandSender sender, OnlinePlayer player, double amount){
+    @CommandCompletion("@cPlayers")
+    public void onAccountSet(CommandSender sender, String player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
             double rounded = MessageHelper.roundToTwoDecimals(amount);
-            pcs_economy.getServer().getLogger().info(String.valueOf(rounded));
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).setBalance(rounded);
-            if(response.type == EconomyResponse.ResponseType.SUCCESS){
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .define("AMOUNT", String.valueOf(rounded))
-                        .build(ConfigManager.accountSuccessSet));
+            Account account = pcs_economy.accountManager.getAccount(player);
+            if(account != null){
+                EconomyResponse response = account.setBalance(rounded);
+                if(response.type == EconomyResponse.ResponseType.SUCCESS){
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .define("AMOUNT", String.valueOf(rounded))
+                            .build(ConfigManager.accountSuccessSet));
+                }else{
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .build(ConfigManager.accountErrorSet));
+                }
             }else{
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .build(ConfigManager.accountErrorSet));
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.paymentErrorAccountNotExisting));
             }
         }
     }
 
     @Subcommand("account add")
     @CommandPermission("pcs.economy.admin")
-    @CommandCompletion("@players")
-    public void onAccountAdd(CommandSender sender, OnlinePlayer player, double amount){
+    @CommandCompletion("@cPlayers")
+    public void onAccountAdd(CommandSender sender, String player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
             double rounded = MessageHelper.roundToTwoDecimals(amount);
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).add(rounded);
-            if(response.type == EconomyResponse.ResponseType.SUCCESS){
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .define("AMOUNT", String.valueOf(rounded))
-                        .build(ConfigManager.accountSuccessAdd));
+            Account account = pcs_economy.accountManager.getAccount(player);
+            if(account != null){
+                EconomyResponse response = account.add(rounded);
+                if(response.type == EconomyResponse.ResponseType.SUCCESS){
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .define("AMOUNT", String.valueOf(rounded))
+                            .build(ConfigManager.accountSuccessAdd));
+                }else{
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .build(ConfigManager.accountErrorAdd));
+                }
             }else{
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .build(ConfigManager.accountErrorAdd));
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.paymentErrorAccountNotExisting));
             }
         }
     }
 
     @Subcommand("account subtract")
     @CommandPermission("pcs.economy.admin")
-    @CommandCompletion("@players")
-    public void onAccountSubtract(CommandSender sender, OnlinePlayer player, double amount){
+    @CommandCompletion("@cPlayers")
+    public void onAccountSubtract(CommandSender sender, String player, double amount){
         if(sender instanceof Player){
             Player p = (Player)sender;
             double rounded = MessageHelper.roundToTwoDecimals(amount);
-            EconomyResponse response = pcs_economy.accountManager.getAccount(player.getPlayer()).subtract(rounded);
-            if(response.type == EconomyResponse.ResponseType.SUCCESS){
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .define("AMOUNT", String.valueOf(rounded))
-                        .build(ConfigManager.accountSuccessSubtract));
+            Account account = pcs_economy.accountManager.getAccount(player);
+            if(account != null){
+                EconomyResponse response = account.subtract(rounded);
+                if(response.type == EconomyResponse.ResponseType.SUCCESS){
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .define("AMOUNT", String.valueOf(rounded))
+                            .build(ConfigManager.accountSuccessSubtract));
+                }else{
+                    p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                            .define("PLAYER", player)
+                            .build(ConfigManager.accountErrorSubtract));
+                }
             }else{
-                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                        .define("PLAYER", player.getPlayer().getName())
-                        .build(ConfigManager.accountErrorSubtract));
+                p.spigot().sendMessage(PCS_Economy.messageBuilder.build(ConfigManager.paymentErrorAccountNotExisting));
             }
         }
     }
@@ -242,15 +246,6 @@ public class MoneyCommand extends BaseCommand {
             }catch (IOException e){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.errorGeneral));
             }
-        }
-    }
-
-    @Subcommand("debug offlineaccount")
-    @CommandPermission("pcs.economy.debug")
-    public void onDebugOfflineAccount(CommandSender sender, String playerName){
-        if(playerName != null && !playerName.isEmpty() && sender instanceof Player){
-            Player p = (Player)sender;
-
         }
     }
 }

@@ -43,17 +43,18 @@ public class DatabaseHelper {
                             " uuid VARCHAR(36) NOT NULL UNIQUE," +
                             " balance DOUBLE DEFAULT 0 NOT NULL );";
             stmt.execute(query);
-            query = "create table transactions" +
+            query = "CREATE TABLE IF NOT EXISTS transactions " +
                     "(" +
-                    "  transactionID int auto_increment" +
-                    "    primary key," +
-                    "  accountID1    int    not null," +
-                    "  accountID2    int    not null," +
-                    "  amount        double not null," +
-                    "  constraint transactions_accounts_accountID_fk" +
-                    "    foreign key (accountID1) references accounts (accountID)," +
-                    "  constraint transactions_accounts_accountID_fk_2" +
-                    "    foreign key (accountID2) references accounts (accountID)" +
+                    "  transactionID INT AUTO_INCREMENT" +
+                    "    PRIMARY KEY," +
+                    "  accountID1    INT    NOT NULL," +
+                    "  accountID2    INT    NOT NULL ," +
+                    "  amount        DOUBLE NOT NULL ," +
+                    "  reason        VARCHAR(256), " +
+                    "  CONSTRAINT transactions_accounts_accountID_fk" +
+                    "    FOREIGN KEY (accountID1) REFERENCES accounts (accountID)," +
+                    "  CONSTRAINT transactions_accounts_accountID_fk_2" +
+                    "    FOREIGN KEY (accountID2) REFERENCES accounts (accountID)" +
                     ");";
             stmt.execute(query);
         }catch (SQLException e){
@@ -76,25 +77,26 @@ public class DatabaseHelper {
                 PCS_Economy.pcs_economy.getLogger().fine("[PUSH] UPDATE " + IntStream.of(sum).sum());
                 PCS_Economy.pcs_economy.getLogger().info("Push completed");
             }catch (SQLException e){
-                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, "Account Update Push failed \n" + e.getMessage());
             }
         }
         if(!transactionDeque.isEmpty()){
-            String query = "INSERT INTO transactions (accountID1, accountID2, amount) VALUES (?, ?, ?);";
+            String query = "INSERT INTO transactions (accountID1, accountID2, amount, reason) VALUES (?, ?, ?, ?);";
             try(Connection con = Database.MAIN.getConnection(); PreparedStatement stmt = con.prepareStatement(query)){
                 while(!transactionDeque.isEmpty()){
                     Transaction transaction = transactionDeque.peek();
                     stmt.setInt(1, transaction.getAccount1().getAccountID());
                     stmt.setInt(2, transaction.getAccount2().getAccountID());
                     stmt.setDouble(3, transaction.getAmount());
+                    stmt.setString(4, transaction.getReason());
                     stmt.addBatch();
                     deque.pop();
                 }
                 int[] sum = stmt.executeBatch();
                 PCS_Economy.pcs_economy.getLogger().fine("[PUSH] UPDATE " + IntStream.of(sum).sum());
-                PCS_Economy.pcs_economy.getLogger().info("Push completed");
+                PCS_Economy.pcs_economy.getLogger().info("Transaction Push completed");
             }catch (SQLException e){
-                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, e.getMessage());
+                PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, "Transaction push failed \n" + e.getMessage());
             }
         }
     }
@@ -104,7 +106,7 @@ public class DatabaseHelper {
     }
 
     public static void addToTransactionDeque(Transaction transaction){
-        transactionDeque.add(transaction);
+        //transactionDeque.add(transaction);
     }
 
     public static boolean existsInDeque(Account account){
