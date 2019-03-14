@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -27,7 +28,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +42,8 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         return instance;
     }
 
-    private static Optional<LuckPermsApi> luckPermsApi;
+    private static LuckPermsApi luckPermsApi;
+
     private static Queue<ProxiedPlayer> queue = new LinkedList<>();
     private static Configuration config;
     private static ServerInfo hub;
@@ -72,9 +73,9 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
             getLogger().severe("LuckPerms not enabled - shutting down");
             getProxy().stop();
             return;
-        } else {
-            luckPermsApi = LuckPerms.getApiSafe();
         }
+
+        luckPermsApi = LuckPerms.getApi();
 
         getProxy().getPluginManager().registerCommand(this, new CommandCheckpoint());
         getProxy().getPluginManager().registerCommand(this, new CommandVerify());
@@ -105,22 +106,36 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     public void onPostLogin(PostLoginEvent event) {
         final ProxiedPlayer player = event.getPlayer();
         checkPlayer(player.getUniqueId());
+    }
 
-        if(player.isConnected()) {
-            if(player.getReconnectServer().equals(main) && main.getPlayers().size() >= mainSlots) {
-                queue.add(player);
-                player.connect(hub);
-                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
-            }
-        }
+    @EventHandler
+    public void onDisconnect(PlayerDisconnectEvent event) {
+        queue.remove(event.getPlayer());
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if(hub == null) return;
+        if(event.getReason() == ServerConnectEvent.Reason.PLUGIN) return;
         final ProxiedPlayer player = event.getPlayer();
 
         if(event.getTarget().equals(main)) {
+
+            PersonaAPI.getPersona(player.getUniqueId()).completeOnTimeout(null, 3L, TimeUnit.SECONDS).thenAcceptAsync(persona -> {
+                if (persona == null && !DatabaseHelper.isVerified(player.getUniqueId())) {
+                    player.sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
+                    if(player.getServer() == null) event.setTarget(hub);
+                    else event.setCancelled(true);
+                    return;
+                }
+
+                if((main.getPlayers().size() >= mainSlots || !queue.isEmpty()) && !queue.contains(player) && !player.hasPermission("essentials.joinfullserver")) {
+                    queue.add(player);
+                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
+                    if(event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) event.setTarget(hub);
+                    else event.setCancelled(true);
+                }
+            });
+
 
             Persona persona;
 
@@ -129,22 +144,13 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
             } catch (HttpResponseException | UnirestException | SQLException e) {
                 e.printStackTrace();
 
-                event.setCancelled(true);
                 player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
+                if(player.getServer() == null) event.setTarget(hub);
+                else event.setCancelled(true);
                 return;
             }
 
-            if (persona == null) {
-                event.setCancelled(true);
-                player.sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
-                return;
-            }
 
-            if(main.getPlayers().size() >= mainSlots && !player.hasPermission("essentials.joinfullserver")) {
-                event.setCancelled(true);
-                queue.add(player);
-                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
-            }
         }
     }
 
@@ -176,29 +182,49 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
                 }
 
                 player.disconnect(messageBuilder.define("TIME", time).build(msg));
-            } else {
-                if(luckPermsApi.isPresent()) {
-                    final String primaryGroup = luckPermsApi.get().getUserManager().getUser(player.getName()).getPrimaryGroup();
-                    if (primaryGroup.equalsIgnoreCase("default")) {
-                        if(!persona.isGuest()) ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), String.format("lpb user %s parent set %s", player.getName(), getConfig().getString("verify-group")));
-                        else ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), String.format("lpb user %s parent set %s", player.getName(), getConfig().getString("invite-group")));
-                    }
-                }
+                return;
             }
+
+            Persona.Mark mark = persona.getMark();
+            boolean isGuest = persona.isGuest();
+            String name = persona.getName();
+            luckPermsApi.getUserManager().loadUser(uuid).thenAcceptAsync(user -> {
+                String add = null, remove = null;
+                switch (user.getPrimaryGroup()) {
+                    case "default":
+                        add = PCS_Checkpoint.getConfig().getString((isGuest ? "invite" : mark != Persona.Mark.SPENDER ? "member" : "premium") + "-group");
+                        remove = PCS_Checkpoint.getConfig().getString("default");
+                        break;
+                    case "member":
+                        if(mark == Persona.Mark.SPENDER) {
+                            add = PCS_Checkpoint.getConfig().getString("premium-group");
+                            remove = PCS_Checkpoint.getConfig().getString("member-group");
+                            getLogger().info(name + " hat sich pr0mium gekauft!");
+                        }
+                        break;
+                    case "premium":
+                        if(mark != Persona.Mark.SPENDER) {
+                            add = PCS_Checkpoint.getConfig().getString("member-group");
+                            remove = PCS_Checkpoint.getConfig().getString("premium-group");
+                        }
+                        break;
+                }
+
+                if(add != null) user.setPermission(luckPermsApi.getNodeFactory().makeGroupNode(add).build());
+                if(remove != null) user.unsetPermission(luckPermsApi.getNodeFactory().makeGroupNode(remove).build());
+                luckPermsApi.getUserManager().saveUser(user);
+            });
         }
     }
 
-
     private void processQueue() {
+        if(queue.isEmpty()) return;
         int freeSlots = mainSlots - main.getPlayers().size();
 
         for(int i = 0; i < freeSlots; i++) queue.poll().connect(main);
 
         int i = 1;
-        for(ProxiedPlayer player : queue) {
-            player.sendMessage(ChatMessageType.ACTION_BAR, MessageBuilder.DEFAULT.define("AMOUNT", Integer.toString(i)).build(config.getString("messages.queue.notify")));
-            i++;
-        }
+        for(ProxiedPlayer player : queue) player.sendMessage(ChatMessageType.ACTION_BAR, MessageBuilder.DEFAULT.define("AMOUNT", Integer.toString(i++)).build(config.getString("messages.queue.notify")));
     }
 
     void load() {

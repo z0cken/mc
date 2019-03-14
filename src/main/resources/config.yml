@@ -6,8 +6,11 @@ bot:
   login-timeout-multiplier: 3
   cookie:
 hub-name: hub
+main-name: main
+main-slots: 75
 verify-group: member
 invite-group: guest
+premium-group: premium
 queue-interval: 5
 messages:
   error: §c§l>_ §7Ein Fehler ist aufgetreten...
@@ -26,8 +29,6 @@ messages:
     denied-nomember: §c§l>_ §7Nur Mitglieder des pr0gramms können Spieler einladen!
     confirmed: §a§l>_ §7§o{NAME} §7wurde erfolgreich eingeladen!
     confirmed-guest: §a§l>_ §7Du wurdest soeben von {NAME} eingeladen!
-    #confirmed-invites: §f§l>_ §7Du hast noch {A}{INVITES} §7Invites übrig!
-    #confirmed-invites-none: §c§l>_ §7Du hast derzeit keine Invites mehr übrig!
     prompt:
     - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
     - '§8[ - §7Aktuell verfügbare Invites: {A}{INVITES}'
@@ -59,4 +60,4 @@ messages:
     - §8[ ------------------------------------------- ]
   queue:
     insert: §e§l>_ §7Du wurdest in die Warteschlange aufgenommen!
-    notify: '§eDu bist auf Platz #{AMOUNT} in der Warteschlange'
+    notify: '§7Du bist auf Platz §b#{AMOUNT} §7in der Warteschlange'
