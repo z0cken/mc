@@ -78,6 +78,7 @@ public class ProtectionListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasPermission("pcs.metro.bypass")) return;
         if(player.getHealth() < disconnectHealth) {
             player.setHealth(0);
             //TODO Broadcast
