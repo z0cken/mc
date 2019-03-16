@@ -42,7 +42,7 @@ public class PCS_Economy extends JavaPlugin {
     private static BukkitCommandManager commandManager;
     public static PCS_Economy pcs_economy;
     public static MessageBuilder messageBuilder;
-    public AccountManager accountManager;
+    public CacheAccountManager accountManager;
     public TraderManager traderManager;
     public AdminShopItemManager adminShopItemManager;
     public InventoryManager inventoryManager;
@@ -52,6 +52,9 @@ public class PCS_Economy extends JavaPlugin {
         pcs_economy = this;
 
         this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
+
         ConfigManager.loadConfig();
         this.messageBuilder = new MessageBuilder()
                 .define("CSYMBOL", ChatColor.GOLD.toString() + ConfigManager.currencySymbol)
@@ -76,7 +79,7 @@ public class PCS_Economy extends JavaPlugin {
             traderManager = new TraderManager();
         }
 
-        accountManager = new AccountManager();
+        accountManager = new CacheAccountManager();
 
         getLogger().info("Load Complete");
     }
@@ -87,13 +90,13 @@ public class PCS_Economy extends JavaPlugin {
         registerCommands();
         registerInterfaces();
 
-        if(accountManager.getCurrentAccounts() == 0){
+        /*if(accountManager.getCurrentAccounts() == 0){
             if(getServer().getOnlinePlayers().size() > 0){
                 getServer().getOnlinePlayers().forEach(p -> {
                     accountManager.addAccountFromPlayer(p);
                 });
             }
-        }
+        }*/
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new InventoryListener(this), this);

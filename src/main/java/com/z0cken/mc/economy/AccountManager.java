@@ -1,5 +1,8 @@
 package com.z0cken.mc.economy;
-
+/*
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.core.Database;
 import com.z0cken.mc.economy.utils.DatabaseHelper;
@@ -11,14 +14,29 @@ import org.bukkit.entity.Player;
 import javax.xml.crypto.Data;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+@SuppressWarnings("Duplicates")
 public class AccountManager {
 
     private HashMap<UUID, Account> accounts;
+    private LoadingCache<UUID, Account> accounts2;
 
+    //TODO
     public AccountManager(){
         accounts = new HashMap<>();
+        accounts2 = CacheBuilder.newBuilder()
+                .maximumSize(2000)
+                .expireAfterAccess(1, TimeUnit.MINUTES)
+                .build(
+                        new CacheLoader<UUID, Account>() {
+                            @Override
+                            public Account load(UUID uuid) throws Exception {
+                                return getAccountFromDB(uuid);
+                            }
+                        }
+                );
     }
 
     public boolean hasAccount(String playerName){
@@ -50,7 +68,8 @@ public class AccountManager {
             try(Connection con = Database.MAIN.getConnection();
                 Statement stmt = con.createStatement();
                 ResultSet set = stmt.executeQuery(query)){
-                return getAccountFromResultSet(set, uuid);
+                Account fromResultSet = getAccountFromResultSet(set, uuid);
+                return fromResultSet;
             }catch (SQLException e){
                 logError(Level.SEVERE, e.getMessage());
                 return null;
@@ -100,7 +119,7 @@ public class AccountManager {
     }
 
     public Account getAccount(UUID uuid){
-        Account account = accounts.get(uuid);
+        Account account = accounts2.getUnchecked(uuid);
         if(account != null) return account;
         return getAccountFromDB(uuid);
     }
@@ -137,10 +156,13 @@ public class AccountManager {
                 stmt.setDouble(2, 0);
                 stmt.execute();
                 try(ResultSet set = stmt.getGeneratedKeys()){
+                    if(set.rowInserted()){
+                        return true;
+                    }
                     if(set.next()){
                         logError(Level.FINE, "TEST");
                         int pk = set.getInt(1);
-                        AccountHolder holder = new AccountHolder(player);
+                        AccountHolder holder = new AccountHolder(player.getUniqueId());
                         Account account = new Account(holder, 0, pk);
                         accounts.put(player.getUniqueId(), account);
                         return true;
@@ -265,9 +287,8 @@ public class AccountManager {
                 if(uuid == null){
                     uuid = UUID.fromString(set.getString("uuid"));
                 }
-                OfflinePlayer op = PCS_Economy.pcs_economy.getServer().getOfflinePlayer(uuid);
                 AccountHolder holder;
-                holder = new AccountHolder(op);
+                holder = new AccountHolder(uuid);
                 account = new Account(holder, set.getDouble("balance"), set.getInt("accountID"));
             }
         }catch (SQLException e){
@@ -284,4 +305,4 @@ public class AccountManager {
     public int getCurrentAccounts(){
         return accounts.size();
     }
-}
+}*/

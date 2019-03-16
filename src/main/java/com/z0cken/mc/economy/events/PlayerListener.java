@@ -26,8 +26,8 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event){
         Player p = event.getPlayer();
         PCS_Economy.pcs_economy.createPlayerCommandCompletionHandler();
-        PCS_Economy.pcs_economy.accountManager.addAccountFromPlayer(p);
         if(!p.hasPlayedBefore()){
+            PCS_Economy.pcs_economy.accountManager.createAccount(p);
             PCS_Economy.pcs_economy.accountManager.getAccount(p).add(ConfigManager.config.getDouble("economy.currency.initialBalance"));
         }
     }
@@ -35,7 +35,6 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         PCS_Economy.pcs_economy.createPlayerCommandCompletionHandler();
-        PCS_Economy.pcs_economy.accountManager.removeAccountFromMap(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

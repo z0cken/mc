@@ -10,10 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.OptionalInt;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
@@ -74,8 +71,8 @@ public class DatabaseHelper {
                     deque.pop();
                 }
                 int[] sum = stmt.executeBatch();
-                PCS_Economy.pcs_economy.getLogger().fine("[PUSH] UPDATE " + IntStream.of(sum).sum());
-                PCS_Economy.pcs_economy.getLogger().info("Push completed");
+                /*PCS_Economy.pcs_economy.getLogger().fine("[PUSH] UPDATE " + IntStream.of(sum).sum());
+                PCS_Economy.pcs_economy.getLogger().info("Push completed");*/
             }catch (SQLException e){
                 PCS_Economy.pcs_economy.getLogger().log(Level.SEVERE, "Account Update Push failed \n" + e.getMessage());
             }

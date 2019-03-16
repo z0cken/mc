@@ -4,13 +4,14 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import co.aikar.commands.contexts.OnlinePlayer;
 import com.z0cken.mc.economy.Account;
-import com.z0cken.mc.economy.AccountManager;
+import com.z0cken.mc.economy.CacheAccountManager;
 import com.z0cken.mc.economy.PCS_Economy;
 import com.z0cken.mc.economy.config.ConfigManager;
 import com.z0cken.mc.economy.utils.MessageHelper;
 import com.z0cken.mc.economy.utils.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.milkbowl.vault.economy.EconomyResponse;
+import org.bukkit.Instrument;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.instrument.Instrumentation;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -40,12 +42,14 @@ public class MoneyCommand extends BaseCommand {
     public void onBalance(CommandSender sender){
         if(sender instanceof Player){
             Player p = (Player)sender;
-            double rounded = MessageHelper.roundToTwoDecimals(pcs_economy.accountManager.getAccount(sender.getName()).getBalance());
-            p.spigot().sendMessage(pcs_economy.getMessageBuilder()
-                    .define("PREFIX", ConfigManager.messagePrefix)
-                    .define("AMOUNT", String.valueOf(rounded))
-                    .build(ConfigManager.accountSuccessBalanceSelf));
-
+            Account account = pcs_economy.accountManager.getAccount(p);
+            if(account != null){
+                double rounded = MessageHelper.roundToTwoDecimals(account.getBalance());
+                p.spigot().sendMessage(pcs_economy.getMessageBuilder()
+                        .define("PREFIX", ConfigManager.messagePrefix)
+                        .define("AMOUNT", String.valueOf(rounded))
+                        .build(ConfigManager.accountSuccessBalanceSelf));
+            }
         }
     }
 
@@ -246,6 +250,16 @@ public class MoneyCommand extends BaseCommand {
             }catch (IOException e){
                 p.spigot().sendMessage(pcs_economy.getMessageBuilder().build(ConfigManager.errorGeneral));
             }
+        }
+    }
+
+    @Subcommand("reload|r")
+    @CommandPermission("pcs.economy.admin")
+    public void onEconomyReload(CommandSender sender){
+        if(sender instanceof Player){
+            Player p = (Player)sender;
+            ConfigManager.loadConfig();
+            p.sendMessage("Config neu geladen!");
         }
     }
 }

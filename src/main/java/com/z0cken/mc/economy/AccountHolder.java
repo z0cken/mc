@@ -7,33 +7,32 @@ import java.util.UUID;
 
 public class AccountHolder {
 
-    private OfflinePlayer accountHolderOP;
+    private UUID uuid;
 
-    public AccountHolder(OfflinePlayer player){
-        if(player != null)
-            this.accountHolderOP = player;
+    public AccountHolder(UUID uuid){
+        this.uuid = uuid;
     }
 
     public String getName(){
-        return accountHolderOP.getName();
+        return getOfflinePlayer().getName();
     }
 
     public OfflinePlayer getOfflinePlayer(){
-        return this.accountHolderOP;
+        return PCS_Economy.pcs_economy.getServer().getOfflinePlayer(uuid);
     }
 
     public Player getPlayer(){
-        return this.accountHolderOP.getPlayer();
+        return PCS_Economy.pcs_economy.getServer().getPlayer(uuid);
     }
 
     public UUID getUUID(){
-        return accountHolderOP.getUniqueId();
+        return this.uuid;
     }
 
     public void sendMessage(String message){
-        if(accountHolderOP.isOnline()){
-            accountHolderOP.getPlayer().sendMessage(message);
+        Player p = getPlayer();
+        if(getPlayer() != null && p.isOnline()){
+            p.sendMessage(message);
         }
     }
-
 }
