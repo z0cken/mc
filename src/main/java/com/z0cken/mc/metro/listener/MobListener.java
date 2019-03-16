@@ -7,6 +7,7 @@ import com.z0cken.mc.metro.PCS_Metro;
 import com.z0cken.mc.metro.Station;
 import com.z0cken.mc.metro.spawn.SpawnProfile;
 import com.z0cken.mc.progression.PCS_Progression;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -17,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+
+import java.util.regex.Pattern;
 
 public class MobListener implements Listener {
 
@@ -53,12 +56,24 @@ public class MobListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onKill(EntityDamageByEntityEvent event) {
-        if(!(event.getEntity() instanceof Monster) || !(event.getDamager() instanceof Player)) return;
-        if(!Metro.getInstance().contains(event.getDamager().getLocation())) return;
-        if(event.getFinalDamage() > ((LivingEntity) event.getEntity()).getHealth()) {
-            PCS_Progression.progress((Player) event.getDamager(), "metro_kills", 1);
+        final Entity entity = event.getEntity();
+
+        if(!(entity instanceof Monster) || !(event.getDamager() instanceof Player)) return;
+        if(!entity.getScoreboardTags().contains("metro")) return;
+
+        if(event.getFinalDamage() > ((LivingEntity) entity).getHealth()) {
+            final Player player = (Player) event.getDamager();
+            PCS_Progression.progress(player, "metro_kills", 1);
+            for(String s : entity.getScoreboardTags()) {
+                if(s.startsWith("metro-xp")) {
+                    final int xp = Integer.parseInt(s.split(Pattern.quote(":"))[1]);
+                    PCS_Progression.progress(player, "metro-xp", xp);
+                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, PCS_Metro.getInstance().getMessageBuilder().define("AMOUNT", Integer.toString(xp)).build(PCS_Metro.getInstance().getConfig().getString("messages.xp-actionbar")));
+                    break;
+                }
+            }
         }
 
     }

@@ -23,6 +23,7 @@ import java.util.Set;
 public class EntityTemplate implements Template {
 
     private EntityType type;
+    private int xp;
     private Map<EquipmentSlot, MetroEquipment> equipment = new HashMap<>();
     private Set<PotionEffect> effects = new HashSet<>();
     private LootTable lootTable;
@@ -30,6 +31,7 @@ public class EntityTemplate implements Template {
     public EntityTemplate(@Nonnull YamlConfiguration configuration) {
         this.type = EntityType.valueOf(configuration.getString("type").toUpperCase());
         if(!type.isAlive()) throw new IllegalArgumentException(String.format("Type %s is not alive", type.name()));
+        xp = configuration.getInt("xp");
         ConfigurationSection equipmentSection = configuration.getConfigurationSection("equipment");
         if(equipmentSection != null) {
             for(String s : equipmentSection.getKeys(false)) {
@@ -87,7 +89,9 @@ public class EntityTemplate implements Template {
 
         effects.forEach(entity::addPotionEffect);
 
-        if(lootTable != null && entity instanceof LootTable) {
+        if(xp > 0) entity.getScoreboardTags().add("metro-xp:" + xp);
+
+        if(lootTable != null && entity instanceof Lootable) {
            ((Lootable)entity).setLootTable(lootTable);
         }
     }

@@ -21,3 +21,4 @@ messages:
   - "§7> Stationen: {#[STATIONS-ACTIVE][§aAktiv]#} §7§l/ {#[STATIONS-INACTIVE][§cInaktiv]#}"
   - "§7> Statistik: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
   activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
+  xp-actionbar: "§7+ §a{AMOUNT} XP"
