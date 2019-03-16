@@ -4,14 +4,18 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.z0cken.mc.metro.Metro;
 import com.z0cken.mc.metro.PCS_Metro;
-import com.z0cken.mc.metro.SpawnProfile;
 import com.z0cken.mc.metro.Station;
+import com.z0cken.mc.metro.spawn.SpawnProfile;
+import com.z0cken.mc.progression.PCS_Progression;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 public class MobListener implements Listener {
@@ -33,10 +37,9 @@ public class MobListener implements Listener {
             if(flag != null) {
                 SpawnProfile profile = Metro.getInstance().getProfile(flag);
                 if(profile != null) {
-                    if(profile.spawnMob(entity.getType(), event.getLocation())) event.setCancelled(true);
+                    if(profile.handleSpawn(entity.getType(), event.getLocation())) event.setCancelled(true);
                 } else PCS_Metro.getInstance().getLogger().warning(String.format("Invalid spawn profile '%s' at %s", flag, event.getLocation().toString()));
             } else PCS_Metro.getInstance().getLogger().warning(String.format("Spawn profile missing for %s", event.getLocation().toString()));
-
         }
     }
 
@@ -48,6 +51,16 @@ public class MobListener implements Listener {
         if(monster.getScoreboardTags().contains("metro")) {
             if(Metro.getInstance().getStations().stream().filter(Station::isActive).anyMatch(s -> s.contains(event.getTarget().getLocation()))) event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onKill(EntityDamageByEntityEvent event) {
+        if(!(event.getEntity() instanceof Monster) || !(event.getDamager() instanceof Player)) return;
+        if(!Metro.getInstance().contains(event.getDamager().getLocation())) return;
+        if(event.getFinalDamage() > ((LivingEntity) event.getEntity()).getHealth()) {
+            PCS_Progression.progress((Player) event.getDamager(), "metro_kills", 1);
+        }
+
     }
 
     /*private Difficulty getDifficulty(Location location) {

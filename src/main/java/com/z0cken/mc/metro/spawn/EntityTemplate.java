@@ -1,9 +1,11 @@
-package com.z0cken.mc.metro;
+package com.z0cken.mc.metro.spawn;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
@@ -12,34 +14,42 @@ import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
 import org.bukkit.potion.PotionEffect;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class EntityTemplate {
+public class EntityTemplate implements Template {
 
+    private EntityType type;
     private Map<EquipmentSlot, MetroEquipment> equipment = new HashMap<>();
     private Set<PotionEffect> effects = new HashSet<>();
     private LootTable lootTable;
 
-    public EntityTemplate(YamlConfiguration configuration) {
-
+    public EntityTemplate(@Nonnull YamlConfiguration configuration) {
+        this.type = EntityType.valueOf(configuration.getString("type").toUpperCase());
+        if(!type.isAlive()) throw new IllegalArgumentException(String.format("Type %s is not alive", type.name()));
         ConfigurationSection equipmentSection = configuration.getConfigurationSection("equipment");
-        for(String s : equipmentSection.getKeys(false)) {
-            EquipmentSlot slot = EquipmentSlot.valueOf(s.toUpperCase());
-            ConfigurationSection sec = equipmentSection.getConfigurationSection(s);
-            equipment.put(slot, new MetroEquipment(sec.getSerializable("itemstack", ItemStack.class), sec.getDouble("probability"), (float) sec.getDouble("drop-chance")));
+        if(equipmentSection != null) {
+            for(String s : equipmentSection.getKeys(false)) {
+                EquipmentSlot slot = EquipmentSlot.valueOf(s.toUpperCase());
+                ConfigurationSection sec = equipmentSection.getConfigurationSection(s);
+                equipment.put(slot, new MetroEquipment(sec.getSerializable("itemstack", ItemStack.class), sec.getDouble("probability"), (float) sec.getDouble("drop-chance")));
+            }
         }
 
         ConfigurationSection effectSection = configuration.getConfigurationSection("effects");
-        effectSection.getKeys(false).forEach(s -> effects.add(effectSection.getSerializable(s, PotionEffect.class)));
+        if(effectSection != null) effectSection.getKeys(false).forEach(s -> effects.add(effectSection.getSerializable(s, PotionEffect.class)));
 
         final String s = configuration.getString("loot-table");
         if(s != null) lootTable = Bukkit.getLootTable(new NamespacedKey("metro", s));
     }
 
-    public void apply(LivingEntity entity) {
+    @Override
+    public void spawn(Location location) {
+        LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
+
         EntityEquipment entityEquipment = entity.getEquipment();
 
         equipment.forEach((slot, metroEquipment) -> {

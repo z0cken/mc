@@ -1,0 +1,79 @@
+settings:
+    blussi-boost: 25
+    pigmen-range: 10
+    money-bonus-interval: 60
+effects:
+    0:
+        difficulty: "hard"
+        discover-success: 0.25
+        potions:
+            unluck: 2
+            weakness: 1
+        thunder-ticks: 0
+        rain-ticks: 0
+        allow-monsters:
+            - stadt
+        flags:
+            - phantoms
+            - compass
+            - teleport
+            - pigmen
+    1:
+        difficulty: "hard"
+        discover-success: 0.5
+        potions:
+            unluck: 1
+        thunder-ticks: 4000
+        rain-ticks: 4000
+        allow-monsters:
+            - stadt
+        flags:
+            - teleport
+            - pigmen
+    2:
+        difficulty: "hard"
+        rain-ticks: 4000
+        flags:
+            - pigmen
+    3:
+        difficulty: "normal"
+    4:
+        difficulty: "normal"
+        potions:
+            health_boost: 1
+        flags:
+            - blussi
+    5:
+        difficulty: "normal"
+        potions:
+            health_boost: 2
+            speed: 1
+        flags:
+            - blussi
+        rain-ticks: -1
+        thunder-ticks: -1
+    6:
+        difficulty: "easy"
+        potions:
+            health_boost: 3
+            speed: 1
+            jump: 1
+            luck: 1
+        flags:
+            - blussi
+        rain-ticks: -1
+        thunder-ticks: -1
+        money-bonus: 20
+    7:
+        difficulty: "easy"
+        potions:
+            health_boost: 4
+            speed: 1
+            jump: 1
+            luck: 1
+            fast_digging: 1
+        flags:
+            - blussi
+        rain-ticks: -1
+        thunder-ticks: -1
+        money-bonus: 50

@@ -2,7 +2,7 @@ name: PCS_Metro
 author: Flare
 version: ${project.version}
 main: com.z0cken.mc.metro.PCS_Metro
-depend: [PCS_Core, WorldGuard]
+depend: [PCS_Core, WorldGuard, Vault, PCS_Progression]
 api-version: 1.13
 commands:
   metro:

@@ -5,6 +5,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.z0cken.mc.metro.event.StationActivateEvent;
 import com.z0cken.mc.metro.event.StationDeactivateEvent;
+import com.z0cken.mc.progression.PCS_Progression;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,21 +22,28 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class Station implements Listener {
 
+    Metro metro;
     private final String id, name;
     private final MetroBeacon beacon;
     private boolean active = false;
     private final ProtectedRegion region;
+    private int stackSize;
+
     //private final Difficulty difficulty;
 
-    Station(String id, String name, Location beaconLocation) {
+    Station(Metro metro, String id, String name, Location beaconLocation) {
+        this.metro = metro;
         this.id = id;
         this.name = name;
+
+        stackSize = metro.getRate() * metro.getInterval();
 
         int supply = DatabaseHelper.getSupply(id);
         this.beacon = new MetroBeacon(beaconLocation, supply);
@@ -50,29 +58,39 @@ public class Station implements Listener {
     }
 
     public boolean contains(Location location) {
+        if(!location.getWorld().equals(metro.getWorld())) return false;
         return region.contains((int) location.getX(), (int) location.getY(), (int) location.getZ());
     }
 
+    public List<Player> getPlayers() {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> p.getWorld().equals(metro.getWorld())).filter(p -> contains(p.getLocation())).collect(Collectors.toList());
+    }
+
     private void activate() {
+        Metro.getInstance().getAppropriateEffect().deactivate();
         active = true;
+        Metro.getInstance().getAppropriateEffect().activate();
+
         beacon.getBlock().getRelative(BlockFace.DOWN).setType(Material.DIAMOND_BLOCK);
 
-        List<Player> players = Bukkit.getOnlinePlayers().stream().filter(p -> contains(p.getLocation())).collect(Collectors.toList());
-        Bukkit.getPluginManager().callEvent(new StationActivateEvent(Metro.getInstance(), this, players));
+        Bukkit.getPluginManager().callEvent(new StationActivateEvent(Metro.getInstance(), this, Collections.unmodifiableList(getPlayers())));
     }
 
     private void deactivate() {
+        Metro.getInstance().getAppropriateEffect().deactivate();
         active = false;
+        Metro.getInstance().getAppropriateEffect().activate();
+
         beacon.getBlock().getRelative(BlockFace.DOWN).setType(Material.BEDROCK);
 
         Bukkit.getPluginManager().callEvent(new StationDeactivateEvent(Metro.getInstance(), this));
     }
 
-    public static Station fromConfig(ConfigurationSection section, String key) {
+    public static Station fromConfig(Metro metro, ConfigurationSection section, String key) {
         section = section.getConfigurationSection(key);
         String name = section.getString("name");
         Location beacon = section.getSerializable("beacon", Location.class);
-        final Station station = new Station(key, name, beacon);
+        final Station station = new Station(metro, key, name, beacon);
         Bukkit.getPluginManager().registerEvents(station, PCS_Metro.getInstance());
         Bukkit.getPluginManager().registerEvents(station.getBeacon(), PCS_Metro.getInstance());
 
@@ -109,16 +127,18 @@ public class Station implements Listener {
 
         MetroBeacon(Location location, int supply) {
             this.location = location;
+            location.getBlock().setType(Material.BEACON);
 
             inventory.setItem(0, new ItemStack(Material.GLASS_PANE));
             inventory.setItem(8, new ItemStack(Material.GLASS_PANE));
 
-            ItemStack is = new ItemStack(Material.LAPIS_LAZULI, 12);
-            int stacks = supply / 12;
-            if(stacks > 7) throw new IllegalArgumentException("Too much supply for station '" + id + "' (" + supply + ")");
-            for(int i = 1; i <= stacks; i++) {
-                if(i == stacks) is.setAmount(supply % 12);
-                inventory.setItem(i, is);
+            ItemStack is = new ItemStack(Material.LAPIS_LAZULI, stackSize);
+            int stacks = supply / stackSize;
+            if(stacks > 7) PCS_Metro.getInstance().getLogger().warning("Too much supply for station '" + id + "' (" + supply + ")");
+            if(stacks == 0) inventory.setItem(1, new ItemStack(Material.LAPIS_LAZULI, supply));
+            else for(int i = 0; i <= stacks && i < 7; i++) {
+                if(i == stacks && supply % stackSize > 0) is.setAmount(supply % stackSize);
+                inventory.setItem(i+1, is);
             }
         }
 
@@ -126,41 +146,48 @@ public class Station implements Listener {
             return location.getBlock();
         }
 
-        void decrement() {
-            if(!isActive()) return;
-            //Remove one item
-            for(int i = 7; i > 0; i--) {
-                ItemStack is = inventory.getItem(i);
-                if(is != null && is.getType() == Material.LAPIS_LAZULI) {
-                    int amount = is.getAmount()-1;
-                    is.setAmount(amount);
-                    inventory.setItem(i, is);
-                    if(i == 1 && amount == 0) deactivate();
-                    break;
-                } else if(i == 1) {
-                    PCS_Metro.getInstance().getLogger().warning(id + " is empty but still active, indicating an inventory exploit!");
-                    deactivate();
-                }
-            }
-        }
-
         int getSupply() {
             return inventory.all(Material.LAPIS_LAZULI).values().stream().mapToInt(ItemStack::getAmount).sum();
+        }
+
+        void drain() {
+            int amount = metro.getRate();
+            if(getSupply() < amount) deactivate();
+            else for(int i = 7; i > 0; i--) {
+                if(amount == 0) break;
+
+                ItemStack is = inventory.getItem(i);
+                if(is == null) continue;
+                if(is.getAmount() > amount) {
+                    is.setAmount(is.getAmount() - amount);
+                    inventory.setItem(i, is);
+                    break;
+                } else {
+                    is.setType(Material.AIR);
+                    inventory.setItem(i, is);
+                    amount -= is.getAmount();
+                }
+            }
+            DatabaseHelper.setSupply(id, getSupply());
         }
 
         private int addLapis(int amount) {
             int cost = 0;
             for(int i = 1; i < 8; i++) {
                 ItemStack is = inventory.getItem(i);
-                int result = Math.min(amount - cost, 12 - (is == null ? 0 : is.getAmount()));
+                int result = Math.min(amount - cost, stackSize - (is == null ? 0 : is.getAmount()));
                 cost += result;
                 ItemStack stack = new ItemStack(Material.LAPIS_LAZULI, (is == null ? 0 : is.getAmount()) + result);
                 inventory.setItem(i, stack);
                 if(cost == amount) break;
             }
 
-            DatabaseHelper.addSupply(id, cost);
-            if(!isActive()) activate();
+            final int supply = getSupply();
+            DatabaseHelper.setSupply(id, supply);
+            if(!isActive() && supply >= Metro.getInstance().getRate()) {
+                activate();
+                drain();
+            }
             return cost;
         }
 
@@ -193,6 +220,7 @@ public class Station implements Listener {
 
             final ItemStack currentItem = event.getCurrentItem();
 
+            //TODO Duplicate code
             if(inv == event.getClickedInventory()) {
                 if(event.getSlot() == 0 || event.getSlot() == 8) return;
 
@@ -203,19 +231,33 @@ public class Station implements Listener {
                     if(event.getClick() == ClickType.MIDDLE) amount /= 2;
                     else if(event.getClick() == ClickType.RIGHT) amount = 1;
 
-                    cursor.setAmount(cursor.getAmount() - addLapis(amount));
+                    final int cost = addLapis(amount);
+                    cursor.setAmount(cursor.getAmount() - cost);
                     event.getWhoClicked().setItemOnCursor(cursor);
+                    PCS_Progression.progress((Player) event.getWhoClicked(),"metro_lapis", cost);
+                    final int xp = PCS_Metro.getInstance().getConfig().getInt("experience.per-lapis") * cost;
+                    getPlayers().forEach(p -> {
+                        p.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("AMOUNT", Integer.toString(xp)).define("REASON", "den Nachschub").build(PCS_Metro.getInstance().getConfig().getString("messages.experience")));
+                        PCS_Progression.progress(p, "metro_xp", xp);
+                    });
                 }
             } else {
                 //Own
                 if(event.isShiftClick()) {
                     if(currentItem.getType() == Material.LAPIS_LAZULI) {
-                        currentItem.setAmount(currentItem.getAmount() - addLapis(currentItem.getAmount()));
+                        final int cost = addLapis(currentItem.getAmount());
+                        currentItem.setAmount(currentItem.getAmount() - cost);
                         event.getClickedInventory().setItem(event.getSlot(), currentItem);
+                        PCS_Progression.progress((Player) event.getWhoClicked(),"metro_lapis", cost);
+
+                        final int xp = PCS_Metro.getInstance().getConfig().getInt("experience.per-lapis") * cost;
+                        getPlayers().forEach(p -> {
+                            p.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("AMOUNT", Integer.toString(xp)).define("REASON", "den Nachschub").build(PCS_Metro.getInstance().getConfig().getString("messages.experience")));
+                            PCS_Progression.progress(p, "metro_xp", xp);
+                        });
                     }
                 } else {
                     if(event.getClick() == ClickType.DOUBLE_CLICK) {
-                        Bukkit.broadcastMessage(currentItem.getType().name());
                         if(!inventory.contains(event.getCursor().getType())) event.setCancelled(false);
                     } else event.setCancelled(false);
                 }

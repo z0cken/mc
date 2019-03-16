@@ -1,10 +1,23 @@
-entry-interval: 10
-stations:
-  alpha:
-    name: "Alpha"
-    beacon:
-      ==: org.bukkit.Location
-      world: world
-      x: 0
-      y: 15
-      z: 0
+world: world
+entry-check-interval: 10
+disconnect:
+  timeout: 1
+  min-health: 2
+lapis:
+  amount: 8
+  interval-hours: 4
+experience:
+  per-lapis: 4
+  per-activation: 100
+messages:
+  prefix: '§f[§6Metro§f]'
+  error: "{PREFIX} §cEin Fehler ist aufgetreten!"
+  header: "§7-------< §6Metro - {TITLE} §7>-------"
+  experience: "{PREFIX} §7Du hast §f{AMOUNT} XP §7für {REASON} erhalten!"
+  leaderboard: "§7> {INDEX} - §f{PLAYER} §7§l/ {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  info:
+  - "§7------------< §6Metro §7>------------"
+  - "§7> Aktuelle Rate: §f{DAILYRATE} Lapis / Tag"
+  - "§7> Stationen: {#[STATIONS-ACTIVE][§aAktiv]#} §7§l/ {#[STATIONS-INACTIVE][§cInaktiv]#}"
+  - "§7> Statistik: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
