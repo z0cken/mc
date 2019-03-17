@@ -55,7 +55,7 @@ public class SpawnProfile {
     }
 
     public boolean handleSpawn(EntityType type, Location location) {
-        if(!type.isAlive()) throw new IllegalArgumentException();
+        if(!type.isAlive()) return false;
 
         RandomSupplier<Template> supplier = templateSuppliers.getOrDefault(type, null);
         if(supplier == null && !substitutes.isEmpty()) {

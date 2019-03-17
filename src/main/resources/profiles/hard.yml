@@ -1,8 +1,0 @@
-mobs:
-  zombie:
-    random_horde: 1
-substitutes:
-  creeper:
-    zombie: 1
-  skeleton:
-    zombie: 1

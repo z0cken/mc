@@ -8,14 +8,12 @@ import com.z0cken.mc.metro.Station;
 import com.z0cken.mc.metro.spawn.SpawnProfile;
 import com.z0cken.mc.progression.PCS_Progression;
 import net.md_5.bungee.api.ChatMessageType;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 
@@ -34,7 +32,11 @@ public class MobListener implements Listener {
     public void onEntitySpawn(CreatureSpawnEvent event) {
         Entity entity = event.getEntity();
         if(event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM && Metro.getInstance().contains(event.getLocation())) {
-            entity.getScoreboardTags().add("metro");
+            //Stop monsters from spawning in active stations (disabled)
+            if(false && Metro.getInstance().getStations().stream().filter(Station::isActive).anyMatch(s -> s.contains(entity.getLocation()))) {
+                event.setCancelled(true);
+                return;
+            }
 
             String flag = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().getApplicableRegions(BukkitAdapter.adapt(event.getLocation())).queryValue(null, PCS_Metro.STRING_FLAG);
             if(flag != null) {
@@ -59,28 +61,24 @@ public class MobListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onKill(EntityDamageByEntityEvent event) {
         final Entity entity = event.getEntity();
-
         if(!(entity instanceof Monster) || !(event.getDamager() instanceof Player)) return;
         if(!entity.getScoreboardTags().contains("metro")) return;
-
         if(event.getFinalDamage() > ((LivingEntity) entity).getHealth()) {
             final Player player = (Player) event.getDamager();
             PCS_Progression.progress(player, "metro_kills", 1);
             for(String s : entity.getScoreboardTags()) {
                 if(s.startsWith("metro-xp")) {
                     final int xp = Integer.parseInt(s.split(Pattern.quote(":"))[1]);
-                    PCS_Progression.progress(player, "metro-xp", xp);
+                    PCS_Progression.progress(player, "metro_xp", xp);
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, PCS_Metro.getInstance().getMessageBuilder().define("AMOUNT", Integer.toString(xp)).build(PCS_Metro.getInstance().getConfig().getString("messages.xp-actionbar")));
                     break;
                 }
             }
         }
-
     }
 
-    /*private Difficulty getDifficulty(Location location) {
-        Difficulty difficulty = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().queryValue(BukkitAdapter.adapt(location), null, PCS_Metro.DIFFICULTY_FLAG);
-        if(difficulty == null) return Difficulty.NORMAL;
-        return difficulty;
-    }*/
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockChange(EntityChangeBlockEvent event) {
+        if(Metro.getInstance().contains(event.getBlock().getLocation()) && event.getEntityType() == EntityType.SILVERFISH) event.setCancelled(true);
+    }
 }

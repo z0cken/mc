@@ -17,10 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MetroEffect implements Listener {
 
@@ -43,7 +40,6 @@ public class MetroEffect implements Listener {
 
         if(config.contains("potions")) {
             final ConfigurationSection sec = config.getConfigurationSection("potions");
-
             for(String s : sec.getKeys(false)) potionEffects.add(new PotionEffect(PotionEffectType.getByName(s), Integer.MAX_VALUE, sec.getInt(s), false, false));
         }
 
@@ -80,10 +76,10 @@ public class MetroEffect implements Listener {
                 @Override
                 public void run() {
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                        if (!p.hasPermission("pcs.metro.bypass")) potionEffects.forEach(p::addPotionEffect);
+                        if (!p.hasPermission("pcs.metro.bypass") && !Metro.getInstance().isExcluded(p)) potionEffects.forEach(p::addPotionEffect);
                     });
                 }
-            }.runTaskTimer(PCS_Metro.getInstance(), 30, 30));
+            }.runTaskTimer(PCS_Metro.getInstance(), 10*20, 10*20));
         }
 
         metro.getWorld().setGameRule(GameRule.DO_WEATHER_CYCLE, false);
@@ -101,9 +97,11 @@ public class MetroEffect implements Listener {
             tasks.add(new BukkitRunnable() {
                 @Override
                 public void run() {
-                    //TODO give money
                     Economy eco = Bukkit.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
-                    Bukkit.getOnlinePlayers().forEach(p -> eco.depositPlayer(p, moneyBonus));
+                    Bukkit.getOnlinePlayers().forEach(p -> {
+                        eco.depositPlayer(p, moneyBonus);
+                        p.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(moneyBonus)).build(PCS_Metro.getInstance().getConfig().getString("messages.money")));
+                    });
                 }
             }.runTaskTimer(PCS_Metro.getInstance(), moneyBonusInterval * 20 * 60, moneyBonusInterval * 20 * 60));
         }
@@ -117,6 +115,14 @@ public class MetroEffect implements Listener {
         allowMonsters.forEach(((region, types) -> {
             region.setFlag(Flags.DENY_SPAWN, types);
         }));
+
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            potionEffects.forEach(effect -> p.removePotionEffect(effect.getType()));
+        });
+    }
+
+    public Set<PotionEffect> getPotionEffects() {
+        return Collections.unmodifiableSet(potionEffects);
     }
 
     public boolean hasFlag(String flag) {

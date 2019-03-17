@@ -3,6 +3,7 @@ package com.z0cken.mc.metro.spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
@@ -24,6 +25,7 @@ public class EntityTemplate implements Template {
 
     private EntityType type;
     private int xp;
+    private Map<Attribute, Integer> attributes = new HashMap<>();
     private Map<EquipmentSlot, MetroEquipment> equipment = new HashMap<>();
     private Set<PotionEffect> effects = new HashSet<>();
     private LootTable lootTable;
@@ -41,6 +43,9 @@ public class EntityTemplate implements Template {
             }
         }
 
+        ConfigurationSection attributeSection = configuration.getConfigurationSection("attributes");
+        if(attributeSection != null) attributeSection.getValues(false).forEach((string, object) -> attributes.put(Attribute.valueOf(string.toUpperCase()), (Integer)object));
+
         ConfigurationSection effectSection = configuration.getConfigurationSection("effects");
         if(effectSection != null) effectSection.getKeys(false).forEach(s -> effects.add(effectSection.getSerializable(s, PotionEffect.class)));
 
@@ -51,6 +56,7 @@ public class EntityTemplate implements Template {
     @Override
     public void spawn(Location location) {
         LivingEntity entity = (LivingEntity) location.getWorld().spawnEntity(location, type);
+        entity.getScoreboardTags().add("metro");
 
         EntityEquipment entityEquipment = entity.getEquipment();
 
@@ -89,7 +95,10 @@ public class EntityTemplate implements Template {
 
         effects.forEach(entity::addPotionEffect);
 
+        attributes.forEach((attribute, integer) -> entity.getAttribute(attribute).setBaseValue(integer));
+
         if(xp > 0) entity.getScoreboardTags().add("metro-xp:" + xp);
+        entity.setCanPickupItems(false);
 
         if(lootTable != null && entity instanceof Lootable) {
            ((Lootable)entity).setLootTable(lootTable);

@@ -8,6 +8,7 @@ import org.bukkit.entity.PigZombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EffectListener implements Listener {
 
@@ -20,6 +21,11 @@ public class EffectListener implements Listener {
                 ((PigZombie)entity).setTarget(event.getPlayer());
             });
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Metro.getInstance().getAppropriateEffect().getPotionEffects().forEach(effect -> event.getPlayer().removePotionEffect(effect.getType()));
     }
 
 }

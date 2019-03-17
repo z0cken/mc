@@ -2,7 +2,7 @@ world: world
 entry-check-interval: 10
 disconnect:
   timeout: 1
-  min-health: 2
+  min-health: 4
 lapis:
   amount: 8
   interval-hours: 4
@@ -19,6 +19,14 @@ messages:
   - "§7------------< §6Metro §7>------------"
   - "§7> Aktuelle Rate: §f{DAILYRATE} Lapis / Tag"
   - "§7> Stationen: {#[STATIONS-ACTIVE][§aAktiv]#} §7§l/ {#[STATIONS-INACTIVE][§cInaktiv]#}"
-  - "§7> Statistik: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  - "§7> Statistik global: {#[TEXT|§6Erfahrungspunkte][§6{XP-G}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS-G}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS-G}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME-G}]#}"
+  - "§7> Statistik persönlich: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  - '§7> Siehe auch: {#[RUN|/metro list][§f/metro list]#} §7§l/ {#[RUN|/metro top][§f/metro top]#} §7§l/ {#[RUN|/metro toggle][§f/metro toggle]#}'
   activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
   xp-actionbar: "§7+ §a{AMOUNT} XP"
+  list: "{PREFIX} Es sind {VALUE} Spieler in der Metro! \n{LIST}"
+  teleport: "{PREFIX} Teleports sind in der Metro deaktiviert"
+  deathjoin: "{PREFIX} §cDu hast dich im Kampf ausgeloggt und wurdest getötet!"
+  deathquit: "{PREFIX} §c{PLAYER} hat sich mit < {VALUE} HP ausgeloggt und wurde getötet!"
+  money: "{PREFIX} Du hast {VALUE} Schekel durch die Metro erhalten!"
+  toggle: "{PREFIX} Du hast die positiven Effekte der Metro {VALUE}"

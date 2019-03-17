@@ -1,10 +1,70 @@
-alpha:
-  name: Alpha
+station_003:
+  name: Stalin
   beacon:
     ==: org.bukkit.Location
     world: world
-    x: 0.0
-    y: 15.0
-    z: 0.0
+    x: 4976.0
+    y: 26.0
+    z: -421.0
+    pitch: 0.0
+    yaw: 0.0
+station_004:
+  name: Chruschtschow
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 4815.0
+    y: 18.0
+    z: -234.0
+    pitch: 0.0
+    yaw: 0.0
+station_005:
+  name: Trotzki
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 4871.0
+    y: 51.0
+    z: -165.0
+    pitch: 0.0
+    yaw: 0.0
+station_006:
+  name: Engels
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 5103.0
+    y: 32.0
+    z: -166.0
+    pitch: 0.0
+    yaw: 0.0
+station_007:
+  name: Lenin
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 5178.0
+    y: 17.0
+    z: -172.0
+    pitch: 0.0
+    yaw: 0.0
+station_008:
+  name: Rasputin
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 5273.0
+    y: 44.0
+    z: -245.0
+    pitch: 0.0
+    yaw: 0.0
+station_009:
+  name: Marx
+  beacon:
+    ==: org.bukkit.Location
+    world: world
+    x: 4982.0
+    y: 13.0
+    z: -49.0
     pitch: 0.0
     yaw: 0.0

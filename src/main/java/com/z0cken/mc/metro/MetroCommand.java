@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 
 public class MetroCommand implements CommandExecutor {
 
@@ -41,9 +42,9 @@ public class MetroCommand implements CommandExecutor {
                                 .define("INDEX", Integer.toString(i))
                                 .define("PLAYER", entry.getKey().getName())
                                 .define("XP", entry.getValue().toString())
-                                .define("LAPIS", lapis.get(entry.getKey()).toString())
-                                .define("KILLS", kills.get(entry.getKey()).toString())
-                                .define("TIME", Integer.toString(time.get(entry.getKey()) / 60))
+                                .define("LAPIS", lapis.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "metro_lapis")).toString())
+                                .define("KILLS", kills.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "metro_kills")).toString())
+                                .define("TIME", Integer.toString(time.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "metro_time")) / 60))
                                 .build(PCS_Metro.getInstance().getConfig().getString("messages.leaderboard")));
                         }
                     } catch (SQLException e) {
@@ -52,6 +53,22 @@ public class MetroCommand implements CommandExecutor {
                     }
 
                     break;
+                case "list":
+                    Set<Player> set = Metro.getInstance().getPlayersInside();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    int i = 0;
+                    for(Player p : set) {
+                        i++;
+                        stringBuilder.append(p.getName());
+                        if(i < set.size()) stringBuilder.append(", ");
+                    }
+                    player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(set.size())).define("LIST", stringBuilder.toString()).build(PCS_Metro.getInstance().getConfig().getString("messages.list")));
+                    break;
+                case "toggle":
+                    boolean value = Metro.getInstance().isExcluded(player);
+                    Metro.getInstance().excludePlayer(player, !value);
+                    player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", !value ? "§causgeschaltet" : "§aeingeschaltet").build(PCS_Metro.getInstance().getConfig().getString("messages.toggle")));
+                    break;
                 case "reload":
                 case "rl":
                     if(sender.hasPermission("pcs.metro.reload")) {
@@ -59,7 +76,6 @@ public class MetroCommand implements CommandExecutor {
                         sender.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().build("{PREFIX} Metro neu geladen"));
                     }
                     break;
-
             }
         } else {
             //Main#
@@ -85,10 +101,24 @@ public class MetroCommand implements CommandExecutor {
                     .define("STATIONS-INACTIVE", new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent(inactiveSb.toString())}));
 
             try {
-                builder = builder.define("XP", Integer.toString(PCS_Progression.getSum("metro_xp")))
-                        .define("LAPIS", Integer.toString(PCS_Progression.getSum("metro_lapis")))
-                        .define("KILLS", Integer.toString(PCS_Progression.getSum("metro_kills")))
-                        .define("TIME", Integer.toString(PCS_Progression.getSum("metro_time")));
+                builder = builder.define("XP-G", Integer.toString(PCS_Progression.getSum("metro_xp")))
+                        .define("LAPIS-G", Integer.toString(PCS_Progression.getSum("metro_lapis")))
+                        .define("KILLS-G", Integer.toString(PCS_Progression.getSum("metro_kills")))
+                        .define("TIME-G", Integer.toString(PCS_Progression.getSum("metro_time") / 60));
+            } catch (SQLException e) {
+                String s1 = ChatColor.RED + " --- ";
+                builder = builder.define("XP-G", s1)
+                        .define("LAPIS-G", s1)
+                        .define("KILLS-G", s1)
+                        .define("TIME-G", s1);
+                e.printStackTrace();
+            }
+
+            try {
+                builder = builder.define("XP", Integer.toString(PCS_Progression.getProgression(player, "metro_xp")))
+                        .define("LAPIS", Integer.toString(PCS_Progression.getProgression(player, "metro_lapis")))
+                        .define("KILLS", Integer.toString(PCS_Progression.getProgression(player, "metro_kills")))
+                        .define("TIME", Integer.toString(PCS_Progression.getProgression(player, "metro_time") / 60));
             } catch (SQLException e) {
                 String s1 = ChatColor.RED + " --- ";
                 builder = builder.define("XP", s1)

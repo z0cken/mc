@@ -36,6 +36,7 @@ public final class Metro {
 
     private static final Logger log = PCS_Metro.getInstance().getLogger();
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Player> excludedPlayers = new HashSet<>();
     private final Set<Station> stations;
 
     private List<MetroEffect> effects;
@@ -235,5 +236,17 @@ public final class Metro {
 
     public World getWorld() {
         return world;
+    }
+
+    public boolean isExcluded(Player player) {
+        return excludedPlayers.contains(player);
+    }
+
+    public void excludePlayer(Player player, boolean value) {
+        if(value) {
+            excludedPlayers.add(player);
+            Metro.getInstance().getAppropriateEffect().getPotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        }
+        else excludedPlayers.remove(player);
     }
 }

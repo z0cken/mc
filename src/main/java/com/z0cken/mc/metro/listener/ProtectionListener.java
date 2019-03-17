@@ -2,6 +2,7 @@ package com.z0cken.mc.metro.listener;
 
 import com.z0cken.mc.metro.Metro;
 import com.z0cken.mc.metro.PCS_Metro;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,8 @@ public class ProtectionListener implements Listener {
     public ProtectionListener() {
         if(instantiated) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
         instantiated = true;
+
+        if(true) return;
 
         new BukkitRunnable() {
             @Override
@@ -53,36 +56,43 @@ public class ProtectionListener implements Listener {
     public void onTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
 
-        if(Metro.getInstance().getPlayersInside().contains(player) && !player.hasPermission("pcs.metro.bypass")) {
+        if(!player.hasPermission("pcs.metro.bypass") && (Metro.getInstance().getPlayersInside().contains(player) || Metro.getInstance().contains(event.getTo()))) {
             event.setCancelled(true);
-            //TODO msg
+            player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().build(PCS_Metro.getInstance().getConfig().getString("messages.teleport")));
         }
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if(Metro.getInstance().contains(event.getPlayer().getLocation())) {
-            if(quitPlayers.keySet().stream().noneMatch(quitPlayer -> quitPlayer.getUniqueId().equals(event.getPlayer().getUniqueId()))) {
-                event.getPlayer().getInventory().clear();
-                //TODO Send message
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
-                    }
-                }.runTaskLater(PCS_Metro.getInstance(), 1);
-            }
+        if(true) return;
+        final Player player = event.getPlayer();
+        if(player.hasPermission("pcs.metro.bypass") || !Metro.getInstance().contains(player.getLocation())) return;
+
+        if(quitPlayers.keySet().stream().noneMatch(quitPlayer -> quitPlayer.getUniqueId().equals(player.getUniqueId()))) {
+            player.getInventory().clear();
+            player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(disconnectTimeout)).build(PCS_Metro.getInstance().getConfig().getString("messages.deathjoin")));
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.spigot().respawn();
+                }
+            }.runTaskLater(PCS_Metro.getInstance(), 3);
         }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
+        if(true) return;
         final Player player = event.getPlayer();
-        if(player.hasPermission("pcs.metro.bypass")) return;
+        if(player.hasPermission("pcs.metro.bypass") || !Metro.getInstance().contains(player.getLocation())) return;
+        PCS_Metro.getInstance().getLogger().info(String.format("%s hat sich mit %d HP in der Metro ausgeloggt", player.getName(), (int) player.getHealth()));
+
         if(player.getHealth() < disconnectHealth) {
             player.setHealth(0);
-            //TODO Broadcast
-        } else quitPlayers.put(new QuitPlayer(player.getUniqueId(), player.getLocation(), player.getInventory().getContents()), Instant.now());
+            Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(disconnectHealth)).define("PLAYER", player.getName()).build(PCS_Metro.getInstance().getConfig().getString("messages.deathquit"))));
+        } else {
+            quitPlayers.put(new QuitPlayer(player.getUniqueId(), player.getLocation(), player.getInventory().getContents()), Instant.now());
+        }
     }
 
     private static class QuitPlayer {
