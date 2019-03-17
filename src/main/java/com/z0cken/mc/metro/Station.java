@@ -15,6 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -193,7 +194,8 @@ public class Station implements Listener {
 
         @EventHandler(ignoreCancelled = true)
         public void onInteract(PlayerInteractEvent event) {
-            if(event.getClickedBlock().equals(getBlock())) {
+            if(event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+            if(event.getMaterial() == Material.BEACON && event.getClickedBlock().equals(getBlock())) {
                 event.setCancelled(true);
                 event.getPlayer().openInventory(inventory);
             }
