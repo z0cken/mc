@@ -8,6 +8,7 @@ import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.config.Configuration;
@@ -18,6 +19,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class CommandFriend extends Command {
@@ -44,13 +47,13 @@ public final class CommandFriend extends Command {
                             player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.add-self")));
                             return;
                         }
-                        
-                        MessageBuilder playerBuilder = PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName());
-                        MessageBuilder targetBuilder = PersonaAPI.getPlayerBuilder(target.getUniqueId(), target.getName());
+
+                        CompletableFuture<TextComponent> playerComponent = PersonaAPI.getPersona(player.getUniqueId()).getComponent(player.getName(), 500, TimeUnit.MILLISECONDS);
+                        CompletableFuture<TextComponent> targetComponent = PersonaAPI.getPersona(target.getUniqueId()).getComponent(target.getName(), 500, TimeUnit.MILLISECONDS);
 
                         try {
                             if (FriendsAPI.areFriends(player.getUniqueId(), target.getUniqueId())) {
-                                player.sendMessage(targetBuilder.define("PLAYER", target.getName()).build(config.getString("messages.duplicate")));
+                                playerComponent.thenAcceptAsync(component -> player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.duplicate"))));
                                 return;
                             }
                         } catch (SQLException e) {
@@ -65,8 +68,8 @@ public final class CommandFriend extends Command {
                             try {
                                 FriendsAPI.friend(player.getUniqueId(), target.getUniqueId());
                                 requests.get(target).remove(player);
-                                player.sendMessage(targetBuilder.build(config.getString("messages.accept-first")));
-                                target.sendMessage(playerBuilder.build(config.getString("messages.accept-third")));
+                                targetComponent.thenAcceptAsync(component -> player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.accept-first"))));
+                                playerComponent.thenAcceptAsync(component -> target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.accept-third"))));
                             } catch (SQLException e) {
                                 e.printStackTrace();
                                 player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
@@ -81,8 +84,8 @@ public final class CommandFriend extends Command {
                         }
                         playerRequests.add(target);
 
-                        player.sendMessage(targetBuilder.build(config.getString("messages.add-first")));
-                        target.sendMessage(playerBuilder.build(config.getString("messages.add-third")));
+                        targetComponent.thenAcceptAsync(component -> player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.add-first"))));
+                        playerComponent.thenAcceptAsync(component -> target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.add-third"))));
 
                     } else {
                         player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.not-found")));
@@ -117,13 +120,13 @@ public final class CommandFriend extends Command {
 
                     try {
                         if (!FriendsAPI.areFriends(player.getUniqueId(), uuid)) {
-                            player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", name).build(config.getString("messages.not-friends")));
+                            player.sendMessage(MessageBuilder.DEFAULT.define("NAME", name).build(config.getString("messages.not-friends")));
                             return;
                         }
 
                         FriendsAPI.unfriend(player.getUniqueId(), uuid);
-                        player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", name).build(config.getString("messages.remove-first")));
-                        if(target != null) target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", player.getName()).build(config.getString("messages.remove-third")));
+                        player.sendMessage(MessageBuilder.DEFAULT.define("NAME", name).build(config.getString("messages.remove-first")));
+                        if(target != null) target.sendMessage(MessageBuilder.DEFAULT.define("NAME", player.getName()).build(config.getString("messages.remove-third")));
 
                     } catch (SQLException e) {
                         player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
@@ -150,7 +153,7 @@ public final class CommandFriend extends Command {
                     for(Map.Entry<UUID, Timestamp> entry : friends.entrySet()) {
                         try {
                             ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(entry.getKey());
-                            set.add(MessageBuilder.DEFAULT.define("PLAYER", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
+                            set.add(MessageBuilder.DEFAULT.define("NAME", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
                         } catch (SQLException e) {
                             player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
                             e.printStackTrace();

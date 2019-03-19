@@ -7,12 +7,11 @@ import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -26,6 +25,10 @@ import java.util.stream.Collectors;
 public class PCS_Core extends JavaPlugin implements ICore, Listener {
 
     private static PCS_Core instance;
+    public static PCS_Core getInstance() {
+        return instance;
+    }
+
     private static YamlConfiguration coreConfig;
     private static ConfigurationBridge coreConfigBridge;
 
@@ -45,9 +48,6 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     @Override
     public void onEnable() {
         ICore.super.init();
-
-        PersonaAPI.init(coreConfig.getLong("persona-update-interval"));
-
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
@@ -55,16 +55,6 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     public void onDisable() {
         ICore.super.shutdown();
         instance = null;
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent event) {
-        //PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
-    }
-
-    @EventHandler
-    public void onPluginDisable(PluginDisableEvent event) {
-        //if(getConfig().getStringList("crucial-plugins").contains(event.getPlugin().getName())) stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
     }
 
     @Override
@@ -114,7 +104,13 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
     }
 
-    public static PCS_Core getInstance() {
-        return instance;
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onQuit(PlayerQuitEvent event) {
+        PersonaAPI.invalidate(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        //if(getConfig().getStringList("crucial-plugins").contains(event.getPlugin().getName())) stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
     }
 }

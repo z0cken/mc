@@ -7,10 +7,12 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class CoreTask implements Runnable {
 
-    private boolean async;
-    private TimeUnit timeUnit;
-    private Long delay, interval;
+    private final boolean async;
+    private final TimeUnit timeUnit;
+    private final Long delay, interval;
     private int id;
+
+    private boolean cancelled = false;
 
     public CoreTask(boolean async) {
         this(async, null, null, null, false);
@@ -48,7 +50,12 @@ public abstract class CoreTask implements Runnable {
     }
 
     protected void cancel() {
+        cancelled = true;
         CoreBridge.getPlugin().cancelTask(id);
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     public void schedule() {

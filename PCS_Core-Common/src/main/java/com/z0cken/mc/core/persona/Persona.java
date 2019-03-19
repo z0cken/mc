@@ -1,61 +1,59 @@
 package com.z0cken.mc.core.persona;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.z0cken.mc.core.CoreBridge;
 import com.z0cken.mc.core.Shadow;
 import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.http.client.HttpResponseException;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class Persona {
 
-    private static final List<String> guestList = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.guest");
-    private static final List<String> memberList = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.member");
+    private static final AsyncLoadingCache<String, BoardProfile> cache = Caffeine.newBuilder()
+            .expireAfterAccess(CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getInt("profile.expire"), TimeUnit.MINUTES)
+            .refreshAfterWrite(CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getInt("profile.refresh"), TimeUnit.MINUTES)
+            .buildAsync(BoardProfile::of);
 
-    private UUID uuid;
+    private static final List<String> guestBubble = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.guest");
+    private static final List<String> memberBubble = CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getStringList("hover-event.member");
 
-    //pr0gramm
-    private String name;
-    private long registered;
-    private boolean banned;
-    private LocalDateTime bannedUntil;
-    private int benis;
-    private Mark mark;
+    private final UUID uuid;
+
+    private BoardProfile boardProfile;
     private boolean anonymized;
+    private String boardName;
 
     //Guest
     private UUID host;
-    private long invited;
+    private Long invited;
 
-    SortedSet<Badge> badges;
+    private final SortedSet<Badge> badges;
 
-    Persona(@Nonnull UUID uuid) throws SQLException, HttpResponseException, UnirestException  {
+    Persona(@Nonnull UUID uuid) throws SQLException {
         this.uuid = uuid;
 
-        String name = DatabaseHelper.getUsername(uuid);
+        boardName = DatabaseHelper.getUsername(uuid);
 
-        if(name != null) {
-            this.name = name;
+        if(isVerified()) {
             anonymized = DatabaseHelper.isAnonymized(uuid);
-            fetchProfile();
         } else {
             String host = DatabaseHelper.getHost(uuid);
             if(host != null) {
@@ -67,78 +65,107 @@ public final class Persona {
         badges = DatabaseHelper.getBadges(uuid);
     }
 
-    void fetchProfile() throws HttpResponseException, UnirestException {
-        GetRequest request = Unirest.get("https://pr0gramm.com/api/profile/info?name=" + name);
+    public CompletableFuture<BoardProfile> getBoardProfile() {
+        if(!isVerified()) throw new IllegalStateException();
+        return cache.get(boardName);
+    }
 
-        HttpResponse<String> httpResponse = request.asString();
-        int status = httpResponse.getStatus();
+    public static final HoverEvent NOT_AVAILABLE = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cProfil nicht verfügbar")});
+    public static final HoverEvent NOT_VERIFIED = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{new TextComponent("§cSpieler nicht verifiziert")});
 
-        if(status / 100 != 2) {
-            CoreBridge.getPlugin().getLogger().severe(String.format("Could not fetch profile of %s (HTTP %d)", name, status));
-            throw new HttpResponseException(status, httpResponse.getStatusText());
+    private HoverEvent getHoverEvent() {
+        StringBuilder badgeText = new StringBuilder(getBadges().isEmpty() ? "" : "\n");
+        getBadges().forEach(badge -> badgeText.append("\n").append(badge.getColor()).append(badge.getTitle()));
+
+        if(isVerified()) {
+            BoardProfile profile;
+            try {
+                profile = getBoardProfile().get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+                return NOT_AVAILABLE;
+            }
+
+            return profile == null ? NOT_AVAILABLE : new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT
+                    .define("NAME", anonymized ? ChatColor.MAGIC + "XXXXXXXX" : boardName)
+                    .define("BENIS", (profile.getBenis() < 0 ? ChatColor.RED : "") + profile.getBenisFormatted())
+                    .define("MARK", profile.getMark().getColor() + profile.getMark().getTitle())
+                    .define("BADGES", badgeText.toString())
+                    .build(memberBubble.stream().collect(Collectors.joining("\n"))));
+        } else if(isGuest()) {
+
+            String hostName = null;
+            try { hostName = Shadow.NAME.getString(host);
+            } catch (SQLException e) { e.printStackTrace(); }
+            if(hostName == null) hostName = ChatColor.RED + "- Nicht verfügbar -";
+
+            return  new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT
+                    .define("NAME", hostName)
+                    .define("DATE", new SimpleDateFormat("dd.MM.yy").format(new java.util.Date(invited)))
+                    .define("BADGES", badgeText.toString())
+                    .build(guestBubble.stream().collect(Collectors.joining("\n"))));
+        } else return NOT_VERIFIED;
+    }
+
+    public CompletableFuture<HoverEvent> getHoverEvent(long timeout, TimeUnit unit) {
+        CompletableFuture<HoverEvent> future = new CompletableFuture<>();
+
+        if(isVerified() || isGuest()) future.completeOnTimeout(NOT_AVAILABLE, timeout, unit).completeAsync(this::getHoverEvent);
+        else future.complete(NOT_VERIFIED);
+
+        return future;
+    }
+
+    public CompletableFuture<TextComponent> getComponent(String name, long timeout, TimeUnit unit) {
+        CompletableFuture<TextComponent> future = new CompletableFuture<>();
+        TextComponent component = new TextComponent(name);
+        component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/msg " + name + " "));
+
+        if(isVerified() || isGuest()) {
+
+            future.completeAsync(() -> {
+
+                HoverEvent hoverEvent;
+                try {
+                    hoverEvent = getHoverEvent(timeout, unit).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    return component;
+                }
+
+                component.setHoverEvent(hoverEvent);
+
+                if(isVerified()) {
+                    final BoardProfile profile = getBoardProfile().getNow(null);
+                    if(profile != null) component.addExtra(" " + profile.getMark().getSymbol());
+                }
+
+                return component;
+            });
+
+        } else {
+            component.setHoverEvent(NOT_VERIFIED);
+            future.complete(component);
         }
 
-        HttpResponse<JsonNode> response = request.asJson();
-
-        JSONObject userObject = response.getBody().getObject().getJSONObject("user");
-        registered = userObject.getLong("registered");
-        benis = userObject.getInt("score");
-        mark = Mark.getById(userObject.getInt("mark"));
-        banned = userObject.getInt("banned") == 1;
-
-        if(banned) {
-            if(!userObject.isNull("bannedUntil"))
-            bannedUntil = LocalDateTime.ofInstant(Instant.ofEpochMilli(userObject.getLong("bannedUntil")), TimeZone.getTimeZone(ZoneOffset.ofHours(1)).toZoneId());
-        }
+        return future;
     }
 
-    public String getName() {
-        return name;
-    }
+    public boolean isVerified() { return boardName != null; }
 
-    public long getRegistered() {
-        return registered;
-    }
+    public boolean isGuest() { return host != null; }
 
-    public boolean isBanned() {
-        return banned;
-    }
+    public UUID getHost() { return host; }
 
-    public LocalDateTime getBannedUntil() {
-        return bannedUntil;
-    }
+    public long getInvited() { return invited; }
 
-    public int getBenis() {
-        return benis;
-    }
+    public SortedSet<Badge> getBadges() { return Collections.unmodifiableSortedSet(badges); }
 
-    public Mark getMark() {
-        return mark;
-    }
-
-    public boolean isGuest() {
-        return host != null;
-    }
-
-    public UUID getHost() {
-        return host;
-    }
-
-    public long getInvited() {
-        return invited;
-    }
-
-    public boolean isAnonymized() {
-        return anonymized;
-    }
+    public boolean isAnonymized() { return anonymized; }
 
     public void setAnonymized(boolean anonymized) {
         DatabaseHelper.setAnonymized(uuid, anonymized);
         this.anonymized = anonymized;
-    }
-
-    public SortedSet<Badge> getBadges() {
-        return Collections.unmodifiableSortedSet(badges);
     }
 
     public void awardBadge(Badge badge) throws SQLException {
@@ -147,125 +174,8 @@ public final class Persona {
         badges.add(badge);
     }
 
-    public HoverEvent getHoverEvent() {
-
-        MessageBuilder messageBuilder = MessageBuilder.DEFAULT;
-        ComponentBuilder componentBuilder = new ComponentBuilder("");
-        List<String> list;
-
-        String bubble;
-
-        if(isGuest()) {
-            list = guestList;
-            String hostName = "- Nicht verfügbar -";
-            try {
-                hostName = Shadow.NAME.getString(host);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            messageBuilder = messageBuilder
-                    .define("PLAYER", hostName)
-                    .define("DATE", new SimpleDateFormat("dd.MM.yy").format(new java.util.Date(invited)));
-        } else {
-            list = memberList;
-            messageBuilder = messageBuilder
-                    .define("PLAYER", anonymized ? ChatColor.MAGIC + "XXXXXXXX" : getName())
-                    .define("BENIS", (getBenis() < 0 ? ChatColor.RED : "") + formatBenis(getBenis()))
-                    .define("MARK", getMark().getColor() + getMark().getTitle());
-        }
-
-        for(int i = 0; i < list.size(); i++) {
-            componentBuilder.append(new TextComponent(messageBuilder.build(list.get(i))).toLegacyText());
-            if(i + 1 < list.size()) componentBuilder.append("\n");
-        }
-
-        if(!badges.isEmpty()) componentBuilder.append("\n");
-        for(Badge badge : badges) {
-            componentBuilder.append("\n" + badge.getTitle(), ComponentBuilder.FormatRetention.NONE).color(badge.getColor());
-        }
-
-        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, componentBuilder.create());
-    }
-
-    private static final NavigableMap<Integer, String> suffixes = new TreeMap<>() {{
-        put(1_000, "k");
-        put(1_000_000, "M");
-    }};
-
-    static String formatBenis(int value) {
-        if (Math.abs(value) < 1000) {
-            if(value < 0) {
-                return "< 0";
-            }
-            return "< 1k";
-        }
-
-        Map.Entry<Integer, String> e = suffixes.floorEntry(Math.abs(value));
-        Integer divideBy = e.getKey();
-        String suffix = e.getValue();
-
-        int truncated = Math.abs(value) / (divideBy / 10); //the number part of the output times 10
-        boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
-        String result = hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
-        return value < 0 ? "-" + result : result;
-    }
-
-    /** @noinspection SpellCheckingInspection*/
-    public enum Mark {
-        SCHWUCHTEL("Schwuchtel", '●', ChatColor.WHITE, 2, 5),
-        NEUSCHWUCHTEL("Neuschwuchtel", '●', ChatColor.LIGHT_PURPLE, 1, 2),
-        ALTSCHWUCHTEL("Altschwuchtel", '●', ChatColor.DARK_GREEN, 3, 10),
-        ADMIN("Admin", '●', ChatColor.GOLD, 1337, Integer.MAX_VALUE),
-        GEBANNT("Gebannt", 'X', ChatColor.GRAY, 0, 0),
-        MODERATOR("Moderator", '●', ChatColor.DARK_BLUE, 3, 10),
-        FLIESENTISCH("Fliesentischbesitzer", '●', ChatColor.GRAY, 0, 1),
-        LEGENDE("Lebende Legende", '✫', ChatColor.DARK_AQUA, 3, 10),
-        WICHTEL("Wichtel", '✉', ChatColor.RED, 3, 10),
-        SPENDER("Edler Spender", '⦿', ChatColor.DARK_AQUA, 3, 10),
-        MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.GREEN, 3, 10),
-        ALTMOD("Alt-Moderator", '●', ChatColor.BLUE, 3, 10),
-        COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.DARK_RED, 3, 10);
-
-        private String title;
-        private char symbol;
-        private ChatColor color;
-        private int startInvites, maxInvites;
-
-        Mark(String title, char symbol, ChatColor color, int startInvites, int maxInvites) {
-            this.title = title;
-            this.symbol = symbol;
-            this.color = color;
-            this.startInvites = startInvites;
-            this.maxInvites = maxInvites;
-        }
-
-        public static Mark getById(int id) {
-            return values()[id];
-        }
-
-        public String getTitle() {
-            return color + title;
-        }
-
-        public String getSymbol() {
-            return color.toString() + symbol;
-        }
-
-        public ChatColor getColor() {
-            return color;
-        }
-
-        public int getStartInvites() {
-            return startInvites;
-        }
-
-        public int getMaxInvites() {
-            return maxInvites;
-        }
-    }
-
     public enum Badge {
-        EARLY_SUPPORTER("Early Supporter", ChatColor.DARK_AQUA);
+        EARLY_SUPPORTER("Früher Vogel", ChatColor.DARK_AQUA);
 
         private String title;
         private ChatColor color;

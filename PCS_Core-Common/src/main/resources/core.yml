@@ -1,8 +1,13 @@
-persona-update-interval: 1200
+persona:
+  connection-timeout: 10000
+  socket-timeout: 60000
+profile:
+  expire: 10
+  refresh: 20
 hover-event:
   guest:
-  - 'Eingeladen von {PLAYER} am {DATE}'
+  - 'Eingeladen von {NAME} am {DATE}'
   member:
-  - '{PLAYER}'
+  - '{NAME}'
   - 'Benis: {BENIS}'
   - '{MARK}'

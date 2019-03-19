@@ -8,7 +8,7 @@ import com.z0cken.mc.core.util.ConfigurationType;
 import com.z0cken.mc.core.util.CoreTask;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -51,8 +51,6 @@ public class PCS_Core extends Plugin implements ICore, Listener {
     public void onEnable() {
         ICore.super.init();
 
-        PersonaAPI.init(coreConfig.getLong("persona-update-interval"));
-
         getProxy().getPluginManager().registerListener(this, this);
         getProxy().getPluginManager().registerListener(this, new ShadowListener());
         getProxy().getPluginManager().registerCommand(this, new CommandFriend());
@@ -65,11 +63,6 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         //saveConfig();
 
         instance = null;
-    }
-
-    @EventHandler
-    public void onJoin(PostLoginEvent event) {
-        //PersonaAPI.updateCachedPersona(event.getPlayer().getUniqueId());
     }
 
     @Override
@@ -97,10 +90,14 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         return player != null && player.isConnected();
     }
 
-
     @Override
     public Set<UUID> getOnlinePlayers() {
         return ProxyServer.getInstance().getPlayers().stream().map(ProxiedPlayer::getUniqueId).collect(Collectors.toSet());
+    }
+
+    @EventHandler
+    public void onDisconnect(PlayerDisconnectEvent event) {
+        PersonaAPI.invalidate(event.getPlayer().getUniqueId());
     }
 
     private void saveResource(String resourcePath, boolean replace) {

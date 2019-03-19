@@ -19,6 +19,7 @@ public class MessageBuilder implements Cloneable {
 
     private static final Pattern PATTERN_COMPONENT = Pattern.compile("(?<=\\{#).+?(?=#})");
 
+    private HashMap<String, TextComponent> components = new HashMap<>();
     private HashMap<String, String> values = new HashMap<>();
     private HashMap<String, Object> events = new HashMap<>();
 
@@ -81,7 +82,15 @@ public class MessageBuilder implements Cloneable {
             allMatches.add(matcher.group());
         }
         int index = allMatches.size() - 1;
-        TextComponent component = new TextComponent(allMatches.get(index).replaceAll(Pattern.quote("\\]"), "]"));
+        String last = allMatches.get(index).replaceAll(Pattern.quote("\\]"), "]");
+
+        //Preset component
+        if(allMatches.size() == 1) {
+            TextComponent c = components.getOrDefault(last, null);
+            if(c != null) return c;
+        }
+
+        TextComponent component = new TextComponent(last);
         allMatches.remove(index);
 
         if(allMatches.size() < 1 || allMatches.size() > 2) throw new IllegalArgumentException("Illegal amount of Event arguments: " + literalComponent);
@@ -92,14 +101,13 @@ public class MessageBuilder implements Cloneable {
             String s = array[0].toUpperCase();
 
             if(array.length == 1) {
+
                 Object event = events.getOrDefault(s, null);
 
                 if(event != null) {
-
                     if(event instanceof ClickEvent) component.setClickEvent((ClickEvent) event);
                     else component.setHoverEvent((HoverEvent) event);
-
-                } else throw new IllegalArgumentException("Event not defined: " + s);
+                }
 
             } else if(array.length == 2) {
                 //Clean up escape characters
@@ -138,6 +146,12 @@ public class MessageBuilder implements Cloneable {
         return clone;
     }
 
+    public MessageBuilder define(String key, @Nullable TextComponent value) {
+        MessageBuilder clone = clone();
+        clone.components.put(key.toUpperCase(), value);
+        return clone;
+    }
+
     @Override
     public MessageBuilder clone() {
         MessageBuilder builder;
@@ -149,6 +163,7 @@ public class MessageBuilder implements Cloneable {
         }
         builder.values = (HashMap<String, String>) builder.values.clone();
         builder.events = (HashMap<String, Object>) builder.events.clone();
+        builder.components = (HashMap<String, TextComponent>) builder.components.clone();
         return builder;
     }
 }
