@@ -1,6 +1,6 @@
-format: "§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#} §7>"
-mention-format: '§7{#[SUGGEST|/msg {PLAYER}][PERSONA][§b{PLAYER}]#}§7'
 log-console: true
-messages:
-  join: "§7[§a+§7] {#[SUGGEST|/msg {PLAYER}][PERSONA][§7{PLAYER}{MARK}]#}"
-  quit: "§7[§c-§7] {#[PERSONA][§7{PLAYER}{MARK}]#}"
+formats:
+  general: "§7{#[PLAYER]#} §7>"
+  mention: "§7{#[SUGGEST|/msg {NAME}][BUBBLE][§b{NAME}]#}§7"
+  join: "§7[§a+§7] {#[PLAYER]#}"
+  quit: "§7[§c-§7] {#[PLAYER]#}"

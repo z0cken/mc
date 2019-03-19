@@ -2,12 +2,10 @@ package com.z0cken.mc.essentials.modules;
 
 import com.z0cken.mc.claim.PCS_Claim;
 import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.milkbowl.vault.chat.Chat;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -24,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +33,7 @@ public class ModuleChat extends Module implements Listener {
     private static Chat chat = null;
 
     private static final Pattern PATTERN_URL = Pattern.compile("^(?:(https?)://)([-\\w_.]{2,}\\.[a-z]{2,4})([/?]\\S*)?$");
-    private String FORMAT, JOIN, QUIT;
+    private String FORMAT, JOIN, QUIT, MENTION;
     private boolean LOG_CONSOLE;
 
     public ModuleChat(String configPath) {
@@ -46,16 +46,22 @@ public class ModuleChat extends Module implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         final Player player = event.getPlayer();
-        BaseComponent[] msg = PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(JOIN);
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+
+        PersonaAPI.getPersona(player.getUniqueId()).getComponent(player.getName(), 3, TimeUnit.SECONDS).thenAcceptAsync(component -> {
+            BaseComponent[] msg = MessageBuilder.DEFAULT.define("PLAYER", component).define("PREFIX", getPrefix(player)).build(JOIN);
+            Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+        });
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
         final Player player = event.getPlayer();
-        BaseComponent[] msg = PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(QUIT);
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+
+        PersonaAPI.getPersona(player.getUniqueId()).getComponent(player.getName(), 3, TimeUnit.SECONDS).thenAcceptAsync(component -> {
+            BaseComponent[] msg = MessageBuilder.DEFAULT.define("PLAYER", component).define("PREFIX", getPrefix(player)).build(QUIT);
+            Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+        });
     }
 
     @EventHandler
@@ -63,8 +69,12 @@ public class ModuleChat extends Module implements Listener {
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        BaseComponent[] msg = (BaseComponent[]) ArrayUtils.addAll(PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(FORMAT), parseMessage(event.getMessage()));
-        event.getRecipients().forEach(p -> p.spigot().sendMessage(msg));
+
+        PersonaAPI.getPersona(player.getUniqueId()).getComponent(player.getName(), 250, TimeUnit.MILLISECONDS).thenAcceptAsync(component -> {
+            BaseComponent[] msg = (BaseComponent[]) ArrayUtils.addAll(MessageBuilder.DEFAULT.define("PLAYER", component).define("PREFIX", getPrefix(player)).build(FORMAT), parseMessage(event.getMessage()));
+            Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+        });
+
         if(LOG_CONSOLE) Bukkit.getServer().getLogger().info(player.getName() + " > " + event.getMessage());
 
         //Without log4j
@@ -96,8 +106,16 @@ public class ModuleChat extends Module implements Listener {
             Player player = Bukkit.getPlayerExact(component.getText());
 
             if(player != null) {
+                HoverEvent hoverEvent;
+                try {
+                    hoverEvent = PersonaAPI.getPersona(player.getUniqueId()).getHoverEvent(250, TimeUnit.MILLISECONDS).get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
                 iterator.remove();
-                Arrays.asList(PersonaAPI.getPlayerBuilder(player.getUniqueId(), player.getName()).define("PREFIX", getPrefix(player)).build(getConfig().getString("mention-format"))).forEach(iterator::add);
+                Arrays.asList(MessageBuilder.DEFAULT.define("NAME", player.getName()).define("BUBBLE", hoverEvent).define("PREFIX", getPrefix(player)).build(MENTION)).forEach(iterator::add);
                 player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.5F, 1.75F);
             }
         }
@@ -123,6 +141,7 @@ public class ModuleChat extends Module implements Listener {
         FORMAT = getConfig().getString("format");
         JOIN = getConfig().getString("messages.join");
         QUIT = getConfig().getString("messages.quit");
+        MENTION = getConfig().getString("mention-format");
         LOG_CONSOLE = getConfig().getBoolean("log-console");
     }
 
