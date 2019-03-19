@@ -3,8 +3,8 @@ package com.z0cken.mc.essentials.modules;
 
 import com.z0cken.mc.essentials.PCS_Essentials;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.logging.Level;
 
 public class ModuleManager {
 
@@ -46,7 +46,9 @@ public class ModuleManager {
             if(isEnabled && !isRunning) {
                 try {
                     activeModules.add(entry.getValue().getDeclaredConstructor(String.class).newInstance(entry.getKey()));
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (LinkageError e) {
+                    PCS_Essentials.getInstance().getLogger().log(Level.SEVERE, "Failed to enable module '" + entry.getKey() + "'", e);
+                } catch (Exception e) {
                     PCS_Essentials.getInstance().getLogger().severe("Failed to enable module '" + entry.getKey() + "'");
                     e.printStackTrace();
                 }
