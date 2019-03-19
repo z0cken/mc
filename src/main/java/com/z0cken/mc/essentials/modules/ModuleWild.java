@@ -54,7 +54,7 @@ public class ModuleWild extends Module implements CommandExecutor {
 
         if(command.getName().equalsIgnoreCase("wild")) {
 
-            if(args.length > 0 && args[0].equalsIgnoreCase("benchmark")) {
+            if(args.length > 0 && args[0].equalsIgnoreCase("benchmark") && (player == null || player.hasPermission("pcs.essentials.wild.benchmark"))) {
                 World world;
                 if(args.length > 3) world = Bukkit.getWorld(args[3]);
                 else if(player != null) world = player.getWorld();
