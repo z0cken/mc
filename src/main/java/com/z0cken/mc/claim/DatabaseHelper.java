@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 class DatabaseHelper {
 
@@ -44,13 +43,13 @@ class DatabaseHelper {
     }
 
     static void commit(Claim claim) {
-        queue.add(claim);
+        if(!queue.contains(claim)) queue.add(claim);
     }
 
     static void push() {
         if(queue.isEmpty()) return;
 
-        List<String> content = queue.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()) ;
+        int add = 0, rem = 0;
 
         try (Connection connection = DATABASE.getConnection();
              PreparedStatement statementAdd = connection.prepareStatement("INSERT INTO claims VALUES(?, ?, ?, ?, ?, ?, ?);");
@@ -72,19 +71,17 @@ class DatabaseHelper {
                     pstmt.setString(7, claim.getBaseMaterial().name());
                 }
 
-                pstmt.addBatch();
+                pstmt.executeUpdate();
+                if(hasOwner) add++; else rem++;
                 queue.remove();
             }
 
-            int[] add = statementAdd.executeBatch();
-            int[] rem = statementRem.executeBatch();
-
-            log.info("[PUSH] ADD " + IntStream.of(add).sum() + " | " + IntStream.of(rem).sum() + " REM");
+            log.info("[PUSH] ADD " + add + " | " + rem + " REM");
 
         } catch (SQLException e) {
             e.printStackTrace();
-            log.severe(">>> Failed to push queue - dumping content <<<");
-            content.forEach(log::severe);
+            log.severe(">>> Failed to push queue - dumping remaining content <<<");
+            queue.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()).forEach(log::severe);
         }
     }
 
