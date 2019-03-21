@@ -78,6 +78,20 @@ public class Claim {
         return false;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null || !(obj instanceof Claim)) {
+            return false;
+        }
+        Claim claim = (Claim) obj;
+        return chunkCoordinate.equals(claim.getChunkCoordinate()) && (owner == null ? claim.getOwner() == null : owner.equals(claim.getOwner()));
+    }
+
+    @Override
+    public int hashCode() {
+        return owner.getUniqueId().hashCode() * chunkCoordinate.getX() * chunkCoordinate.getZ();
+    }
+
     protected static class Owner {
         private UUID uuid;
 

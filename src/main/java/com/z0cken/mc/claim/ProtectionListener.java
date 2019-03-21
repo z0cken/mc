@@ -4,27 +4,28 @@ import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.block.Container;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.PlayerLeashEntityEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 class ProtectionListener implements Listener {
 
     private static final Set<Material> INTERACTABLE_BLOCKS = Set.of(
         Material.ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
-        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON,
+        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE,
 
         //Buttons
         Material.ACACIA_BUTTON,
@@ -139,21 +140,35 @@ class ProtectionListener implements Listener {
     );
 
     private static boolean instantiated;
+    private static final Map<Player, Integer> mutedFor = Collections.synchronizedMap(new HashMap<>());
 
     ProtectionListener() {
         if(instantiated) throw new IllegalStateException(getClass().getName() + " already instantiated!");
         instantiated = true;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                mutedFor.replaceAll((player, integer) -> integer--);
+                mutedFor.values().removeAll(Collections.singleton(0));
+            }
+        }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, 20);
     }
 
     private void sendProtected(Player recipient, Claim.Owner owner) {
         recipient.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", owner.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.protected")));
+        mutedFor.remove(recipient);
     }
 
-    private void handleManipulation(Cancellable event, Chunk chunk, Player player) {
+    private void handleManipulation(Cancellable event, Chunk chunk, Player player, boolean quiet) {
         Claim claim = PCS_Claim.getClaim(chunk);
         if(claim == null || claim.canBuild(player)) return;
         event.setCancelled(true);
-        sendProtected(player, claim.getOwner());
+        if(!quiet) sendProtected(player, claim.getOwner());
+    }
+
+    private void muteFor(Player player) {
+        mutedFor.put(player, PCS_Claim.getInstance().getConfig().getInt("mute-duration"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -179,32 +194,36 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        handleManipulation(event, event.getBlock().getChunk(), event.getPlayer());
+        handleManipulation(event, event.getBlock().getChunk(), event.getPlayer(), false);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if((block == null || !INTERACTABLE_BLOCKS.contains(block.getType()))
         && (event.getItem() == null || !INTERACTABLE_ITEMS.contains(event.getItem().getType()))) return;
 
-        handleManipulation(event, event.getClickedBlock().getChunk(), event.getPlayer());
+        final Player player = event.getPlayer();
+        if(block instanceof Container && player.hasPermission("pcs.claim.override")) return;
+
+        handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player));
+        if(event.getAction() == Action.PHYSICAL) muteFor(player);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer());
+        handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer(), false);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeashEntity(PlayerLeashEntityEvent event) {
-        handleManipulation(event, event.getEntity().getLocation().getChunk(), event.getPlayer());
+        handleManipulation(event, event.getEntity().getLocation().getChunk(), event.getPlayer(), false);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFish(PlayerFishEvent event) {
         if(event.getCaught() == null) return;
-        handleManipulation(event, event.getCaught().getLocation().getChunk(), event.getPlayer());
+        handleManipulation(event, event.getCaught().getLocation().getChunk(), event.getPlayer(), false);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -223,15 +242,23 @@ class ProtectionListener implements Listener {
     public void onItemPickup(EntityPickupItemEvent event) {
         final Entity entity = event.getEntity();
         if(entity.getType() != EntityType.PLAYER) return;
-        handleManipulation(event, event.getItem().getLocation().getChunk(), (Player) entity);
+        handleManipulation(event, event.getItem().getLocation().getChunk(), (Player) entity, mutedFor.containsKey(entity));
+        muteFor((Player) entity);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if(event.getEntity() instanceof Monster || event.getEntity().getType() == EntityType.SLIME) return;
 
-        final Entity damager = event.getDamager();
-        if(damager.getType() != EntityType.PLAYER) return;
+        Entity damager = event.getDamager();
+
+        if(damager.getType() != EntityType.PLAYER) {
+            if(damager instanceof Projectile) {
+                ProjectileSource source = ((Projectile)damager).getShooter();
+                if(source instanceof Player) damager = (Player) source;
+                else return;
+            } else return;
+        }
 
         final Claim claim = PCS_Claim.getClaim(event.getEntity().getLocation().getChunk());
         if(claim == null) return;
@@ -290,5 +317,15 @@ class ProtectionListener implements Listener {
         Claim origin = PCS_Claim.getClaim(event.getBlock().getChunk());
         Claim target = PCS_Claim.getClaim(event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()).getChunk());
         if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onTempt(EntityTargetLivingEntityEvent event) {
+        if(event.getReason() != EntityTargetEvent.TargetReason.TEMPT) return;
+
+        Claim claim = PCS_Claim.getClaim(event.getEntity().getLocation().getChunk());
+        if(claim == null) return;
+
+        if(!claim.canBuild((Player) event.getTarget())) event.setCancelled(true);
     }
 }

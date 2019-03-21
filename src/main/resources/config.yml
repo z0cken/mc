@@ -18,8 +18,13 @@ messages:
   unclaimable: §c§l>_ §7In diesem Bereich darf nicht geclaimt werden!
   override-on: §f§l>_ §7Override-Modus §aaktiviert
   override-off: §f§l>_ §7Override-Modus §cdeaktiviert
-  info-claim:
+  help:
     - "§7---------<§f Hilfemenü - Claims §7>---------"
     - "§7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten"
-    - "§7> Der §fKompass §7zeigt dir alle deine Claims und deren Position an"
+    - "§7> Der §fKompass §7zeigt dir deine Claims und deren Position an"
     - "§7> Alle deine Freunde haben §fBaurechte §7auf sämtlichen Claims"
+  info:
+    - "§7---------<§f {CLAIM} §7>---------"
+    - "§7> Block: §f{BLOCK}"
+    - "§7> Hühner: §f{CHICKEN} §8/ §7Kühe: §f{COW}"
+    - "§7> Schweine: §f{PIG} §8/ §7Schafe: §f{SHEEP}"

@@ -8,10 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.EndPortalFrame;
@@ -85,6 +82,7 @@ class ClaimListener implements Listener {
                 blockPlaced.setBlockData(frame);
 
                 Claim claim = PCS_Claim.claim(player, blockPlaced.getRelative(BlockFace.DOWN));
+                showEffect(blockPlaced.getLocation());
                 PCS_Claim.getInstance().getLogger().info(claim.getName() + " ADD -> " + player.getUniqueId() + " (" + player.getName() + ")");
                 player.spigot().sendMessage(new MessageBuilder().define("CHUNK", claim.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.success")));
             }
@@ -133,6 +131,7 @@ class ClaimListener implements Listener {
                     } else {
                         block.breakNaturally();
                         block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.END_PORTAL_FRAME, 1));
+                        block.getWorld().playSound(block.getLocation(), Sound.BLOCK_END_PORTAL_FRAME_FILL, 1, 0.8F);
 
                         Claim c = PCS_Claim.claim(null, block);
                         PCS_Claim.getInstance().getLogger().info(c.getName() + " REM -> " + claim.getOwner().getUniqueId() + " (" + claim.getOwner().getName() + ")" + (isOwner ? "" : " - OVERRIDE by " + player.getName()));
@@ -161,5 +160,20 @@ class ClaimListener implements Listener {
                 player.spigot().sendMessage(message);
             }
         }
+    }
+
+    private static void showEffect(Location loc) {
+        World world = loc.getWorld();
+        loc.add(0, 1, 0);
+        world.playEffect(loc, Effect.ENDER_SIGNAL, 10);
+        world.playEffect(loc, Effect.ENDER_SIGNAL, 20);
+        world.playEffect(loc, Effect.ENDER_SIGNAL, 30);
+        world.playEffect(loc, Effect.ENDER_SIGNAL, 40);
+        world.playEffect(loc, Effect.ENDER_SIGNAL, 50);
+
+        world.playEffect(loc, Effect.SMOKE, 4);
+        world.playEffect(loc, Effect.SMOKE, 4);
+        world.playEffect(loc, Effect.SMOKE, 4);
+        world.playSound(loc, Sound.BLOCK_END_PORTAL_SPAWN, 0.5F, 1);
     }
 }

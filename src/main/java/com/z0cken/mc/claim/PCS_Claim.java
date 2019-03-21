@@ -8,6 +8,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,10 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -118,6 +117,13 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         instance = null;
     }
 
+    private static final Set<EntityType> trackedEntities = Set.of(
+            EntityType.CHICKEN,
+            EntityType.COW,
+            EntityType.PIG,
+            EntityType.SHEEP
+    );
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
@@ -126,7 +132,18 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
             if(command.getName().equalsIgnoreCase("claim")) {
 
                 if (args.length == 0) {
-                    getConfig().getStringList("messages.info-claim").forEach(s -> player.spigot().sendMessage(MessageBuilder.DEFAULT.build(s)));
+                    Claim claim = getClaim(player.getLocation().getChunk());
+                    if(claim != null && claim.canBuild(player)) {
+                        String blockString = "[" + claim.getBaseBlock().getX() + "|" + claim.getBaseBlock().getY() + "|" + claim.getBaseBlock().getZ() + "]";
+                        MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("CLAIM", claim.getName()).define("BLOCK", blockString);
+                        List<Entity> list = Arrays.asList(claim.getChunk().getEntities());
+                        for(EntityType type : trackedEntities) {
+                            messageBuilder = messageBuilder.define(type.name(), Long.toString(list.stream().filter(entity -> entity.getType() == type).count()));
+                        }
+                        MessageBuilder mb = messageBuilder;
+                        getConfig().getStringList("messages.info").forEach(s -> player.spigot().sendMessage(mb.build(s)));
+                    } else getConfig().getStringList("messages.help").forEach(s -> player.spigot().sendMessage(MessageBuilder.DEFAULT.build(s)));
+
                     return true;
                 } else {
                     if(args[0].equalsIgnoreCase("override") && sender.hasPermission("pcs.claim.override")) {
@@ -171,7 +188,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
-        if(chunk.getWorld() != Bukkit.getWorld(getConfig().getString("main-world"))) return;
+        if(!chunk.getWorld().equals(Bukkit.getWorld(getConfig().getString("main-world")))) return;
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(chunk);
 
         if (!claimedChunks.containsKey(chunkCoordinate)) {
@@ -192,6 +209,7 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
+        if(!event.getWorld().equals(Bukkit.getWorld(getConfig().getString("main-world")))) return;
         final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(event.getChunk());
         claimedChunks.remove(chunkCoordinate);
     }
