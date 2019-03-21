@@ -40,7 +40,7 @@ public class ModuleWild extends Module implements CommandExecutor {
             Material.FERN
     );
 
-    private Map<Player, Integer> players = new HashMap<>();
+    private Map<UUID, Integer> players = new HashMap<>();
 
     ModuleWild(String configPath) {
         super(configPath);
@@ -92,7 +92,7 @@ public class ModuleWild extends Module implements CommandExecutor {
                     return true;
                 }
 
-                Integer remaining = players.getOrDefault(player, null);
+                Integer remaining = players.getOrDefault(player.getUniqueId(), null);
                 if(remaining == null) {
                     final Location target = getRandomLocation(player.getWorld(), LIMIT);
                     if(target == null) player.sendMessage(getConfig().getString("messages.error"));
@@ -100,7 +100,7 @@ public class ModuleWild extends Module implements CommandExecutor {
                     else {
                         player.spigot().sendMessage(MessageBuilder.DEFAULT.define("VALUE", Integer.toString((int) target.distance(player.getLocation()))).build(getConfig().getString("messages.success")));
                         player.teleport(target);
-                        if(!player.hasPermission("pcs.essentials.wild.bypass")) players.put(player, COOLDOWN);
+                        if(!player.hasPermission("pcs.essentials.wild.bypass")) players.put(player.getUniqueId(), COOLDOWN);
                     }
                 } else player.spigot().sendMessage(MessageBuilder.DEFAULT.define("VALUE", remaining.toString()).build(getConfig().getString("messages.wait")));
             }
@@ -117,9 +117,9 @@ public class ModuleWild extends Module implements CommandExecutor {
 
         tasks.add(new BukkitRunnable(){
             @Override public void run() {
-                Iterator<Map.Entry<Player, Integer>> iterator = players.entrySet().iterator();
+                Iterator<Map.Entry<UUID, Integer>> iterator = players.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    final Map.Entry<Player, Integer> next = iterator.next();
+                    final Map.Entry<UUID, Integer> next = iterator.next();
                     next.setValue(next.getValue() - 1);
                     if(next.getValue() <= 0) iterator.remove();
                 }
