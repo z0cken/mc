@@ -176,6 +176,9 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
                         }
 
                         return true;
+                    } else if (args[0].equalsIgnoreCase("scan") && sender.hasPermission("pcs.claim.scan")) {
+                        Set<Claim> claims = DatabaseHelper.getAllClaims(player.getWorld());
+                        claims.stream().filter(claim -> claim.getBaseBlock().getRelative(BlockFace.UP).getType() != Material.END_PORTAL_FRAME).forEach(claim -> player.sendMessage(claim.getBaseLocation().toString()));
                     }
                 }
             }

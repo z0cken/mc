@@ -43,7 +43,7 @@ class DatabaseHelper {
     }
 
     static void commit(Claim claim) {
-        if(!queue.contains(claim)) queue.add(claim);
+        queue.add(claim);
     }
 
     static void push() {
@@ -82,6 +82,7 @@ class DatabaseHelper {
             e.printStackTrace();
             log.severe(">>> Failed to push queue - dumping remaining content <<<");
             queue.stream().map(claim -> ">>> " + claim.getName() + " -> " + (claim.getOwner() == null ? "null" : claim.getOwner().getUniqueId())).collect(Collectors.toList()).forEach(log::severe);
+            queue.clear();
         }
     }
 
@@ -145,6 +146,24 @@ class DatabaseHelper {
             while(resultSet.next()) {
                 Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
                 claims.add(new Claim(player.getUniqueId(), location, Material.valueOf(resultSet.getString(7))));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return claims;
+    }
+
+    static Set<Claim> getAllClaims(@Nonnull World world) {
+
+        Set<Claim> claims = new HashSet<>();
+        try(Connection connection = DATABASE.getConnection();
+            Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM claims;");
+
+            while(resultSet.next()) {
+                Location location = new Location(world, resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
+                claims.add(new Claim(UUID.fromString(resultSet.getString(3)), location, Material.valueOf(resultSet.getString(7))));
             }
         } catch (SQLException e) {
             e.printStackTrace();
