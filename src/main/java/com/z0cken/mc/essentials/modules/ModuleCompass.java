@@ -16,8 +16,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +33,10 @@ import java.util.stream.Collectors;
 
 public class ModuleCompass extends Module implements Listener {
 
+    private Set<Player> deadPlayers;
     private static final HashMap<Player, CompassTarget> targets = new HashMap<>();
+
+    private boolean keepOnDeath;
 
     public ModuleCompass(String configPath) {
         super(configPath);
@@ -46,7 +52,18 @@ public class ModuleCompass extends Module implements Listener {
 
     @Override
     protected void load() {
+        keepOnDeath = getConfig().getBoolean("keep-on-death");
+        if(keepOnDeath) deadPlayers = new HashSet<>();
+    }
 
+    @EventHandler
+    public void onDeath(PlayerDeathEvent event) {
+        if(keepOnDeath && event.getEntity().getInventory().contains(Material.COMPASS)) deadPlayers.add(event.getEntity());
+    }
+
+    @EventHandler
+    public void onRespawn(PlayerRespawnEvent event) {
+        if(keepOnDeath && deadPlayers.remove(event.getPlayer())) event.getPlayer().getInventory().addItem(new ItemStack(Material.COMPASS));
     }
 
     @EventHandler

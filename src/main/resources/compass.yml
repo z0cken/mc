@@ -26,6 +26,7 @@ targets:
 #      - "Seht her ich habe Freunde"
 claim-price: 20
 friend-price: 20
+keep-on-death: true
 titles:
   compass: "Kompass"
   friends: "Freunde"
