@@ -1,14 +1,13 @@
 package com.z0cken.mc.checkpoint;
 
 import com.google.common.io.ByteStreams;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import com.z0cken.mc.core.persona.BoardProfile;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -21,10 +20,8 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
-import org.apache.http.client.HttpResponseException;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -36,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 public final class PCS_Checkpoint extends Plugin implements Listener {
 
     private static PCS_Checkpoint instance;
-    private static MessageBuilder messageBuilder;
 
     static PCS_Checkpoint getInstance() {
         return instance;
@@ -68,19 +64,13 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     @Override
     public void onEnable() {
         load();
-
-        if(ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") == null) {
-            getLogger().severe("LuckPerms not enabled - shutting down");
-            getProxy().stop();
-            return;
-        }
-
         luckPermsApi = LuckPerms.getApi();
 
         getProxy().getPluginManager().registerCommand(this, new CommandCheckpoint());
         getProxy().getPluginManager().registerCommand(this, new CommandVerify());
         getProxy().getPluginManager().registerCommand(this, new CommandInvite());
         getProxy().getPluginManager().registerCommand(this, new CommandAnon());
+        getProxy().getPluginManager().registerCommand(this, new CommandTerms());
         getProxy().getPluginManager().registerListener(this,this);
 
         DatabaseHelper.setupTables();
@@ -118,39 +108,28 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         if(event.getReason() == ServerConnectEvent.Reason.PLUGIN) return;
         final ProxiedPlayer player = event.getPlayer();
 
-        if(event.getTarget().equals(main)) {
+        if(!event.getTarget().equals(hub)) {
 
-            PersonaAPI.getPersona(player.getUniqueId()).completeOnTimeout(null, 3L, TimeUnit.SECONDS).thenAcceptAsync(persona -> {
-                if (persona == null && !DatabaseHelper.isVerified(player.getUniqueId())) {
-                    player.sendMessage(messageBuilder.build(config.getString("messages.verify.prompt")));
-                    if(player.getServer() == null) event.setTarget(hub);
-                    else event.setCancelled(true);
-                    return;
-                }
+            Persona persona = PersonaAPI.getPersona(player.getUniqueId());
 
-                if((main.getPlayers().size() >= mainSlots || !queue.isEmpty()) && !queue.contains(player) && !player.hasPermission("essentials.joinfullserver")) {
-                    queue.add(player);
-                    player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
-                    if(event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) event.setTarget(hub);
-                    else event.setCancelled(true);
-                }
-            });
-
-
-            Persona persona;
-
-            try {
-                persona = PersonaAPI.getPersona(player.getUniqueId());
-            } catch (HttpResponseException | UnirestException | SQLException e) {
-                e.printStackTrace();
-
-                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.error")));
+            if(!persona.isVerified() && !persona.isGuest()) {
+                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.verify.prompt")));
+                if(player.getServer() == null) event.setTarget(hub);
+                else event.setCancelled(true);
+                return;
+            } else if(config.getBoolean("require-terms") && !persona.hasAcceptedTerms()) {
+                config.getStringList("messages.terms.prompt").forEach(s -> player.sendMessage(MessageBuilder.DEFAULT.build(s)));
                 if(player.getServer() == null) event.setTarget(hub);
                 else event.setCancelled(true);
                 return;
             }
 
-
+            if(event.getTarget().equals(main) && (main.getPlayers().size() >= mainSlots || !queue.isEmpty()) && !queue.contains(player) && !player.hasPermission("essentials.joinfullserver")) {
+                queue.add(player);
+                player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.queue.insert")));
+                if(event.getReason() == ServerConnectEvent.Reason.JOIN_PROXY) event.setTarget(hub);
+                else event.setCancelled(true);
+            }
         }
     }
 
@@ -158,61 +137,73 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         ProxiedPlayer player = getProxy().getPlayer(uuid);
         if(player == null) return;
 
-        Persona persona = null;
-        try {
-            persona = PersonaAPI.getPersona(uuid);
-        } catch (UnirestException | HttpResponseException e) {
-            getLogger().severe(e.getMessage());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        final Persona persona = PersonaAPI.getPersona(uuid);
+        if(persona.isVerified()) {
+            persona.getBoardProfile().thenAcceptAsync(profile -> {
 
-        if(persona != null) {
-            if(persona.isBanned()) {
-                LocalDateTime bannedUntil = persona.getBannedUntil();
+                if(profile.isBanned() && !player.hasPermission("pcs.checkpoint.bypass")) {
+                    LocalDateTime bannedUntil = profile.getBannedUntil();
 
-                String msg;
-                String time = null;
+                    String msg;
+                    String time = null;
 
-                //TODO Separate date and time
-                if(bannedUntil == null) msg = PCS_Checkpoint.getConfig().getString("messages.banned-permanent");
-                else {
-                    time = bannedUntil.format(DateTimeFormatter.ofPattern("dd.MM.yy 'um' HH:mm"));
-                    msg = PCS_Checkpoint.getConfig().getString("messages.banned");
+                    //TODO Separate date and time
+                    if(bannedUntil == null) msg = PCS_Checkpoint.getConfig().getString("messages.banned-permanent");
+                    else {
+                        time = bannedUntil.format(DateTimeFormatter.ofPattern("dd.MM.yy 'um' HH:mm"));
+                        msg = PCS_Checkpoint.getConfig().getString("messages.banned");
+                    }
+
+                    player.disconnect(MessageBuilder.DEFAULT.define("TIME", time).build(msg));
+                    return;
                 }
 
-                player.disconnect(messageBuilder.define("TIME", time).build(msg));
-                return;
-            }
+                BoardProfile.Mark mark = profile.getMark();
 
-            Persona.Mark mark = persona.getMark();
-            boolean isGuest = persona.isGuest();
-            String name = persona.getName();
+                luckPermsApi.getUserManager().loadUser(uuid).thenAcceptAsync(user -> {
+                    String add = null, remove = null;
+                    switch (user.getPrimaryGroup()) {
+                        case "default":
+                            add = mark == BoardProfile.Mark.SPENDER ? "premium" : "member";
+                            remove = "default";
+                            break;
+
+                        case "guest":
+                            add = mark == BoardProfile.Mark.SPENDER ? "premium" : "member";
+                            remove = "guest";
+                            break;
+
+                        case "member":
+                            if(mark == BoardProfile.Mark.SPENDER) {
+                                add = "premium";
+                                remove = "member";
+                                getLogger().info( profile.getName() + " hat sich pr0mium gekauft!");
+                            }
+                            break;
+
+                        case "premium":
+                            if(mark != BoardProfile.Mark.SPENDER) {
+                                add = "member";
+                                remove = "premium";
+                            }
+                            break;
+                    }
+
+                    //Careful, only works if always neither or both are assigned
+                    if(add == null) return;
+                    user.setPermission(luckPermsApi.getNodeFactory().makeGroupNode(add).build());
+                    user.unsetPermission(luckPermsApi.getNodeFactory().makeGroupNode(remove).build());
+                    luckPermsApi.getUserManager().saveUser(user);
+                });
+            });
+
+        } else if(persona.isGuest()) {
             luckPermsApi.getUserManager().loadUser(uuid).thenAcceptAsync(user -> {
-                String add = null, remove = null;
-                switch (user.getPrimaryGroup()) {
-                    case "default":
-                        add = PCS_Checkpoint.getConfig().getString((isGuest ? "invite" : mark != Persona.Mark.SPENDER ? "member" : "premium") + "-group");
-                        remove = PCS_Checkpoint.getConfig().getString("default");
-                        break;
-                    case "member":
-                        if(mark == Persona.Mark.SPENDER) {
-                            add = PCS_Checkpoint.getConfig().getString("premium-group");
-                            remove = PCS_Checkpoint.getConfig().getString("member-group");
-                            getLogger().info(name + " hat sich pr0mium gekauft!");
-                        }
-                        break;
-                    case "premium":
-                        if(mark != Persona.Mark.SPENDER) {
-                            add = PCS_Checkpoint.getConfig().getString("member-group");
-                            remove = PCS_Checkpoint.getConfig().getString("premium-group");
-                        }
-                        break;
+                if(user.getPrimaryGroup().equalsIgnoreCase("default")) {
+                    user.setPermission(luckPermsApi.getNodeFactory().makeGroupNode("guest").build());
+                    user.unsetPermission(luckPermsApi.getNodeFactory().makeGroupNode("default").build());
+                    luckPermsApi.getUserManager().saveUser(user);
                 }
-
-                if(add != null) user.setPermission(luckPermsApi.getNodeFactory().makeGroupNode(add).build());
-                if(remove != null) user.unsetPermission(luckPermsApi.getNodeFactory().makeGroupNode(remove).build());
-                luckPermsApi.getUserManager().saveUser(user);
             });
         }
     }
@@ -234,8 +225,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         hub = getProxy().getServerInfo(config.getString("hub-name"));
         main = getProxy().getServerInfo(config.getString("main-name"));
         mainSlots = config.getInt("main-slots");
-
-        messageBuilder = new MessageBuilder().define("A", getConfig().getString("messages.accent-color"));
 
         RequestHelper.load();
         CommandVerify.load();

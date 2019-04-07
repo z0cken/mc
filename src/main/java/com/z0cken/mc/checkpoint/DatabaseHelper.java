@@ -1,15 +1,14 @@
 package com.z0cken.mc.checkpoint;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.Database;
-import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import org.apache.http.client.HttpResponseException;
 
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -35,7 +34,6 @@ class DatabaseHelper {
         }
     }
 
-    //TODO SQL Injection assessment
     static void verify(String message, String name) {
 
         UUID uuid;
@@ -70,37 +68,26 @@ class DatabaseHelper {
             log.severe(String.format("A database error occurred while verifying %s", uuid));
         }
 
+        PersonaAPI.invalidate(uuid);
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
-        PersonaAPI.updateCachedPersona(uuid);
-        Persona persona;
-        try {
-            persona = PersonaAPI.getPersona(uuid);
-        } catch (SQLException | HttpResponseException | UnirestException e) {
-            e.printStackTrace();
-            log.severe(String.format("Failed to retrieve Persona for %s while verifying!", uuid));
-            if(player != null) {
-                player.sendMessage(PCS_Checkpoint.getConfig().getString("messages.error"));
-            }
-            return;
-        }
+            PersonaAPI.getPersona(uuid).getBoardProfile().thenAcceptAsync(boardProfile -> {
+                if(player != null) {
+                    MessageBuilder builder = MessageBuilder.DEFAULT.define("MARK", boardProfile.getMark().getTitle())
+                            .define("AMOUNT", Integer.toString(boardProfile.getMark().getStartInvites())).define("NAME", boardProfile.getName());
 
-        if(player != null) {
-            MessageBuilder builder = MessageBuilder.DEFAULT.define("MARK", persona.getMark().getTitle())
-                    .define("AMOUNT", Integer.toString(persona.getMark().getStartInvites())).define("NAME", persona.getName());
+                    for(String s : PCS_Checkpoint.getConfig().getStringList("messages.verify.success")) {
+                        player.sendMessage(builder.build(s));
+                    }
+                }
 
-            for(String s : PCS_Checkpoint.getConfig().getStringList("messages.verify.success")) {
-                player.sendMessage(builder.build(s));
-            }
-        }
-
-        try {
-            giveInvites(uuid, persona.getMark().getStartInvites());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            log.severe(String.format("Failed to give %d invites to %s", persona.getMark().getStartInvites(), uuid));
-            return;
-        }
+                try {
+                    giveInvites(uuid, boardProfile.getMark().getStartInvites());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    log.severe(String.format("Failed to give %d invites to %s", boardProfile.getMark().getStartInvites(), uuid));
+                }
+            });
 
         PCS_Checkpoint.getInstance().checkPlayer(uuid);
     }
@@ -187,4 +174,19 @@ class DatabaseHelper {
         }
     }
 
+    public static Map<UUID, Timestamp> getGuests(UUID uuid) throws SQLException {
+
+        Map<UUID, Timestamp> guests = new HashMap<>();
+
+        try (Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT * FROM guests WHERE host = ?;")) {
+
+            pstmt.setString(1, uuid.toString());
+            ResultSet resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) guests.put(UUID.fromString(resultSet.getString(1)), resultSet.getTimestamp(3));
+        }
+
+        return guests;
+    }
 }

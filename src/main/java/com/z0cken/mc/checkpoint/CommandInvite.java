@@ -1,25 +1,29 @@
 package com.z0cken.mc.checkpoint;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.z0cken.mc.core.Shadow;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.config.Configuration;
-import org.apache.http.client.HttpResponseException;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 
 class CommandInvite extends Command {
-
-    /*
-     * TODO /invite list
-     */
 
     private static Configuration cfg;
 
@@ -37,30 +41,44 @@ class CommandInvite extends Command {
         if (commandSender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) commandSender;
 
-            MessageBuilder builder = new MessageBuilder()
-                    .define("A", PCS_Checkpoint.getConfig().getString("messages.accent-color"));
+            Persona persona = PersonaAPI.getPersona(player.getUniqueId());
 
-
-            Persona persona;
-
-            //noinspection Duplicates
-            try {
-                persona = PersonaAPI.getPersona(player.getUniqueId());
-            } catch (SQLException | HttpResponseException | UnirestException e) {
-                e.printStackTrace();
-
-                player.sendMessage(builder.build(PCS_Checkpoint.getConfig().getString("messages.error")));
-                return;
-            }
 
             if (persona != null && !persona.isGuest()) {
                 int invites = DatabaseHelper.getInvites(player.getUniqueId());
-                builder = builder.define("INVITES", Integer.toString(invites));
+                MessageBuilder builder = MessageBuilder.DEFAULT.define("INVITES", Integer.toString(invites));
 
-                if (args.length == 1 || args.length == 2) {
-                    if (invites > 0) {
+                if (args.length > 0) {
+                    if(args[0].equalsIgnoreCase("list")) {
+                        try {
+                            Map<UUID, Timestamp> guests = DatabaseHelper.getGuests(player.getUniqueId());
+
+                            if (guests.isEmpty()) player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("no-guests")));
+                            else {
+                                String s = cfg.getString("list");
+
+                                List<BaseComponent[]> set = new ArrayList<>(guests.size());
+                                for(Map.Entry<UUID, Timestamp> entry : guests.entrySet()) {
+                                    try {
+                                        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(entry.getKey());
+                                        set.add(MessageBuilder.DEFAULT.define("NAME", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
+                                    } catch (SQLException e) {
+                                        player.sendMessage(MessageBuilder.DEFAULT.build(PCS_Checkpoint.getConfig().getString("messages.error")));
+                                        e.printStackTrace();
+                                        return;
+                                    }
+                                }
+                                player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("list-header")));
+                                set.forEach(player::sendMessage);
+                            }
+
+                        } catch (SQLException e) {
+                            player.sendMessage(builder.build(PCS_Checkpoint.getConfig().getString("messages.error")));
+                            e.printStackTrace();
+                        }
+
+                    } else if (invites > 0) {
                         builder = builder.define("NAME", args[0]);
-
                         try {
                             UUID uuid = Util.getMojangUUID(args[0]);
                             if (uuid.equals(player.getUniqueId())) {
@@ -68,20 +86,19 @@ class CommandInvite extends Command {
                             } else if (DatabaseHelper.isGuest(uuid) || DatabaseHelper.isVerified(uuid)) {
                                 player.sendMessage(builder.build(cfg.getString("denied-exists")));
                             } else {
-                                if (args.length == 1) {
-                                    for (String s : cfg.getStringList("prompt")) {
-                                        player.sendMessage(builder.build(s));
-                                    }
-
-                                } else if (args[1].equalsIgnoreCase("yes")) {
+                                if (args.length > 1 && args[1].equalsIgnoreCase("yes")) {
                                     DatabaseHelper.invite(uuid, player.getUniqueId());
-                                    PersonaAPI.updateCachedPersona(uuid);
+                                    PersonaAPI.invalidate(uuid);
 
                                     player.sendMessage(builder.build(cfg.getString("confirmed")));
 
                                     ProxiedPlayer guest = ProxyServer.getInstance().getPlayer(uuid);
                                     if(guest != null) {
-                                        guest.sendMessage(MessageBuilder.DEFAULT.build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
+                                        guest.sendMessage(MessageBuilder.DEFAULT.define("NAME", player.getName()).build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
+                                    }
+                                } else {
+                                    for (String s : cfg.getStringList("prompt")) {
+                                        player.sendMessage(builder.build(s));
                                     }
                                 }
                             }
@@ -101,7 +118,7 @@ class CommandInvite extends Command {
                     }
                 }
             } else {
-                player.sendMessage(builder.build(cfg.getString("denied-nomember")));
+                player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("denied-nomember")));
             }
 
         }

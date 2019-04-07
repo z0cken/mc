@@ -1,3 +1,8 @@
+hub-name: hub
+main-name: main
+main-slots: 90
+queue-interval: 5
+require-terms: true
 bot:
   timestamp: 0
   interval: 45
@@ -5,16 +10,8 @@ bot:
   password:
   login-timeout-multiplier: 3
   cookie:
-hub-name: hub
-main-name: main
-main-slots: 75
-verify-group: member
-invite-group: guest
-premium-group: premium
-queue-interval: 5
 messages:
   error: §c§l>_ §7Ein Fehler ist aufgetreten...
-  accent-color: §b
   anon:
     switched-to-true: §a§l>_ §7Du bist nun §aanonymisiert§7 (Wirksam nach Reconnect)
     switched-to-false: §a§l>_ §7Du bist nun §cnicht mehr §7anonymisiert (Wirksam nach Reconnect)
@@ -30,34 +27,46 @@ messages:
     confirmed: §a§l>_ §7§o{NAME} §7wurde erfolgreich eingeladen!
     confirmed-guest: §a§l>_ §7Du wurdest soeben von {NAME} eingeladen!
     prompt:
-    - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
-    - '§8[ - §7Aktuell verfügbare Invites: {A}{INVITES}'
-    - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
-    - §8[ - §7Klicke {#[RUN|/invite {NAME} yes][{A}> HIER <]#} §7um §o{NAME} §7einzuladen!
-    - §8[ ------------------------------------------- ]
+      - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
+      - '§8[ - §7Aktuell verfügbare Invites: §b{INVITES}'
+      - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
+      - §8[ - §7Klicke {#[RUN|/invite {NAME} yes][§b> HIER <]#} §7um §o{NAME} §7einzuladen!
+      - §8[ ------------------------------------------- ]
     instructions:
-    - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
-    - '§8[ - §7Aktuell verfügbare Invites: {A}{INVITES}'
-    - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
-    - '§8[ - §7Syntax: {A}/invite [Minecraft Username]'
-    - '§8[ - §7{#[RUN|/invite list][{A}Klicke hier]#} um deine Bürgschaften einzusehen'
-    - §8[ ------------------------------------------- ]
+      - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
+      - '§8[ - §7Aktuell verfügbare Invites: §b{INVITES}'
+      - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
+      - '§8[ - §7Syntax: §b/invite [Minecraft Username]'
+      - '§8[ - §7{#[RUN|/invite list][§bKlicke hier]#} um deine Bürgschaften einzusehen'
+      - §8[ ------------------------------------------- ]
+    no-guests: "§c§l>_§7 Du hast keine Bürgschaften!"
+    list-header: "§7------------< §fBürgschaften §7>------------"
+    list: "§7> {NAME} §8: {DATE}"
   verify:
     prompt: §c§l>_ §7Bitte nutze §c§l/verify §7um deinen Account zu bestätigen!
-    denied-isverified: §c§l>_ §7Dein Account §o{NAME} §7ist bereits bestätigt!
+    denied-isverified: §c§l>_ §7Dein Account ist bereits bestätigt!
     success:
-    - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
-    - §8[ - §fDein Account {NAME} wurde soeben bestätigt
-    - §8[ - §7Nutze {#[RUN|/anon][§f/anon]#} §7um dich zu anonymisieren!
-    - §8[ - §7Als {MARK} §7erhältst du zu Beginn §b{AMOUNT} §7Invites!
-    - §8[ ------------------------------------------- ]
+      - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
+      - §8[ - §fDein Account {NAME} wurde soeben bestätigt
+      - §8[ - §7Nutze {#[RUN|/anon][§f/anon]#} §7um dich zu anonymisieren!
+      - §8[ - §7Als {MARK} §7erhältst du zu Beginn §b{AMOUNT} §7Invites!
+      - §8[ ------------------------------------------- ]
     info:
-    - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
-    - §8[ - §7Sende diesen Code per PN an den Bot {#[URL|http://pr0gramm.com/user/z0cken][{A}z0cken]#}
-    - §8[ - §7{#[SUGGEST|{HASH}][{A}{HASH}]#}
-    - §8[ - §7Klick drauf, um ihn ins Textfeld zu kopieren
-    - §8[ - §7Die Bestätigung kann bis zu {A}30 Sekunden §7dauern!
-    - §8[ ------------------------------------------- ]
+      - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
+      - §8[ - §7Sende diesen Code per PN an den Bot {#[URL|http://pr0gramm.com/user/z0cken][§bz0cken]#}
+      - §8[ - §7{#[SUGGEST|{HASH}][§b{HASH}]#}
+      - §8[ - §7Klick drauf, um ihn ins Textfeld zu kopieren
+      - §8[ - §7Die Bestätigung kann bis zu §b30 Sekunden §7dauern!
+      - §8[ ------------------------------------------- ]
   queue:
     insert: §e§l>_ §7Du wurdest in die Warteschlange aufgenommen!
     notify: '§7Du bist auf Platz §b#{AMOUNT} §7in der Warteschlange'
+  terms:
+    accepted: §a§l>_ §7Du hast die Datenschutzerklärung akzeptiert
+    info: §f§l>_ §7Unsere {#[URL|https://z0cken.com/minecraft/privacy][§bDatenschutzerklärung]#}
+    prompt:
+      - §8[ ------------------ §l[ §c§l>_ §8§l] §8------------------ ]
+      - '§8[ - §7Akzeptiere erst die {#[URL|https://z0cken.com/minecraft/privacy][§bDatenschutzerklärung]#}'
+      - §8[ - §7Klicke {#[RUN|/terms][§b> HIER <]#} §7zum Akzeptieren
+      - '§8[ - §7Datenschutzbeauftragter -> {#[URL|https://pr0gramm.com/user/5yn74x][§b5yn74x]#}'
+      - §8[ ------------------------------------------- ]
