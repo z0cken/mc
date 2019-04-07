@@ -11,3 +11,4 @@ hover-event:
   - '{NAME}'
   - 'Benis: {BENIS}'
   - '{MARK}'
+display-team: false

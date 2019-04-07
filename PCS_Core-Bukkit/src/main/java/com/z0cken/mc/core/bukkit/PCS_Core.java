@@ -30,7 +30,6 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     }
 
     private static YamlConfiguration coreConfig;
-    private static ConfigurationBridge coreConfigBridge;
 
     @Override
     public void onLoad() {
@@ -42,7 +41,8 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
         saveDefaultConfig();
 
         coreConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "core.yml"));
-        coreConfigBridge = new BukkitConfigurationBridge(coreConfig);
+        coreConfig.setDefaults(YamlConfiguration.loadConfiguration(getTextResource("core.yml")));
+        coreConfig.options().copyDefaults(true);
     }
 
     @Override
@@ -93,9 +93,9 @@ public class PCS_Core extends JavaPlugin implements ICore, Listener {
     @Override
     public ConfigurationBridge getConfigBridge(ConfigurationType type) {
         switch (type) {
-            case CORE: return coreConfigBridge;
-            case PLUGIN: return null;
-            default: return null;
+            case CORE: return new BukkitConfigurationBridge(coreConfig);
+            case PLUGIN: return new BukkitConfigurationBridge(getConfig());
+            default: throw new UnsupportedOperationException();
         }
     }
 

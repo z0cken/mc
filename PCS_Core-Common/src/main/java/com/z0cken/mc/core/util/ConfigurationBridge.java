@@ -2,12 +2,18 @@ package com.z0cken.mc.core.util;
 
 import java.util.List;
 
-public abstract class ConfigurationBridge {
+public interface ConfigurationBridge {
 
-    public abstract int getInt(String path);
+    int getInt(String path);
 
-    public abstract String getString(String path);
+    double getDouble(String path);
 
-    public abstract List<String> getStringList(String path);
+    long getLong(String path);
+
+    boolean getBoolean(String path);
+
+    String getString(String path);
+
+    List<String> getStringList(String path);
 
 }

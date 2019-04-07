@@ -1,6 +1,5 @@
 package com.z0cken.mc.core.bungee;
 
-import com.google.common.io.ByteStreams;
 import com.z0cken.mc.core.ICore;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.ConfigurationBridge;
@@ -27,7 +26,6 @@ public class PCS_Core extends Plugin implements ICore, Listener {
 
     private static PCS_Core instance;
     private static Configuration config, coreConfig;
-    private static ConfigurationBridge configBridge, coreConfigBridge;
 
     public static PCS_Core getInstance() {
         return instance;
@@ -36,15 +34,11 @@ public class PCS_Core extends Plugin implements ICore, Listener {
     @Override
     public void onLoad() {
         instance = this;
-        saveResource("core.yml", false);
         saveResource("hikari.properties", false);
         saveResource("main.properties", false);
 
-        config = getConfiguration("config.yml");
-        coreConfig = getConfiguration("core.yml");
-
-        configBridge = new BungeeConfigurationBridge(config);
-        coreConfigBridge = new BungeeConfigurationBridge(coreConfig);
+        config = getConfig("config.yml");
+        coreConfig = getConfig("core.yml");
     }
 
     @Override
@@ -137,22 +131,12 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         }
     }
 
-    private Configuration getConfiguration(String name) {
+    private Configuration getConfig(String name) {
         File configFile = new File(getDataFolder(), name);
 
         try {
-
-            if (configFile.createNewFile()) {
-
-                try (InputStream is = getResourceAsStream(name);
-                     OutputStream os = new FileOutputStream(configFile)) {
-                    ByteStreams.copy(is, os);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            return ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            saveResource(name, false);
+            return ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile, YamlConfiguration.getProvider(YamlConfiguration.class).load(getResourceAsStream(name)));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -161,16 +145,7 @@ public class PCS_Core extends Plugin implements ICore, Listener {
         return null;
     }
 
-
-    private void saveConfig(Configuration configuration, String name) {
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration, new File(getDataFolder(), name));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    static Configuration getConfig(ConfigurationType type) {
+    Configuration getConfig(ConfigurationType type) {
         switch (type) {
             case CORE: return coreConfig;
             case PLUGIN: return config;
@@ -181,9 +156,9 @@ public class PCS_Core extends Plugin implements ICore, Listener {
     @Override
     public ConfigurationBridge getConfigBridge(ConfigurationType type) {
         switch (type) {
-            case CORE: return coreConfigBridge;
-            case PLUGIN: return configBridge;
-            default: throw new IllegalArgumentException();
+            case CORE: return new BungeeConfigurationBridge(coreConfig);
+            case PLUGIN: return new BungeeConfigurationBridge(config);
+            default: throw new UnsupportedOperationException();
         }
     }
 }

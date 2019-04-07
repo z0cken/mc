@@ -38,7 +38,7 @@ public final class Persona {
     private final UUID uuid;
 
     private BoardProfile boardProfile;
-    private boolean anonymized;
+    private boolean anonymized, acceptedTerms;
     private String boardName;
 
     //Guest
@@ -63,6 +63,7 @@ public final class Persona {
         }
 
         badges = DatabaseHelper.getBadges(uuid);
+        acceptedTerms = Shadow.TERMS.getBoolean(uuid);
     }
 
     public CompletableFuture<BoardProfile> getBoardProfile() {
@@ -91,7 +92,7 @@ public final class Persona {
                     .define("BENIS", (profile.getBenis() < 0 ? ChatColor.RED : "") + profile.getBenisFormatted())
                     .define("MARK", profile.getMark().getColor() + profile.getMark().getTitle())
                     .define("BADGES", badgeText.toString())
-                    .build(memberBubble.stream().collect(Collectors.joining("\n"))));
+                    .build(memberBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString()))));
         } else if(isGuest()) {
 
             String hostName = null;
@@ -103,7 +104,7 @@ public final class Persona {
                     .define("NAME", hostName)
                     .define("DATE", new SimpleDateFormat("dd.MM.yy").format(new java.util.Date(invited)))
                     .define("BADGES", badgeText.toString())
-                    .build(guestBubble.stream().collect(Collectors.joining("\n"))));
+                    .build(guestBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString()))));
         } else return NOT_VERIFIED;
     }
 
@@ -137,7 +138,10 @@ public final class Persona {
 
                 if(isVerified()) {
                     final BoardProfile profile = getBoardProfile().getNow(null);
-                    if(profile != null) component.addExtra(" " + profile.getMark().getSymbol());
+                    if(profile != null) {
+                        if(CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getBoolean("display-team") && profile.getTeam() != null) component.setColor(profile.getTeam().getColor());
+                        component.addExtra(" " + profile.getMark().getSymbol());
+                    }
                 }
 
                 return component;
@@ -168,6 +172,13 @@ public final class Persona {
         this.anonymized = anonymized;
     }
 
+    public boolean hasAcceptedTerms() { return acceptedTerms; }
+
+    public void setAcceptedTerms(boolean b) {
+        acceptedTerms = b;
+        Shadow.TERMS.setBoolean(uuid, b);
+    }
+
     public void awardBadge(Badge badge) throws SQLException {
         if(badges.contains(badge)) return;
         DatabaseHelper.awardBadge(uuid, badge);
@@ -175,7 +186,8 @@ public final class Persona {
     }
 
     public enum Badge {
-        EARLY_SUPPORTER("Früher Vogel", ChatColor.DARK_AQUA);
+        EARLY_SUPPORTER("Früher Vogel", ChatColor.DARK_AQUA),
+        MINION("Unverbesserlich", ChatColor.YELLOW);
 
         private String title;
         private ChatColor color;

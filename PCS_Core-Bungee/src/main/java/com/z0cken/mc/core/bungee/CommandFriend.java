@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class CommandFriend extends Command {
 
-    private static final Configuration config = PCS_Core.getConfig(ConfigurationType.PLUGIN);
+    private static final Configuration config = PCS_Core.getInstance().getConfig(ConfigurationType.PLUGIN);
     private static final HashMap<ProxiedPlayer, Collection<ProxiedPlayer>> requests = new HashMap<>();
 
     public CommandFriend() {

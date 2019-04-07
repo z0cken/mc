@@ -8,6 +8,7 @@ import com.mashape.unirest.request.GetRequest;
 import com.z0cken.mc.core.CoreBridge;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.http.client.HttpResponseException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.Instant;
@@ -27,6 +28,7 @@ public class BoardProfile {
     private LocalDateTime bannedUntil;
     private int benis;
     private BoardProfile.Mark mark;
+    private Team team;
 
     private BoardProfile(String name) throws UnirestException, HttpResponseException {
         this.name = name;
@@ -61,10 +63,18 @@ public class BoardProfile {
         benis = userObject.getInt("score");
         mark = BoardProfile.Mark.getById(userObject.getInt("mark"));
         banned = userObject.getInt("banned") == 1;
+        team = userObject.getInt("id") % 2 == 0 ? Team.BLUE : Team.RED;
 
         if(banned) {
             if(!userObject.isNull("bannedUntil"))
-                bannedUntil = LocalDateTime.ofInstant(Instant.ofEpochMilli(userObject.getLong("bannedUntil")), TimeZone.getTimeZone(ZoneOffset.ofHours(1)).toZoneId());
+                bannedUntil = LocalDateTime.ofInstant(Instant.ofEpochSecond(userObject.getLong("bannedUntil")), TimeZone.getTimeZone(ZoneOffset.ofHours(1)).toZoneId());
+        }
+
+        JSONArray badgeArray = response.getBody().getObject().getJSONArray("badges");
+        if(badgeArray != null) {
+            for(int i = 0; i < badgeArray.length(); i++) {
+                //TODO badges?
+            }
         }
     }
 
@@ -87,6 +97,8 @@ public class BoardProfile {
     public BoardProfile.Mark getMark() {
         return mark;
     }
+
+    public Team getTeam() { return team; }
 
     public int getBenis() {
         return benis;
@@ -169,4 +181,17 @@ public class BoardProfile {
         }
     }
 
+    public enum Team {
+        BLUE(ChatColor.BLUE), RED(ChatColor.RED);
+
+        private ChatColor color;
+
+        Team(ChatColor color) {
+            this.color = color;
+        }
+
+        public ChatColor getColor() {
+            return color;
+        }
+    }
 }

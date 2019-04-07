@@ -5,16 +5,32 @@ import net.md_5.bungee.config.Configuration;
 
 import java.util.List;
 
-public class BungeeConfigurationBridge extends ConfigurationBridge {
-    Configuration configuration;
+public class BungeeConfigurationBridge implements ConfigurationBridge {
 
-    public BungeeConfigurationBridge(Configuration configuration) {
+    private Configuration configuration;
+
+    BungeeConfigurationBridge(Configuration configuration) {
         this.configuration = configuration;
     }
 
     @Override
     public int getInt(String path) {
         return configuration.getInt(path);
+    }
+
+    @Override
+    public double getDouble(String path) {
+        return configuration.getDouble(path);
+    }
+
+    @Override
+    public long getLong(String path) {
+        return configuration.getLong(path);
+    }
+
+    @Override
+    public boolean getBoolean(String path) {
+        return false;
     }
 
     @Override

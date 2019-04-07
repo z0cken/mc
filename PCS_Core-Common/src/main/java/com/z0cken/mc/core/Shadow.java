@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public enum Shadow {
-    NAME(JDBCType.VARCHAR, 40), IP(JDBCType.VARCHAR, 15), SEEN(JDBCType.TIMESTAMP, 0), MARK(JDBCType.TINYINT, 0);
+    NAME(JDBCType.VARCHAR, 40), IP(JDBCType.VARCHAR, 15), SEEN(JDBCType.TIMESTAMP, 0), MARK(JDBCType.TINYINT, 0), TERMS(JDBCType.TINYINT, 1);
 
     private JDBCType type;
     private int arg;
@@ -54,6 +54,28 @@ public enum Shadow {
         try (Connection connection = Database.MAIN.getConnection();
              Statement statement = connection.createStatement()) {
             final String s = name().toLowerCase() + " = '" + string + "'";
+            statement.executeUpdate("INSERT INTO shadow SET " + s + ", uuid = '" + uuid + "' ON DUPLICATE KEY UPDATE " + s + ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean getBoolean(@Nonnull UUID uuid) throws SQLException {
+        try(Connection connection = Database.MAIN.getConnection();
+            PreparedStatement pstmt = connection.prepareStatement("SELECT " + name().toLowerCase() + " FROM shadow WHERE uuid = ?;")) {
+            pstmt.setString(1, uuid.toString());
+            ResultSet resultSet = pstmt.executeQuery();
+            if(!resultSet.next()) return false;
+            boolean b = resultSet.getBoolean(1);
+            resultSet.close();
+            return b;
+        }
+    }
+
+    public void setBoolean(@Nonnull UUID uuid, boolean b) {
+        try (Connection connection = Database.MAIN.getConnection();
+             Statement statement = connection.createStatement()) {
+            final String s = name().toLowerCase() + " = '" + (b ? 1 : 0) + "'";
             statement.executeUpdate("INSERT INTO shadow SET " + s + ", uuid = '" + uuid + "' ON DUPLICATE KEY UPDATE " + s + ";");
         } catch (SQLException e) {
             e.printStackTrace();
