@@ -4,6 +4,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.z0cken.mc.core.Shadow;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
+import com.z0cken.mc.core.util.CoreUtil;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -80,7 +81,7 @@ class CommandInvite extends Command {
                     } else if (invites > 0) {
                         builder = builder.define("NAME", args[0]);
                         try {
-                            UUID uuid = Util.getMojangUUID(args[0]);
+                            UUID uuid = CoreUtil.getMojangUUID(args[0]);
                             if (uuid.equals(player.getUniqueId())) {
                                 player.sendMessage(builder.build(cfg.getString("denied-self")));
                             } else if (DatabaseHelper.isGuest(uuid) || DatabaseHelper.isVerified(uuid)) {
