@@ -21,7 +21,7 @@ messages:
   - "§7> Stationen: {#[STATIONS-ACTIVE][§aAktiv]#} §7§l/ {#[STATIONS-INACTIVE][§cInaktiv]#}"
   - "§7> Statistik global: {#[TEXT|§6Erfahrungspunkte][§6{XP-G}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS-G}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS-G}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME-G}]#}"
   - "§7> Statistik persönlich: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
-  - '§7> Siehe auch: {#[RUN|/metro list][§f/metro list]#} §7§l/ {#[RUN|/metro top][§f/metro top]#} §7§l/ {#[RUN|/metro toggle][§f/metro toggle]#}'
+  - "§7> Siehe auch: {#[RUN|/metro list][§flist]#} §7§l/ {#[RUN|/metro top][§ftop]#} §7§l/ {#[RUN|/metro toggle][§ftoggle]#} §7§l/ {#[RUN|/metro map][§fmap]#}"
   activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
   xp-actionbar: "§7+ §a{AMOUNT} XP"
   list: "{PREFIX} Es sind {VALUE} Spieler in der Metro! \n{LIST}"
@@ -30,3 +30,4 @@ messages:
   deathquit: "{PREFIX} §c{PLAYER} hat sich mit < {VALUE} HP ausgeloggt und wurde getötet!"
   money: "{PREFIX} Du hast {VALUE} Schekel durch die Metro erhalten!"
   toggle: "{PREFIX} Du hast die positiven Effekte der Metro {VALUE}"
+  map: "{PREFIX} Du musst eine Karte in der Hand halten!"

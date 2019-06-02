@@ -54,6 +54,7 @@ public class PCS_Metro extends JavaPlugin {
     public void onDisable() {
         instance = null;
         if(metro != null) metro.getAppropriateEffect().deactivate();
+        MetroMapRenderer.saveAll();
     }
 
     public MessageBuilder getMessageBuilder() {

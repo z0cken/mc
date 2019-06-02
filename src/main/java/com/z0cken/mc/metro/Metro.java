@@ -15,14 +15,37 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class Metro {
+
+    private static Set<PotionEffectType> POSITIVE = Set.of(
+            PotionEffectType.ABSORPTION,
+            PotionEffectType.CONDUIT_POWER,
+            PotionEffectType.DAMAGE_RESISTANCE,
+            PotionEffectType.DOLPHINS_GRACE,
+            PotionEffectType.FAST_DIGGING,
+            PotionEffectType.FIRE_RESISTANCE,
+            PotionEffectType.HEAL,
+            PotionEffectType.HEALTH_BOOST,
+            PotionEffectType.INCREASE_DAMAGE,
+            PotionEffectType.INVISIBILITY,
+            PotionEffectType.JUMP,
+            PotionEffectType.LUCK,
+            PotionEffectType.NIGHT_VISION,
+            PotionEffectType.REGENERATION,
+            PotionEffectType.SATURATION,
+            PotionEffectType.SPEED,
+            PotionEffectType.WATER_BREATHING
+    );
 
     private static Metro instance;
     private final ProtectedRegion region;
@@ -58,6 +81,7 @@ public final class Metro {
         groupTemplates = loadGroupTemplates();
         profiles = loadProfiles();
         effects = loadEffects();
+        MetroMapRenderer.loadFromConfig();
 
         if(effects.size() < stations.size()) log.severe(String.format("There are %d stations but only %d effects", stations.size(), effects.size()));
 
@@ -84,8 +108,16 @@ public final class Metro {
         new BukkitRunnable() {
             @Override
             public void run() {
-                players.clear();
-                world.getPlayers().stream().filter(p -> contains(p.getLocation())).forEach(players::add);
+                players.removeIf(Predicate.not(Player::isOnline));
+
+                world.getPlayers().forEach(p -> {
+                    boolean contained = contains(p.getLocation());
+                    if(contained && players.add(p)) {
+                        //Enter
+                    } else if(!contained && players.remove(p)) {
+                        //Leave
+                    }
+                });
             }
         }.runTaskTimerAsynchronously(PCS_Metro.getInstance(), 100, PCS_Metro.getInstance().getConfig().getInt("entry-check-interval") * 20);
 
@@ -147,6 +179,7 @@ public final class Metro {
         groupTemplates = loadGroupTemplates();
         profiles = loadProfiles();
         effects = loadEffects();
+        MetroMapRenderer.loadFromConfig();
     }
 
     private static Date getNextHour(int divisor) {
@@ -199,8 +232,8 @@ public final class Metro {
         final File[] entityTemplateFiles = entityTemplateFile.listFiles();
         if(entityTemplateFiles != null) {
             Arrays.stream(entityTemplateFiles).filter(File::isFile).filter(f -> f.getName().toLowerCase().endsWith(".yml")).forEach(f -> {
-                entityTemplateMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new EntityTemplate(YamlConfiguration.loadConfiguration(f)));
                 log.info(String.format("> %s", f.getName()));
+                entityTemplateMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new EntityTemplate(YamlConfiguration.loadConfiguration(f)));
             });
         } else log.warning(String.format("No entity templates found in %s", entityTemplateFile.getPath()));
         return Collections.unmodifiableMap(entityTemplateMap);
@@ -213,8 +246,8 @@ public final class Metro {
         final File[] groupTemplateFiles = groupTemplateFile.listFiles();
         if(groupTemplateFiles != null) {
             Arrays.stream(groupTemplateFiles).filter(File::isFile).filter(f -> f.getName().toLowerCase().endsWith(".yml")).forEach(f -> {
-                groupTemplateMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new GroupTemplate(YamlConfiguration.loadConfiguration(f), entityTemplates));
                 log.info(String.format("> %s", f.getName()));
+                groupTemplateMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new GroupTemplate(YamlConfiguration.loadConfiguration(f), entityTemplates));
             });
         } else log.warning(String.format("No group templates found in %s", groupTemplateFile.getPath()));
         return Collections.unmodifiableMap(groupTemplateMap);
@@ -227,8 +260,8 @@ public final class Metro {
         final File[] profileFiles = profileFile.listFiles();
         if(profileFiles != null) {
             Arrays.stream(profileFiles).filter(File::isFile).filter(f -> f.getName().toLowerCase().endsWith(".yml")).forEach(f -> {
-                profileMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new SpawnProfile(this, YamlConfiguration.loadConfiguration(f)));
                 log.info(String.format("> %s", f.getName()));
+                profileMap.put(FilenameUtils.removeExtension(f.getName()).toLowerCase(), new SpawnProfile(this, YamlConfiguration.loadConfiguration(f)));
             });
         } else log.warning(String.format("No spawn profiles found in %s", profileFile.getPath()));
         return Collections.unmodifiableMap(profileMap);
@@ -242,11 +275,15 @@ public final class Metro {
         return excludedPlayers.contains(player);
     }
 
-    public void excludePlayer(Player player, boolean value) {
+    public boolean setExcluded(Player player, boolean value) {
         if(value) {
+            final Set<PotionEffect> potionEffects = Metro.getInstance().getAppropriateEffect().getPotionEffects();
+            if(potionEffects.stream().map(PotionEffect::getType).noneMatch(POSITIVE::contains)) return false;
+            potionEffects.forEach(effect -> player.removePotionEffect(effect.getType()));
             excludedPlayers.add(player);
-            Metro.getInstance().getAppropriateEffect().getPotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+            return true;
         }
         else excludedPlayers.remove(player);
+        return true;
     }
 }

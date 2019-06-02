@@ -6,13 +6,18 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,12 +67,32 @@ public class MetroCommand implements CommandExecutor {
                         stringBuilder.append(p.getName());
                         if(i < set.size()) stringBuilder.append(", ");
                     }
-                    player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(set.size())).define("LIST", stringBuilder.toString()).build(PCS_Metro.getInstance().getConfig().getString("messages.list")));
+                    if(stringBuilder.length() > 0) player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", Integer.toString(set.size())).define("LIST", stringBuilder.toString()).build(PCS_Metro.getInstance().getConfig().getString("messages.list")));
                     break;
                 case "toggle":
                     boolean value = Metro.getInstance().isExcluded(player);
-                    Metro.getInstance().excludePlayer(player, !value);
+                    Metro.getInstance().setExcluded(player, !value);
                     player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().define("VALUE", !value ? "§causgeschaltet" : "§aeingeschaltet").build(PCS_Metro.getInstance().getConfig().getString("messages.toggle")));
+                    break;
+                case "map":
+                    ItemStack is = player.getInventory().getItemInMainHand();
+                    if(is == null || (is.getType() != Material.FILLED_MAP && is.getType() != Material.MAP)) {
+                        player.spigot().sendMessage(PCS_Metro.getInstance().getMessageBuilder().build(PCS_Metro.getInstance().getConfig().getString("messages.map")));
+                        break;
+                    }
+
+                    if(is.getType() == Material.MAP) is.setType(Material.FILLED_MAP);
+
+                    if(args.length == 1) {
+                        MapMeta mapMeta = (MapMeta) is.getItemMeta();
+                        mapMeta.setMapId(1);
+                        mapMeta.setLore(List.of("§6Metro Minimap"));
+                        is.setItemMeta(mapMeta);
+                    } else if(player.hasPermission("pcs.metro.map.all")){
+                        final MetroMapRenderer renderer = MetroMapRenderer.getByName(args[1]);
+                        MapMeta mapMeta = (MapMeta) is.getItemMeta();
+                        renderer.subscribe(Bukkit.getMap((short) mapMeta.getMapId()));
+                    }
                     break;
                 case "reload":
                 case "rl":

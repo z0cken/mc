@@ -1,0 +1,8 @@
+#minimap:
+#  contextual: false
+#  scale: NORMAL
+#  center-x: 5050
+#  center-z: -210
+#  unlimited-tracking: false
+#  refresh: -1
+#  transparent: false

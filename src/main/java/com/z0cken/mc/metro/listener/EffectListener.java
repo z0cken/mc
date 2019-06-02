@@ -9,6 +9,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EffectListener implements Listener {
 
@@ -25,7 +30,10 @@ public class EffectListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        Metro.getInstance().getAppropriateEffect().getPotionEffects().forEach(effect -> event.getPlayer().removePotionEffect(effect.getType()));
+        Set<PotionEffectType> types = Metro.getInstance().getAppropriateEffect().getPotionEffects().stream().map(PotionEffect::getType).collect(Collectors.toSet());
+        for(PotionEffect effect : event.getPlayer().getActivePotionEffects()) {
+            if(types.contains(effect.getType()) || effect.getDuration() > 1000) event.getPlayer().removePotionEffect(effect.getType());
+        }
     }
 
 }

@@ -71,6 +71,8 @@ public class MetroEffect implements Listener {
     public void activate() {
         metro.getWorld().setDifficulty(difficulty);
 
+        Bukkit.getOnlinePlayers().forEach(p -> Metro.getInstance().setExcluded(p, false));
+
         if (!potionEffects.isEmpty()) {
             tasks.add(new BukkitRunnable() {
                 @Override

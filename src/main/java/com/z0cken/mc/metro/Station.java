@@ -153,7 +153,7 @@ public class Station implements Listener {
 
         void drain() {
             int amount = metro.getRate();
-            if(getSupply() < amount) deactivate();
+            if(getSupply() <= amount) deactivate();
             else for(int i = 7; i > 0; i--) {
                 if(amount == 0) break;
 
@@ -194,8 +194,7 @@ public class Station implements Listener {
 
         @EventHandler(ignoreCancelled = true)
         public void onInteract(PlayerInteractEvent event) {
-            if(event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-            if(event.getMaterial() == Material.BEACON && event.getClickedBlock().equals(getBlock())) {
+            if(event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock().equals(getBlock())) {
                 event.setCancelled(true);
                 event.getPlayer().openInventory(inventory);
             }
