@@ -2,6 +2,7 @@ package com.z0cken.mc.progression;
 
 import com.z0cken.mc.core.Database;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -101,7 +102,7 @@ public class DatabaseHelper {
         columns.add(name);
     }
 
-    static Map<String, Integer> getProgression(Player player) {
+    static Map<String, Integer> getProgression(OfflinePlayer player) {
         Map<String, Integer> map;
 
         map = PCS_Progression.progressionData.getOrDefault(player, null);
@@ -115,7 +116,6 @@ public class DatabaseHelper {
             ResultSetMetaData metaData = resultSet.getMetaData();
             while (resultSet.next()) {
                 for(int i = 2; i <= metaData.getColumnCount(); i++) {
-                    Bukkit.broadcastMessage(metaData.getColumnName(i) + " : " + resultSet.getInt(i));
                     map.put(metaData.getColumnName(i), resultSet.getInt(i));
                 }
             }
@@ -127,5 +127,27 @@ public class DatabaseHelper {
         return map;
     }
 
+    static Map<OfflinePlayer, Integer> getLeaderboard(String column, int limit) throws SQLException {
+        Map<OfflinePlayer, Integer> map = new LinkedHashMap<>();
+
+        try (Connection connection = DATABASE.getConnection();
+             Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(String.format("SELECT player, %s FROM progression ORDER BY %s DESC LIMIT %d;", column, column, limit));
+            while (resultSet.next()) map.put(Bukkit.getOfflinePlayer(UUID.fromString(resultSet.getString(1))), resultSet.getInt(2));
+        }
+
+        return map;
+    }
+
+    static Integer getSum(String column) throws SQLException {
+        try (Connection connection = DATABASE.getConnection();
+             Statement statement = connection.createStatement()) {
+
+            ResultSet resultSet = statement.executeQuery(String.format("SELECT SUM(%s) FROM progression;", column));
+            if(resultSet.next()) return resultSet.getInt(1);
+        }
+        return 0;
+    }
 
 }
