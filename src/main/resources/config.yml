@@ -1,11 +1,12 @@
 push-interval: 20
 main-world: world
 eye-timer: 10
+animal-limit: 20
 messages:
   protected: §c§l>_ §7Dieser Chunk gehört §f{NAME}
   success: §a§l>_ §7Du hast erfolgreich den Chunk {CHUNK} beansprucht
   denied-self: §c§l>_ §7Dieser Chunk gehört dir bereits
-  right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick, um ihn abzubauen
+  right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick
   unclaim: §e§l>_ §7Du hast deinen Chunk {CHUNK} aufgegeben
   unclaim-override: §e§l>_ §7Der Claim bei {CHUNK} von {NAME} wurde aufgehoben
   enter: §f§l>_ §7Du hast das Gebiet von {NAME} betreten
@@ -19,12 +20,24 @@ messages:
   override-on: §f§l>_ §7Override-Modus §aaktiviert
   override-off: §f§l>_ §7Override-Modus §cdeaktiviert
   help:
-    - "§7---------<§f Hilfemenü - Claims §7>---------"
-    - "§7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten"
-    - "§7> Der §fKompass §7zeigt dir deine Claims und deren Position an"
-    - "§7> Alle deine Freunde haben §fBaurechte §7auf sämtlichen Claims"
+  - §7---------<§f Hilfemenü - Claims §7>---------
+  - §7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten
+  - §7> Der §fKompass §7zeigt dir deine Claims und deren Position an
+  - §7> Alle deine Freunde haben §fBaurechte §7auf sämtlichen Claims
   info:
-    - "§7---------<§f {CLAIM} §7>---------"
-    - "§7> Block: §f{BLOCK}"
-    - "§7> Hühner: §f{CHICKEN} §8/ §7Kühe: §f{COW}"
-    - "§7> Schweine: §f{PIG} §8/ §7Schafe: §f{SHEEP}"
+  - §7---------<§f {CLAIM} §7>---------
+  - '§7> Claimblock Position: §f{BLOCK}'
+  animals: §7> {TYPE} -> §f{VALUE}
+  animals-sum: '§7> §lSumme: §l{VALUE}'
+tracked-animals:
+  COW: Kühe
+  SHEEP: Schafe
+  CHICKEN: Hühner
+  PIG: Schweine
+  TURTLE: Schildkröten
+  HORSE: Pferde
+  RABBIT: Hasen
+  MUSHROOM_COW: Mooshrooms
+  MULE: Maultiere
+  LLAMA: Llamas
+  DONKEY: Esel

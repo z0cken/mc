@@ -16,16 +16,13 @@ import org.bukkit.event.player.*;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class ProtectionListener implements Listener {
 
     private static final Set<Material> INTERACTABLE_BLOCKS = Set.of(
         Material.ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
-        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE,
+        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE, Material.LEVER,
 
         //Buttons
         Material.ACACIA_BUTTON,
@@ -122,6 +119,19 @@ class ProtectionListener implements Listener {
         Material.WATER_BUCKET,
         Material.FLINT_AND_STEEL,
         Material.BONE_MEAL,
+        Material.FIRE_CHARGE,
+        
+        Material.WOODEN_HOE,
+        Material.STONE_HOE,
+        Material.GOLDEN_HOE,
+        Material.IRON_HOE,
+        Material.DIAMOND_HOE,
+
+        Material.WOODEN_AXE,
+        Material.STONE_AXE,
+        Material.GOLDEN_AXE,
+        Material.IRON_AXE,
+        Material.DIAMOND_AXE,
 
         //Boats
         Material.ACACIA_BOAT,
@@ -141,6 +151,7 @@ class ProtectionListener implements Listener {
 
     private static boolean instantiated;
     private static final Map<Player, Integer> mutedFor = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<TNTPrimed, Player> explosives = new HashMap<>();
 
     ProtectionListener() {
         if(instantiated) throw new IllegalStateException(getClass().getName() + " already instantiated!");
@@ -160,11 +171,12 @@ class ProtectionListener implements Listener {
         mutedFor.remove(recipient);
     }
 
-    private void handleManipulation(Cancellable event, Chunk chunk, Player player, boolean quiet) {
+    private boolean handleManipulation(Cancellable event, Chunk chunk, Player player, boolean silent) {
         Claim claim = PCS_Claim.getClaim(chunk);
-        if(claim == null || claim.canBuild(player)) return;
+        if(claim == null || claim.canBuild(player)) return true;
         event.setCancelled(true);
-        if(!quiet) sendProtected(player, claim.getOwner());
+        if(!silent) sendProtected(player, claim.getOwner());
+        return false;
     }
 
     private void muteFor(Player player) {
@@ -198,25 +210,43 @@ class ProtectionListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if((block == null || !INTERACTABLE_BLOCKS.contains(block.getType()))
         && (event.getItem() == null || !INTERACTABLE_ITEMS.contains(event.getItem().getType()))) return;
 
         final Player player = event.getPlayer();
-        if(block instanceof Container && player.hasPermission("pcs.claim.override")) return;
+        if(block != null && block.getState() instanceof Container && player.hasPermission("pcs.claim.override")) return;
 
-        handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player));
-        if(event.getAction() == Action.PHYSICAL) muteFor(player);
+        //Whitelist TNT
+        if(handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player))) {
+            if(event.getAction() == Action.RIGHT_CLICK_BLOCK && block.getType() == Material.TNT && (event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.FIRE_CHARGE)) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        final Optional<Entity> entity = block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2).stream().filter(e -> e instanceof TNTPrimed).findAny();
+                        entity.ifPresent(e -> explosives.put((TNTPrimed) e, player));
+                    }
+                }.runTaskLater(PCS_Claim.getInstance(), 1);
+            }
+        }
+        else if(event.getAction() == Action.PHYSICAL) muteFor(player);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
+        if(event.getRightClicked() instanceof Tameable && ((Tameable)event.getRightClicked()).getOwner().equals(event.getPlayer())) return;
+        handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer(), false);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onInteractAtEntity(PlayerInteractAtEntityEvent event) {
         handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer(), false);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onLeashEntity(PlayerLeashEntityEvent event) {
+        if(event.getEntity() instanceof Tameable && ((Tameable)event.getEntity()).getOwner().equals(event.getPlayer())) return;
         handleManipulation(event, event.getEntity().getLocation().getChunk(), event.getPlayer(), false);
     }
 
@@ -327,5 +357,39 @@ class ProtectionListener implements Listener {
         if(claim == null) return;
 
         if(!claim.canBuild((Player) event.getTarget())) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if(event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+            final Claim claim = PCS_Claim.getClaim(event.getTo().getChunk());
+            if(claim != null && !claim.canBuild(event.getPlayer())) event.setCancelled(true);
+        }
+    }
+
+    private static Map<EntityExplodeEvent, List<Block>> explosionBlocks = new HashMap<>();
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onExplosionLow(EntityExplodeEvent event) {
+        if(event.getEntityType() != EntityType.PRIMED_TNT) return;
+        Player owner = explosives.getOrDefault(event.getEntity(), null);
+        if(owner != null) {
+            Iterator<Block> iterator = event.blockList().iterator();
+            while (iterator.hasNext()) {
+                Claim claim = PCS_Claim.getClaim(iterator.next().getChunk());
+                if(claim == null || !claim.canBuild(owner)) iterator.remove();
+            }
+            explosionBlocks.put(event, new ArrayList<>(event.blockList()));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onExplosionHigh(EntityExplodeEvent event) {
+        List<Block> blockList = explosionBlocks.getOrDefault(event, null);
+        if(blockList != null) {
+            explosionBlocks.remove(event);
+            event.blockList().clear();
+            event.blockList().addAll(blockList);
+        }
     }
 }

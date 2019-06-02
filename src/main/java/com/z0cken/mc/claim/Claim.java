@@ -44,6 +44,11 @@ public class Claim {
         return baseLocation;
     }
 
+    public void setBaseLocation(Location location) {
+        baseLocation = location;
+        updateBaseMaterial();
+    }
+
     public Material getBaseMaterial() {
         return baseMaterial;
     }
