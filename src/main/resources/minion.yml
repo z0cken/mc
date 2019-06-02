@@ -1,0 +1,6 @@
+distance-margin: 5
+distraction-chance: 0.5
+ignore-protection: true
+max-damage: 4
+guard-spawn: 600
+guard-teleport: 400

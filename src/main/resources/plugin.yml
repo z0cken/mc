@@ -3,11 +3,12 @@ author: Flare
 version: ${project.version}
 main: com.z0cken.mc.essentials.PCS_Essentials
 depend: [PCS_Core]
-softdepend: [PCS_Claim, Vault, WorldGuard]
+softdepend: [PCS_Claim, Vault, WorldGuard, Citizens]
 api-version: 1.13
 
 commands:
   pcse:
+    permission: pcs.essentials.admin
   award:
     permission: pcs.essentials.award
   erosion:
@@ -15,6 +16,12 @@ commands:
   wild:
     permission: pcs.essentials.wild
   help:
+  entity:
+    permission: pcs.essentials.entity
+  donate:
+    permission: pcs.essentials.donate
+  inactive:
+    permission: pcs.essentials.inactive
 
 permissions:
   pcs.essentials.*:
@@ -23,3 +30,7 @@ permissions:
       pcs.essentials.award: true
       pcs.essentials.erosion: true
       pcs.essentials.wild: true
+      pcs.essentials.admin: true
+      pcs.essentials.entity: true
+      pcs.essentials.donate: true
+      pcs.essentials.inactive: true

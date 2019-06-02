@@ -1,6 +1,7 @@
 package com.z0cken.mc.essentials.modules;
 
 
+import com.google.common.collect.ImmutableMap;
 import com.z0cken.mc.essentials.PCS_Essentials;
 
 import java.util.*;
@@ -8,16 +9,21 @@ import java.util.logging.Level;
 
 public class ModuleManager {
 
-    private static final Map<String, Class<? extends Module>> MODULES = Map.of(
-        "chat", ModuleChat.class,
-        "snowball", ModuleSnowball.class,
-        "compass", ModuleCompass.class,
-        "erosion", ModuleErosion.class,
-        "discover", ModuleDiscover.class,
-        "award", ModuleAward.class,
-        "help", ModuleHelp.class,
-        "wild", ModuleWild.class
-    );
+    private static final Map<String, Class<? extends Module>> MODULES = ImmutableMap.<String, Class<? extends Module>>builder()
+            .put("chat", ModuleChat.class)
+            .put("snowball", ModuleSnowball.class)
+            .put("compass", ModuleCompass.class)
+            .put("erosion", ModuleErosion.class)
+            .put("discover", ModuleDiscover.class)
+            .put("award", ModuleAward.class)
+            .put("help", ModuleHelp.class)
+            .put("wild", ModuleWild.class)
+            .put("entity", ModuleEntity.class)
+            .put("various", ModuleVarious.class)
+            .put("minion", ModuleMinion.class)
+            .put("donate", ModuleDonate.class)
+            .put("inactive", ModuleInactive.class)
+        .build();
 
     private static final Set<Module> activeModules = new HashSet<>();
 
@@ -46,11 +52,8 @@ public class ModuleManager {
             if(isEnabled && !isRunning) {
                 try {
                     activeModules.add(entry.getValue().getDeclaredConstructor(String.class).newInstance(entry.getKey()));
-                } catch (LinkageError e) {
+                } catch (Throwable e) {
                     PCS_Essentials.getInstance().getLogger().log(Level.SEVERE, "Failed to enable module '" + entry.getKey() + "'", e);
-                } catch (Exception e) {
-                    PCS_Essentials.getInstance().getLogger().severe("Failed to enable module '" + entry.getKey() + "'");
-                    e.printStackTrace();
                 }
             }
         }
@@ -58,5 +61,9 @@ public class ModuleManager {
 
     public static Set<Module> getActiveModules() {
         return Collections.unmodifiableSet(activeModules);
+    }
+
+    public static void shutdown() {
+        getActiveModules().forEach(Module::onDisable);
     }
 }

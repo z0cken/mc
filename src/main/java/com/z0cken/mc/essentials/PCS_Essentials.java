@@ -31,6 +31,7 @@ public class PCS_Essentials extends JavaPlugin {
     @Override
     public void onDisable() {
         instance = null;
+        ModuleManager.shutdown();
     }
 
     @Override
