@@ -4,22 +4,22 @@ messages:
   undiscovered: "§c§l>_§7 Du musst erst den Ort §f{NAME}§7 entdecken!"
   discovered: "§a§l>_§7 Du hast den Ort §f{NAME}§7 entdeckt!"
 places:
-  world:
-    region-name:
-      name: "Dorf"
-      source:
-        ==: org.bukkit.Location
-        world: world
-        x: 42
-        y: 42
-        z: 42
-        pitch: 42
-        yaw: 42
-      target:
-        ==: org.bukkit.Location
-        world: world
-        x: 42
-        y: 42
-        z: 42
-        pitch: 42
-        yaw: 42
+#  world:
+#    region-name:
+#      name: "Dorf"
+#      source:
+#        ==: org.bukkit.Location
+#        world: world
+#        x: 42
+#        y: 42
+#        z: 42
+#        pitch: 42
+#        yaw: 42
+#      target:
+#        ==: org.bukkit.Location
+#        world: world
+#        x: 42
+#        y: 42
+#        z: 42
+#        pitch: 42
+#        yaw: 42

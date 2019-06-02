@@ -31,15 +31,7 @@ public class ModuleDiscover extends Module implements Listener {
 
     ModuleDiscover(String configPath) {
         super(configPath);
-
-        if(!Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            PCS_Essentials.getInstance().getLogger().severe(configPath + "> WorldGuard not found");
-            disable();
-            return;
-        }
-
         setupTables();
-        importPlaces();
 
         tasks.add(new BukkitRunnable() {
             @Override
@@ -48,9 +40,9 @@ public class ModuleDiscover extends Module implements Listener {
                     Location location = p.getLocation();
                     places.forEach(r -> {
                         if(r.getRegion().contains(BlockVector3.at(location.getX(), location.getY(), location.getZ()))) {
-                                if(hasDiscovered(p, r.getRegion().getId())) return;
-                                discover(p, r.getRegion().getId());
-                                p.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", r.getName()).build(getConfig().getString("messages.discovered")));
+                            if(hasDiscovered(p, r.getRegion().getId())) return;
+                            discover(p, r.getRegion().getId());
+                            p.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", r.getName()).build(getConfig().getString("messages.discovered")));
                         }
                     });
                 });
@@ -62,6 +54,8 @@ public class ModuleDiscover extends Module implements Listener {
     protected void load() {
         INTERVAL = Math.max(100, getConfig().getInt("interval") * 20);
         MAX_DISTANCE_SQ = (int) Math.pow(getConfig().getInt("max-distance"), 2);
+
+        importPlaces();
     }
 
     private void importPlaces() {
@@ -76,9 +70,11 @@ public class ModuleDiscover extends Module implements Listener {
                 if(region == null) continue;
 
                 final ConfigurationSection childSection = section.getConfigurationSection(world).getConfigurationSection(place);
-                Location portal = childSection.getSerializable("source", Location.class);
+                Location source = childSection.getSerializable("source", Location.class);
                 Location target = childSection.getSerializable("target", Location.class);
-                places.add(new Place(portal, target, region, childSection.getString("name")));
+                String name = childSection.getString("name");
+
+                places.add(new Place(source, target, region, name));
             }
         }
     }
