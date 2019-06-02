@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -138,10 +137,10 @@ public class ModuleChat extends Module implements Listener {
 
     @Override
     public void load() {
-        FORMAT = getConfig().getString("format");
-        JOIN = getConfig().getString("messages.join");
-        QUIT = getConfig().getString("messages.quit");
-        MENTION = getConfig().getString("mention-format");
+        FORMAT = getConfig().getString("formats.general");
+        JOIN = getConfig().getString("formats.join");
+        QUIT = getConfig().getString("formats.quit");
+        MENTION = getConfig().getString("formats.mention");
         LOG_CONSOLE = getConfig().getBoolean("log-console");
     }
 
@@ -149,7 +148,7 @@ public class ModuleChat extends Module implements Listener {
         if(chat != null) {
             String prefix = chat.getPlayerPrefix(player);
             if(prefix.isEmpty() || prefix.equalsIgnoreCase("")) return prefix;
-            else return ChatColor.translateAlternateColorCodes('&', prefix).replaceAll(Pattern.quote("]"), Matcher.quoteReplacement("\\\\]")) + " ";
+            else return ChatColor.translateAlternateColorCodes('&', prefix) + " ";
         }
         return "";
     }
