@@ -23,6 +23,7 @@ messages:
   - "§7> Statistik persönlich: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
   - "§7> Siehe auch: {#[RUN|/metro list][§flist]#} §7§l/ {#[RUN|/metro top][§ftop]#} §7§l/ {#[RUN|/metro toggle][§ftoggle]#} §7§l/ {#[RUN|/metro map][§fmap]#}"
   activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
+  deactivation: '{PREFIX} §7Die Station §f{STATION} wurde mangels Lapis deaktiviert§7!'
   xp-actionbar: "§7+ §a{AMOUNT} XP"
   list: "{PREFIX} Es sind {VALUE} Spieler in der Metro! \n{LIST}"
   teleport: "{PREFIX} Teleports sind in der Metro deaktiviert"

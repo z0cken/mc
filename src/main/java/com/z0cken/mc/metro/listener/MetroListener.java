@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -23,7 +24,6 @@ public class MetroListener implements Listener {
 
     @EventHandler
     public void onActivate(StationActivateEvent event) {
-        //TODO Broadcast message & sound
         //TODO Give XP
         final MessageBuilder messageBuilder = PCS_Metro.getInstance().getMessageBuilder();
         event.getPlayers().forEach(p -> {
@@ -36,12 +36,21 @@ public class MetroListener implements Listener {
         HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, event.getPlayers().stream().map(player -> new TextComponent(player.getName()+"\n")).toArray(BaseComponent[]::new));
 
         final BaseComponent[] msg = messageBuilder.define("STATION", event.getStation().getName()).define("PLAYERTEXT", s).define("PLAYERLIST", hoverEvent).build(PCS_Metro.getInstance().getConfig().getString("messages.activation"));
-        Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(msg));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            p.spigot().sendMessage(msg);
+            if(!event.getStation().getPlayers().contains(p)) p.playSound(p.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 10, 1);
+        });
     }
 
     @EventHandler
     public void onDeactivate(StationDeactivateEvent event) {
-        //TODO Broadcast message & sound
+        final MessageBuilder messageBuilder = PCS_Metro.getInstance().getMessageBuilder();
+        final BaseComponent[] msg = messageBuilder.define("STATION", event.getStation().getName()).build(PCS_Metro.getInstance().getConfig().getString("messages.deactivation"));
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            p.spigot().sendMessage(msg);
+            if(!event.getStation().getPlayers().contains(p)) p.playSound(p.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 10, 1);
+        });
+
     }
 
 }
