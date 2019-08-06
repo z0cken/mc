@@ -1,0 +1,75 @@
+end:
+  world: end
+  last-phase: DRAGON
+  respawn-time: 14400
+  max-elytra: 15
+  main-radius: 200
+  fall-radius: 30
+  dragon-health: 400
+  spawn:
+    ==: org.bukkit.Location
+    world: world_the_end
+    x: 0
+    y: 67
+    z: 0
+bar-title: "§5Drache spawnt in %s"
+crystal:
+  warn-range: 10
+  warn-damage: 2
+  kill-range: 3
+eye:
+  range: 15
+  duration: 200
+eggs:
+  monster:
+    range: 8
+    duration: 2400
+    rgb: 834048
+    bar-color: GREEN
+    chat-color: GREEN
+    title: "§aMonster-Ei"
+    lore:
+      - "§aSchadet Monstern"
+      - "§7Radius: 8 Blöcke"
+      - "§7Dauer: 2 Minuten"
+  combat:
+    range: 8
+    duration: 2400
+    rgb: 16711684
+    bar-color: RED
+    chat-color: RED
+    title: "§cSchlacht-Ei"
+    lore:
+      - "§cRegeneration und Stärke"
+      - "§7Radius: 8 Blöcke"
+      - "§7Dauer: 2 Minuten"
+  mining:
+    range: 25
+    duration: 3600
+    rgb: 6184542
+    bar-color: WHITE
+    chat-color: GRAY
+    title: "§7Bergbau-Ei"
+    lore:
+      - "§7Haste und Nachtsicht"
+      - "§7Radius: 25 Blöcke"
+      - "§7Dauer: 3 Minuten"
+player-check-interval: 5
+announce-respawn: 180
+messages:
+  announce-respawn: "{PREFIX} Der Enderdrache respawnt in {VALUE} Minuten!"
+  info:
+  - "§7------------< §5End §7>------------"
+  - "§7> {STATUS}"
+  - "§7> Statistik global: {#[TEXT|§dDamage gegen Drache][§d{DAMAGE-G}]#} §7§l/ {#[TEXT|§5Zerstörte Kristalle][§5{CRYSTALS-G}]#} §7§l/ {#[TEXT|§cPVP Kills][§c{KILLS-G}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME-G}]#}"
+  - "§7> Statistik persönlich: {#[TEXT|§dDamage gegen Drache][§d{DAMAGE}]#} §7§l/ {#[TEXT|§5Zerstörte Kristalle][§5{CRYSTALS}]#} §7§l/ {#[TEXT|§cPVP Kills][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  - "§7> Siehe auch: {#[RUN|/end list][§flist]#} §7§l/ {#[RUN|/end top][§ftop]#}"
+  - "§7> Es sind noch {ELYTRA} Elytren versteckt"
+  prefix: '§f[§5End§f]'
+  error: "{PREFIX} §cEin Fehler ist aufgetreten!"
+  header: "§7-------< §5End - {TITLE} §7>-------"
+  leaderboard: "§7> {INDEX} - §f{PLAYER} §7§l/ {#[TEXT|§dDamage gegen Drache][§d{DAMAGE}]#} §7§l/ {#[TEXT|§5Zerstörte Kristalle][§5{CRYSTALS}]#} §7§l/ {#[TEXT|§cPVP Kills][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  list: "{PREFIX} Es sind {VALUE} Spieler im End! \n{LIST}"
+  top-killer: "{PREFIX} Tödlichster Spieler: {PLAYER} mit {VALUE} Kills!"
+  phase-end: "{PREFIX} {VALUE} beendet!"
+  pvp-warn: "{PREFIX} Schlachtphase beginnt in {VALUE} Sekunden"
