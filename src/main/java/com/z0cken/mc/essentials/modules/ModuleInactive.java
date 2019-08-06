@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.wiefferink.areashop.AreaShop;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,27 +37,31 @@ public class ModuleInactive extends Module implements CommandExecutor {
             seen.ifPresent(l -> lastSeen.put(r, l));
         });
 
-        LinkedHashMap<ProtectedRegion, Long> reverseSortedMap = new LinkedHashMap<>();
+        LinkedHashMap<ProtectedRegion, Long> map = new LinkedHashMap<>();
         lastSeen.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
+                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
+                .forEachOrdered(x -> map.put(x.getKey(), x.getValue()));
 
-        int i = 0;
-        for(Map.Entry<ProtectedRegion, Long> entry : reverseSortedMap.entrySet()) {
+        int i = 0, max = Integer.parseInt(astring[0]);
+        for(Map.Entry<ProtectedRegion, Long> entry : map.entrySet()) {
             p.sendMessage(entry.getKey().getId() + " -> " + DateUtil.formatDateDiff(entry.getValue()) + ChatColor.GRAY + " (" + toFriendlyString(entry.getKey().getMembers().getUniqueIds()) + ")");
-            if(++i == 10) break;
+            if(++i == max) break;
         }
         return false;
     }
 
     private String toFriendlyString(Set<UUID> uuids) {
+        if(uuids == null || uuids.isEmpty()) return "";
         String s = "";
         Iterator<UUID> it = uuids.iterator();
 
         while (it.hasNext()) {
-            s += Bukkit.getPlayer(it.next()).getName();
-            if(it.hasNext()) s += ";";
+            OfflinePlayer p = Bukkit.getOfflinePlayer(it.next());
+            if(p != null) {
+                s += p.getName();
+                if(it.hasNext()) s += " ";
+            }
         }
 
         return s;
