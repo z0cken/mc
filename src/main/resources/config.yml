@@ -12,6 +12,7 @@ modules:
   various: true
   minion: true
   inactive: true
+  nether: true
 messages:
   reload: "§a§l>_§7 Plugin neu geladen!"
   module-reload-success: "§a§l>_§7 Modul neu geladen!"

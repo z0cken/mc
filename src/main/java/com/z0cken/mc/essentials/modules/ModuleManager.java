@@ -23,6 +23,7 @@ public class ModuleManager {
             .put("minion", ModuleMinion.class)
             .put("donate", ModuleDonate.class)
             .put("inactive", ModuleInactive.class)
+            .put("nether", ModuleNether.class)
         .build();
 
     private static final Set<Module> activeModules = new HashSet<>();
