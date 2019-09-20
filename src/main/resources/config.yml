@@ -1,0 +1,893 @@
+duration: 600
+countdown: 10
+players: 50
+snowball-damage: 4
+capture:
+  duration: 80
+  radius: 2
+  location:
+    ==: org.bukkit.Location
+    world: world
+    x: 11.5
+    y: 0.0
+    z: -104.5
+    pitch: 0.0
+    yaw: 0.0
+messages: {}
+lobby:
+  ==: org.bukkit.Location
+  world: world
+  x: -3.5
+  y: 246.0
+  z: -5.5
+  pitch: -90.0
+  yaw: 0.0
+attacker:
+  respawn-time: 5
+  scores:
+    kill: 2
+    capture-passive: 8
+    capture-active: 2
+  kits:
+    '0':
+      ==: com.z0cken.mc.raid.Kit
+      name: Kyle
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: TURTLE_HELMET
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: Kyle
+          lore:
+            - '[Allrounder]'
+            - ''
+            - 'Buff: Absorption'
+            - 'Rüstung: Gemischt'
+            - ''
+            - Diamantaxt
+            - Schild
+            - 2x Monsterle (Stärke)
+            - OP-Apfel
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: DIAMOND_AXE
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SHIELD
+          meta:
+            ==: ItemMeta
+            meta-type: TILE_ENTITY
+            display-name: pr0gramm
+            internal: H4sIAAAAAAAAAONiYOBi4HPKyU/Ods0rySypDElM52TgCEgsKUktyivmYmBgYORgYIfyGZhz87OYGVid83Pyi4BSfAzMDCxOicWpQDY7AwMAh/WZp00AAAA=
+            blockMaterial: SHIELD
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            display-name: Monsterle
+            lore:
+              - Muskelstärke (1:30)
+            ItemFlags:
+              - HIDE_POTION_EFFECTS
+            potion-type: minecraft:strong_strength
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            display-name: Monsterle
+            lore:
+              - Muskelstärke (1:30)
+            ItemFlags:
+              - HIDE_POTION_EFFECTS
+            potion-type: minecraft:strong_strength
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: ENCHANTED_GOLDEN_APPLE
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: IRON_BOOTS
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: CHAINMAIL_CHESTPLATE
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: TURTLE_HELMET
+      effects:
+        ABSORPTION: 0
+    '1':
+      ==: com.z0cken.mc.raid.Kit
+      name: Naruto Runner
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: LEATHER_HELMET
+        meta:
+          ==: ItemMeta
+          meta-type: LEATHER_ARMOR
+          display-name: Naruto Runnerz
+          lore:
+            - '[Rusher]'
+            - ''
+            - 'Buff: Schnelligkeit'
+            - 'Rüstung: Leder'
+            - ''
+            - Steinschwert
+            - 1x Monsterle (Sprungkraft)
+          color:
+            ==: Color
+            RED: 59
+            BLUE: 194
+            GREEN: 123
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: STONE_SWORD
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            display-name: Monsterle
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_BOOTS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 59
+              BLUE: 194
+              GREEN: 123
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 58
+              BLUE: 218
+              GREEN: 179
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_CHESTPLATE
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 58
+              BLUE: 218
+              GREEN: 179
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_HELMET
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 59
+              BLUE: 194
+              GREEN: 123
+      effects:
+        SPEED: 1
+    '2':
+      ==: com.z0cken.mc.raid.Kit
+      name: Rock Thrower
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: SNOWBALL
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: Rock Throwers
+          lore:
+            - '[Tank]'
+            - ''
+            - Steinaxt
+            - Schild
+            - 1x Monsterle (Stärke)
+            - 64x Steine
+            - Feuerbälle
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: STONE_AXE
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SHIELD
+          meta:
+            ==: ItemMeta
+            meta-type: TILE_ENTITY
+            display-name: pr0gramm
+            internal: H4sIAAAAAAAAAONiYOBi4HPKyU/Ods0rySypDElM52TgCEgsKUktyivmYmBgYORgYIfyGZhz87OYGVid83Pyi4BSfAzMDCxOicWpQDY7AwMAh/WZp00AAAA=
+            blockMaterial: SHIELD
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SNOWBALL
+          amount: 16
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            display-name: Stein
+            lore:
+              - 'Schaden: 1 Herz'
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SNOWBALL
+          amount: 16
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            display-name: Stein
+            lore:
+              - 'Schaden: 1 Herz'
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SNOWBALL
+          amount: 16
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            display-name: Stein
+            lore:
+              - 'Schaden: 1 Herz'
+        5:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SNOWBALL
+          amount: 16
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            display-name: Stein
+            lore:
+              - 'Schaden: 1 Herz'
+        6:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: FIRE_CHARGE
+          amount: 8
+          meta:
+            ==: ItemMeta
+            meta-type: UNSPECIFIC
+            display-name: Feuerball
+            lore:
+              - Rechtsklick zum Werfen
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_BOOTS
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: CHAINMAIL_CHESTPLATE
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: CHAINMAIL_HELMET
+      effects: {}
+    '3':
+      ==: com.z0cken.mc.raid.Kit
+      name: Anti-Vax Kid
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: TIPPED_ARROW
+        meta:
+          ==: ItemMeta
+          meta-type: POTION
+          display-name: Anti-Vax Kid
+          lore:
+            - '[Toxic Range]'
+            - ''
+            - 'Buff: Dornenrüstung'
+            - ''
+            - Goldschwert
+            - Angel
+            - Wurf-Monsterle (Gift)
+            - Bogen
+            - Gift/Schwäche/Langsamkeits Pfeile
+          ItemFlags:
+            - HIDE_POTION_EFFECTS
+          potion-type: minecraft:long_poison
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_SWORD
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: FISHING_ROD
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            display-name: Wurf-Monsterle
+            lore:
+              - '>> Werfen <<'
+            potion-type: minecraft:strong_poison
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: BOW
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: TIPPED_ARROW
+          amount: 5
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:long_poison
+        5:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: TIPPED_ARROW
+          amount: 5
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slowness
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            enchants:
+              THORNS: 3
+            color:
+              ==: Color
+              RED: 94
+              BLUE: 22
+              GREEN: 124
+        6:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: TIPPED_ARROW
+          amount: 5
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:weakness
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_CHESTPLATE
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            enchants:
+              THORNS: 3
+            repair-cost: 1
+            color:
+              ==: Color
+              RED: 94
+              BLUE: 22
+              GREEN: 124
+        7:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: ARROW
+          amount: 64
+      effects: {}
+    '4':
+      ==: com.z0cken.mc.raid.Kit
+      name: Karen
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: GOLDEN_SWORD
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: Karen
+          lore:
+            - '[Spotter]'
+            - ''
+            - 'Rüstung: Gold'
+            - ''
+            - Goldschwert
+            - Bogen mit Spektralpfeilen
+            - Feuerzeug
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_SWORD
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: BOW
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPECTRAL_ARROW
+          amount: 64
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: FLINT_AND_STEEL
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_BOOTS
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_LEGGINGS
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_CHESTPLATE
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_HELMET
+      effects: {}
+    '5':
+      ==: com.z0cken.mc.raid.Kit
+      name: Furry
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: WOODEN_SWORD
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          display-name: Furry
+          lore:
+            - '[Heiler]'
+            - ''
+            - 'Buff: Resistenz'
+            - 'Rüstung: Leder'
+            - ''
+            - Holzschwert
+            - 6x Wurf-Monsterle (Heilung)
+            - 2x Goldener Apfel
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: WOODEN_SWORD
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LINGERING_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_healing
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_regeneration
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_leaping
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slow_falling
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_BOOTS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 243
+              BLUE: 170
+              GREEN: 139
+        5:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LINGERING_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_regeneration
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 137
+              BLUE: 184
+              GREEN: 50
+        6:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LINGERING_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:harming
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_CHESTPLATE
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 137
+              BLUE: 184
+              GREEN: 50
+        7:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: GOLDEN_APPLE
+          amount: 2
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_HELMET
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 243
+              BLUE: 170
+              GREEN: 139
+      effects:
+        DAMAGE_RESISTANCE: 0
+    '6':
+      ==: com.z0cken.mc.raid.Kit
+      name: Armed to the teeth
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_SWORD
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: IRON_SWORD
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SHIELD
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: TNT
+          amount: 16
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: BOW
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: ENCHANTED_GOLDEN_APPLE
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: IRON_BOOTS
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: CHAINMAIL_LEGGINGS
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: CHAINMAIL_CHESTPLATE
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: IRON_HELMET
+        30:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: ARROW
+          amount: 64
+      effects: {}
+    '7':
+      ==: com.z0cken.mc.raid.Kit
+      name: Crackhead
+      button:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: SPLASH_POTION
+        meta:
+          ==: ItemMeta
+          meta-type: POTION
+          potion-type: minecraft:mundane
+      items:
+        0:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: WOODEN_SHOVEL
+        32:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slowness
+        1:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_strength
+        33:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:turtle_master
+        2:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slow_falling
+        34:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:long_weakness
+        3:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:swiftness
+        35:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:long_poison
+        4:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:fire_resistance
+        36:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_BOOTS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 185
+              BLUE: 34
+              GREEN: 74
+        5:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slowness
+        37:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_LEGGINGS
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 204
+              BLUE: 39
+              GREEN: 98
+        6:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:turtle_master
+        38:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_CHESTPLATE
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 230
+              BLUE: 31
+              GREEN: 107
+        7:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:long_weakness
+        39:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: LEATHER_HELMET
+          meta:
+            ==: ItemMeta
+            meta-type: LEATHER_ARMOR
+            color:
+              ==: Color
+              RED: 251
+              BLUE: 104
+              GREEN: 171
+        8:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:long_poison
+        28:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:strong_strength
+        29:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:slow_falling
+        30:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:swiftness
+        31:
+          ==: org.bukkit.inventory.ItemStack
+          v: 1631
+          type: SPLASH_POTION
+          meta:
+            ==: ItemMeta
+            meta-type: POTION
+            potion-type: minecraft:fire_resistance
+      effects: {}
+defender:
+  scores:
+    kill: 2
+  respawn-time: 8
+  kit:
+    ==: com.z0cken.mc.raid.Kit
+    name: null
+    button: null
+    items:
+      0:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_SWORD
+      1:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: GOLDEN_APPLE
+        amount: 2
+      2:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: ARROW
+        amount: 32
+      36:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_BOOTS
+      37:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_LEGGINGS
+      38:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_CHESTPLATE
+      39:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: IRON_HELMET
+      -106:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: BOW
+        meta:
+          ==: ItemMeta
+          meta-type: UNSPECIFIC
+          enchants:
+            ARROW_DAMAGE: 1
+      effects: {}
