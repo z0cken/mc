@@ -1,5 +1,6 @@
 package com.z0cken.mc.essentials.modules;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,6 @@ public class ModuleNether extends Module implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        if(event.getBlock().getType() == Material.SPAWNER && event.getBlock().getWorld().getEnvironment() == World.Environment.NETHER) event.setCancelled(true);
+        if(event.getBlock().getType() == Material.SPAWNER && event.getBlock().getWorld().getEnvironment() == World.Environment.NETHER && event.getPlayer().getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
     }
 }
