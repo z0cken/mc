@@ -24,6 +24,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -40,14 +42,18 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Raid implements Listener {
 
     private static final File endermanSpawnFile = new File(PCS_Raid.getInstance().getDataFolder(), "endermen-spawns.json");
-    private static final Set<EndermenSpawnRunnable> endermenSpawns = new HashSet<>();
+    private final Set<EndermenSpawnRunnable> endermenSpawns = new HashSet<>();
 
     private static final File soundSourceFile = new File(PCS_Raid.getInstance().getDataFolder(), "sound-sources.json");
-    private static final Set<SoundSourceRunnable> soundSources = new HashSet<>();
+    private final Set<SoundSourceRunnable> soundSources = new HashSet<>();
+
+    //private static final File captureZoneFile = new File(PCS_Raid.getInstance().getDataFolder(), "capture-zones.json");
+    private final Set<EndermanCaptureRunnable> captureRunnables = new HashSet<>();
 
     private final Set<Listener> listeners = new HashSet<>();
     private final Set<BukkitTask> tasks = new HashSet<>();
@@ -55,7 +61,7 @@ public class Raid implements Listener {
     private final Duration duration;
 
     //Holds all game endermen as keys, current leashholder as value
-    private final Map<Enderman, Player> endermen = new HashMap<>();
+    public final Map<Enderman, Player> endermen = new HashMap<>();
 
     private final BossBar bossBar = Bukkit.createBossBar(new NamespacedKey(PCS_Raid.getInstance(), "TimeBar"), "", BarColor.WHITE, BarStyle.SOLID);
     private final Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -70,7 +76,10 @@ public class Raid implements Listener {
         attackers.forEach(this.attackers::addPlayer);
         defenders.forEach(this.defenders::addPlayer);
 
-        Bukkit.getOnlinePlayers().forEach(getBossBar()::addPlayer);
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            getBossBar().addPlayer(p);
+            p.setScoreboard(getScoreboard());
+        });
 
         this.duration = duration;
 
@@ -83,14 +92,13 @@ public class Raid implements Listener {
         System.out.println("Loading sound sources");
         Util.runAndCatch(() -> Util.loadCollection(soundSources, soundSourceFile, new TypeToken<HashSet<SoundSourceRunnable>>() {}));
 
-        final Location loc = new Location(Bukkit.getWorld("world"), 0, 0, 0, 0, 0);
-        if(endermenSpawns.isEmpty()) endermenSpawns.add(new EndermenSpawnRunnable(loc, (short) 2, 5));
-        if(soundSources.isEmpty()) soundSources.add(new SoundSourceRunnable(loc, "sound", 10, 1F, 1F));
+        captureRunnables.add(new EndermanCaptureRunnable(new Location(Bukkit.getWorld("world"), 11.5, 70, -104.5), 1.5));
+        captureRunnables.add(new EndermanCaptureRunnable(new Location(Bukkit.getWorld("world"), -120.5, 70, -31.5), 1.5));
+        captureRunnables.forEach(r -> registerTask(r.runTaskTimer(PCS_Raid.getInstance(), 0, 10)));
 
         //Create SoundRunnables
         endermenSpawns.forEach(r -> registerTask(r.runTaskTimer(PCS_Raid.getInstance(), 0, 20)));
         soundSources.forEach(r -> registerTask(r.runTaskTimer(PCS_Raid.getInstance(), 0, 20)));
-        registerTask(new EndermanCaptureRunnable(endermen.keySet()).runTaskTimer(PCS_Raid.getInstance(), 0, 20));
 
         Objective objective = scoreboard.registerNewObjective("showhealth", "health", ChatColor.RED + "\u2764");
         objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
@@ -160,8 +168,6 @@ public class Raid implements Listener {
         endermen.keySet().forEach(Entity::remove);
 
         Bukkit.getOnlinePlayers().forEach(p -> {
-            p.getInventory().clear();
-            Util.clearPotionEffects(p);
             p.teleport(PCS_Raid.getLobby());
         });
 
@@ -240,14 +246,13 @@ public class Raid implements Listener {
     public void onCapture(EndermanCaptureEvent event) {
         aliensCaptured++;
         Enderman enderman = event.getEntity();
-        endermen.remove(enderman);
 
         //Make it float
-        final int duration = PCS_Raid.getInstance().getConfig().getInt("capture.duration");
-        enderman.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 0));
+        final int duration = PCS_Raid.getInstance().getConfig().getInt("capture-duration");
+        enderman.setVelocity(new Vector(0, 0 ,0));
+        enderman.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 4));
         enderman.addScoreboardTag("captured");
         enderman.setLeashHolder(null);
-        enderman.setAI(false);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -259,10 +264,10 @@ public class Raid implements Listener {
         //Scores & Sounds
         Player player = getLeashHolder(enderman);
         if(player != null) {
-            getAttackers().getGamePlayer(player).addScore(getAttackers().getConfig().getInt("scores.capture-active"));
+            getAttackers().getGamePlayer(player).addScore(getAttackers().getConfig().getInt("score.capture-active"));
         }
 
-        final int score = getAttackers().getConfig().getInt("scores.capture-passive");
+        final int score = getAttackers().getConfig().getInt("score.capture-passive");
         PCS_Raid.getRaid().getAttackers().getPlayers().forEach(gp -> {
             Player p = gp.getPlayer();
             if(p != null) {
@@ -292,12 +297,17 @@ public class Raid implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
+        if(event.getCause() == EntityDamageEvent.DamageCause.CRAMMING) event.setCancelled(true);
         if(!(event.getEntity() instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) event.getEntity();
 
         Entity damager = null;
         if (event instanceof EntityDamageByEntityEvent) {
             damager = ((EntityDamageByEntityEvent) event).getDamager();
+            if(damager.getType() == EntityType.FIREBALL) {
+                event.setDamage(PCS_Raid.getInstance().getConfig().getDouble("fireball-damage"));
+                event.getEntity().setFireTicks(PCS_Raid.getInstance().getConfig().getInt("fireball-fireticks"));
+            }
         }
 
         //Disable enderman & item frame damage
@@ -334,11 +344,17 @@ public class Raid implements Listener {
         if(event.getFinalDamage() >= entity.getHealth()) {
 
             Player killer = null;
-            if(damager != null && damager.getType() == EntityType.PLAYER) killer = (Player) damager;
+            if(damager != null) {
+                 if(damager.getType() == EntityType.PLAYER) killer = (Player) damager;
+                 else if(damager instanceof Projectile) {
+                     final ProjectileSource shooter = ((Projectile) damager).getShooter();
+                     if(shooter instanceof Player) killer = (Player) shooter;
+                 }
+            }
+            Team killerTeam = null;
             if(killer != null) {
-                final Team killerTeam = getTeam(killer);
-                killer.playSound(killer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.25F, 1F);
-                killerTeam.getGamePlayer(killer).addScore(killerTeam.getConfig().getInt("score.kill"));
+                killerTeam = getTeam(killer);
+                killer.playSound(killer.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1F);
             }
 
             switch (event.getEntityType()) {
@@ -347,8 +363,16 @@ public class Raid implements Listener {
                     Player player = (Player) entity;
                     Team team = getTeam(player);
 
+                    if(killer != null) killerTeam.getGamePlayer(killer).addScore(killerTeam.getConfig().getInt("score.kill"));
+
+                    registerTask(new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.closeInventory();
+                        }
+                    }.runTaskLater(PCS_Raid.getInstance(), 2));
+
                     if (team != null) {
-                        team.getGamePlayer(player).addScore(team.getConfig().getInt("score.kill"));
                         team.handleDeath(player);
                     }
                     break;
@@ -356,6 +380,7 @@ public class Raid implements Listener {
                 case EVOKER:
                 case VINDICATOR: {
                     //TODO Award
+                    if(killer != null) killerTeam.getGamePlayer(killer).addScore(1);
                     break;
                 }
             }
@@ -364,8 +389,9 @@ public class Raid implements Listener {
 
     @EventHandler
     public void onPotionEffect(EntityPotionEffectEvent event) {
-        if(event.getEntityType() != EntityType.PLAYER) return;
+        if(event.getEntityType() != EntityType.PLAYER || event.getCause() == EntityPotionEffectEvent.Cause.FOOD) return;
         //Only attackers get positive, only defenders negative
+        //This might clash with different kits
         if(event.getAction() == EntityPotionEffectEvent.Action.ADDED) {
             Team team = getTeam((Player) event.getEntity());
             if(Util.isNegative(event.getNewEffect().getType())) {
@@ -377,10 +403,16 @@ public class Raid implements Listener {
     }
 
     @EventHandler
+    public void onAreaEffect(AreaEffectCloudApplyEvent event) {
+        event.getAffectedEntities().removeIf(le -> le instanceof Player && getTeam((Player) le) == getDefenders());
+    }
+
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         final Team team = getTeam(event.getPlayer());
         if(team != null) {
             team.spawn(event.getPlayer());
+            team.getScoreboardTeam().addEntry(event.getPlayer().getName());
         } else if(!event.getPlayer().isOp()) event.getPlayer().kickPlayer("Die Runde hat bereits gestartet!");
         bossBar.addPlayer(event.getPlayer());
     }
@@ -398,21 +430,17 @@ public class Raid implements Listener {
     }
 
     @EventHandler
-    public void onHunger(FoodLevelChangeEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
     public void onItemDamage(PlayerItemDamageEvent event) {
         event.setCancelled(true);
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        //Prevent closing of Kit menu when not chosen
+        //Prevent closing of Kit menu when not chosen (unless player dead)
         if(event.getInventory().getType() == InventoryType.CHEST
                 && getTeam((Player) event.getPlayer()) == attackers
-                && getAttackers().getGamePlayer((Player) event.getPlayer()).getKit() == null) {
+                && getAttackers().getGamePlayer((Player) event.getPlayer()).getKit() == null
+                && event.getPlayer().getGameMode() != GameMode.SPECTATOR) {
             registerTask(new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -424,19 +452,25 @@ public class Raid implements Listener {
 
     @EventHandler
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        if(event.getRightClicked().getType() == EntityType.ENDERMAN && getTeam(event.getPlayer()) == getAttackers()) {
+        final Player player = event.getPlayer();
+        if(event.getRightClicked().getType() == EntityType.ENDERMAN && getTeam(player) == getAttackers()) {
             Enderman enderman = (Enderman) event.getRightClicked();
             if(!enderman.isLeashed()) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                    if(!enderman.isLeashed() && !endermen.containsValue(event.getPlayer()) && !enderman.getScoreboardTags().contains("captured")) {
-                        enderman.setLeashHolder(event.getPlayer());
-                        endermen.put(enderman, event.getPlayer());
+                    if(!enderman.isLeashed() && !endermen.containsValue(player) && !enderman.getScoreboardTags().contains("captured")) {
+                        enderman.setLeashHolder(player);
+                        endermen.put(enderman, player);
                     }
                     }
                 }.runTaskLater(PCS_Raid.getInstance(), 0);
             }
+        } else if(event.getHand() == EquipmentSlot.HAND && event.getPlayer().getInventory().getItemInMainHand().getType() == Material.FLINT_AND_STEEL) {
+            if(event.getRightClicked() instanceof Player) {
+                if(getTeam((Player)event.getRightClicked()) == getTeam(player)) return;
+            }
+            event.getRightClicked().setFireTicks(PCS_Raid.getInstance().getConfig().getInt("feuerzeug-fireticks"));
         }
     }
 
@@ -455,8 +489,8 @@ public class Raid implements Listener {
     @EventHandler
     public void onTarget(EntityTargetEvent event) {
         if(event.getEntityType() == EntityType.ENDERMAN) event.setCancelled(true);
+        if(event.getTarget() != null && event.getTarget().getType() == EntityType.PLAYER && getTeam((Player) event.getTarget()) == getDefenders()) event.setCancelled(true);
     }
-
 
     private static final double TELEPORT_MAGIC = 0.19D;
     @EventHandler
@@ -485,22 +519,29 @@ public class Raid implements Listener {
     }
 
     @EventHandler
-    public void onInventory(InventoryClickEvent event) {
-        if(event.getSlot() >= 100 && event.getSlot() <= 103 || event.getSlot() == -106) {
+    public void onInventoryClick(InventoryClickEvent event) {
+        if(event.getClickedInventory() == null || event.getWhoClicked().isOp()) return;
+        if(event.getWhoClicked().isOp()) {
+            System.out.println("Slot: " + event.getSlot()
+                    + " | Raw: " + event.getRawSlot()
+                    + " | Type: " + event.getClickedInventory().getType().name());
+        }
+
+        if(event.getSlotType() == InventoryType.SlotType.ARMOR || event.getSlot() == 40 && event.getClickedInventory().getType() == InventoryType.PLAYER) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onHandSwap(PlayerSwapHandItemsEvent event) {
-        if(event.getOffHandItem().getType() == Material.LEAD) event.setCancelled(true);
+        if(event.getMainHandItem().getType() == Material.LEAD) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if(event.getBlockPlaced().getType() == Material.TNT) {
             event.setCancelled(true);
-            TNTPrimed tnt = (TNTPrimed) Bukkit.getWorld("arena").spawnEntity(event.getBlock().getLocation().add(0.5,0,0.5), EntityType.PRIMED_TNT);
+            TNTPrimed tnt = (TNTPrimed) Bukkit.getWorld("world").spawnEntity(event.getBlock().getLocation().add(0.5,0,0.5), EntityType.PRIMED_TNT);
             tnt.setVelocity(new Vector());
         }
     }
@@ -538,6 +579,32 @@ public class Raid implements Listener {
         }
     }
 
+    @EventHandler
+    public void onConsume(PlayerItemConsumeEvent event) {
+        if(event.getItem().getType() == Material.POTION) {
+            final int slot = event.getPlayer().getInventory().getHeldItemSlot();
+            registerTask(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    //TODO Move next potion in slot?
+                    event.getPlayer().getInventory().remove(Material.GLASS_BOTTLE);
+                }
+            }.runTaskLater(PCS_Raid.getInstance(), 1));
+        }
+    }
+
+    @EventHandler
+    public void onChat(AsyncPlayerChatEvent event) {
+        Team team = getTeam(event.getPlayer());
+        if(team != null) {
+            if(team == getAttackers()) {
+                event.getRecipients().removeIf(p -> getTeam(p) == getDefenders());
+            }
+            else if(team == getDefenders()) {
+                event.getRecipients().removeIf(p -> getTeam(p) == getAttackers());
+            }
+        }
+    }
     //TODO Despawn endermen on idle?
 
 }

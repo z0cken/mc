@@ -4,6 +4,8 @@ import com.z0cken.mc.raid.event.RaidStopEvent;
 import com.z0cken.mc.raid.runnable.EndermenSpawnRunnable;
 import com.z0cken.mc.raid.runnable.SoundSourceRunnable;
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -14,15 +16,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.FileNotFoundException;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PCS_Raid extends JavaPlugin implements Listener {
@@ -42,6 +44,9 @@ public class PCS_Raid extends JavaPlugin implements Listener {
         return instance;
     }
     //TODO Combine points of two rounds and only save after 2nd round
+    //TODO Defender no level
+    //TODO Fireball no kill and arrow
+    //TODO Map reset
 
     @Override
     public void onLoad() {
@@ -86,6 +91,10 @@ public class PCS_Raid extends JavaPlugin implements Listener {
             //if(!sender.isOp()) return false;
             if(args[0].equalsIgnoreCase("start")) {
                 try {
+                    if(state != ServerState.WAITING) {
+                        sender.sendMessage("Server nicht bereit");
+                        return true;
+                    }
                     createRaid(args.length > 1 ? Long.parseLong(args[1]) : null);
                     sender.sendMessage(ChatColor.GREEN + "Raid gestartet");
                 } catch (FileNotFoundException e) {
@@ -196,6 +205,7 @@ public class PCS_Raid extends JavaPlugin implements Listener {
     }
 
     public void createRaid(Long duration) throws FileNotFoundException {
+        reloadConfig();
         if(getState() == ServerState.WAITING) {
             PCS_Raid.setOpen(false);
             statusBar.setVisible(false);
@@ -240,30 +250,60 @@ public class PCS_Raid extends JavaPlugin implements Listener {
         if(!open) {
             if(getRaid().getTeam(event.getPlayer()) == null) {
                 event.getPlayer().kickPlayer("Runde läuft bereits!");
+                event.setJoinMessage(null);
             } //else player has team, Raid handles join
         } else {
-            statusBar.addPlayer(event.getPlayer());
-            event.getPlayer().teleport(getLobby());
-            event.getPlayer().getInventory().clear();
-            event.getPlayer().setGameMode(GameMode.ADVENTURE);
-            event.getPlayer().setLevel(0);
-            Util.clearPotionEffects(event.getPlayer());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    statusBar.addPlayer(event.getPlayer());
+                    Util.cleanPlayer(event.getPlayer(), true);
+                    event.getPlayer().teleport(getLobby());
+                }
+            }.runTaskLater(this, 1);
         }
+    }
+
+    private static final Map<Location, BlockState> blocks = new HashMap<>();
+    @EventHandler
+    public void onBreak(BlockBreakEvent event) {
+        if(event.getBlock().getType() != Material.IRON_BARS) event.setCancelled(true);
+
+        if(event.getBlock().getType() == Material.IRON_BARS) {
+            blocks.put(event.getBlock().getLocation(), event.getBlock().getState());
+        }
+    }
+
+    private static void resetMap() {
+        blocks.forEach((l, s) -> {
+            final Block block = Bukkit.getWorld("world").getBlockAt(l);
+            block.setBlockData(s.getBlockData());
+            block.setType(Material.IRON_BARS);
+        });
     }
 
     @EventHandler
     public void onRaidStop(RaidStopEvent event) {
+
         if(state == ServerState.SECOND_ROUND) {
             setOpen(true);
             state = ServerState.WAITING;
+            Bukkit.getOnlinePlayers().forEach(p -> Util.cleanPlayer(p, true));
+            resetMap();
         } else if(state == ServerState.FIRST_ROUND){
             try {
                 //Start second round
+                Bukkit.getOnlinePlayers().forEach(p -> Util.cleanPlayer(p, false));
                 createRaid(null);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    @EventHandler
+    public void onHunger(FoodLevelChangeEvent event) {
+        event.setCancelled(true);
     }
 
     public enum ServerState {

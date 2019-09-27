@@ -25,8 +25,8 @@ public class TeamAttacker extends Team {
         super(raid, "attacker", Color.RED, ChatColor.RED);
         //Util.loadMap(kits, kitFile, new TypeToken<HashMap<Integer, Kit>>() {});
         loadKits();
-        kitMenu = makeKitMenu();
         System.out.println(kits.size() + " Kits loaded");
+        kitMenu = makeKitMenu();
     }
 
     @Override
@@ -41,14 +41,21 @@ public class TeamAttacker extends Team {
             public void run() {
                 canSwitchKit.remove(player);
             }
-        }.runTaskLater(PCS_Raid.getInstance(), 10);
+        }.runTaskLater(PCS_Raid.getInstance(), 200);
 
         final Kit kit = gp.getKit();
-        if(kit == null) player.openInventory(kitMenu);
+        if(kit == null) {
+            raid.get().registerTask(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    player.openInventory(kitMenu);
+                }
+            }.runTaskLater(PCS_Raid.getInstance(), 10));
+        }
         else {
             kit.apply(player, false);
+            player.getInventory().setItemInOffHand(new ItemStack(Material.LEAD, 1));
         }
-        player.getInventory().setItemInOffHand(new ItemStack(Material.LEAD, 1));
     }
 
     @Override
@@ -88,7 +95,11 @@ public class TeamAttacker extends Team {
                 final GamePlayer gp = team.getGamePlayer(player);
                 Kit currentKit = gp.getKit();
                 gp.setKit(k);
-                if(currentKit == null || canSwitchKit.contains(player)) gp.getKit().apply(player, true);
+                if(currentKit == null || canSwitchKit.contains(player)) {
+                    gp.getKit().apply(player, true);
+                    player.getInventory().setItemInOffHand(new ItemStack(Material.LEAD, 1));
+                }
+                else player.sendMessage(ChatColor.GRAY + "Dein Kit wird beim nächsten Spawn angewendet");
                 player.closeInventory();
             }, k.getButton().getType(), k.getButton().getAmount());
             b.setItemMeta(k.getButton().getItemMeta());

@@ -54,7 +54,7 @@ public class Kit implements ConfigurationSerializable {
 
     public void apply(Player player, boolean clear) {
         PlayerInventory inventory = player.getInventory();
-        if(clear) inventory.clear();
+        Util.cleanPlayer(player, false);
         items.forEach((i, itemstack) -> {
 
             if(itemstack.getType() == Material.SHIELD) {

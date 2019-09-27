@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.z0cken.mc.raid.json.BukkitExclusionStrategy;
 import com.z0cken.mc.raid.json.LocationAdapter;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -125,9 +127,22 @@ public final class Util {
         player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
     }
 
+    public static void cleanPlayer(Player player, boolean clearXp) {
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        clearPotionEffects(player);
+        if(clearXp) {
+            player.setTotalExperience(0);
+            player.setLevel(0);
+        }
+        player.setFoodLevel(20);
+        player.setFireTicks(0);
+        player.getInventory().clear();
+    }
+
     public static boolean isLikelyParticipant(Player player) {
         return true; //TODO Enable
-       //return !player.isOp() && player.getGameMode() == GameMode.ADVENTURE;
+       //return !player.isOp() && player.getGameMode() == GameMode.SURVIVAL;
     }
 
     public static void writePlayerStats(List<GamePlayer> players, File csvFile) {

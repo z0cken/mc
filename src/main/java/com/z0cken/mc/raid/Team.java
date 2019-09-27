@@ -25,7 +25,7 @@ public abstract class Team implements Listener {
     private final String name;
     private ConfigurationSection config;
 
-    private final Map<UUID, GamePlayer> players = new HashMap<>();
+    private final Map<UUID, GamePlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     private final List<Location> spawnPoints = new ArrayList<>();
     private final File spawnPointsFile;
@@ -40,7 +40,6 @@ public abstract class Team implements Listener {
 
         scoreboardTeam = raid.getScoreboard().registerNewTeam(name);
         scoreboardTeam.setColor(chatColor);
-        scoreboardTeam.setPrefix(color.toString());
         scoreboardTeam.setAllowFriendlyFire(false);
 
         spawnPointsFile = new File(PCS_Raid.getInstance().getDataFolder(), name + "-spawns.json");
@@ -54,14 +53,18 @@ public abstract class Team implements Listener {
     public void spawn(Player player) {
         GamePlayer gp = getGamePlayer(player);
         if(gp == null) throw new IllegalArgumentException();
-        player.setGameMode(GameMode.ADVENTURE);
-        player.getInventory().clear();
-        Util.clearPotionEffects(player);
-        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        Util.cleanPlayer(player, false);
+        player.setExp(1F);
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 10, true, true));
 
-        player.teleport(getRandomSpawn());
+        //TODO Remove if doesnt fix stuck glitch
+        raid.get().registerTask(new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.teleport(getRandomSpawn());
+            }
+        }.runTaskLater(PCS_Raid.getInstance(), 2));
     }
 
     public void spawnAll() {
@@ -73,11 +76,16 @@ public abstract class Team implements Listener {
     }
 
     public void addPlayer(UUID uuid) {
+        scoreboardTeam.addEntry(Bukkit.getOfflinePlayer(uuid).getName());
         players.put(uuid, new GamePlayer(uuid));
     }
 
     public ConfigurationSection getConfig() {
         return config;
+    }
+
+    public org.bukkit.scoreboard.Team getScoreboardTeam() {
+        return scoreboardTeam;
     }
 
     public Collection<GamePlayer> getPlayers() {

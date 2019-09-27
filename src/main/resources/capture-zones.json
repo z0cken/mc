@@ -1,0 +1,20 @@
+[
+  {
+    "radius": 1.5,
+    "location" : {
+      "world": "world",
+      "x": 11.5,
+      "y": 70,
+      "z": -104.5
+    }
+  },
+  {
+    "radius": 1.5,
+    "location": {
+      "world": "world",
+      "x": -120.5,
+      "y": 70,
+      "z": -31.5
+    }
+  }
+]

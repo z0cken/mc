@@ -34,7 +34,10 @@ public class GamePlayer {
     public void addScore(int score) {
         this.score += score;
         Player player = getPlayer();
-        if(player != null) player.setLevel(score);
+        if(player != null) {
+            System.out.println("Level " + this.score);
+            player.setLevel(this.score);
+        }
     }
 
     public Player getPlayer() {
