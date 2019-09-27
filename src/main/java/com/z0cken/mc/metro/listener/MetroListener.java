@@ -35,6 +35,8 @@ public class MetroListener implements Listener {
         String s = event.getPlayers().size() > 1 ? event.getPlayers().size() + " Spielern" : event.getPlayers().get(0).getName();
         HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, event.getPlayers().stream().map(player -> new TextComponent(player.getName()+"\n")).toArray(BaseComponent[]::new));
 
+        PCS_Metro.getInstance().getLogger().info(event.getStation().getName());
+        PCS_Metro.getInstance().getLogger().info(messageBuilder.define("STATION", event.getStation().getName()).setValues("{STATION}"));
         final BaseComponent[] msg = messageBuilder.define("STATION", event.getStation().getName()).define("PLAYERTEXT", s).define("PLAYERLIST", hoverEvent).build(PCS_Metro.getInstance().getConfig().getString("messages.activation"));
         Bukkit.getOnlinePlayers().forEach(p -> {
             p.spigot().sendMessage(msg);

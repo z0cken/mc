@@ -97,7 +97,7 @@ public class EntityTemplate implements Template {
 
         attributes.forEach((attribute, integer) -> entity.getAttribute(attribute).setBaseValue(integer));
 
-        if(xp > 0) entity.getScoreboardTags().add("metro-xp:" + xp);
+        if(xp > 0) entity.getScoreboardTags().add("metro-xp-" + xp);
         entity.setCanPickupItems(false);
 
         if(lootTable != null && entity instanceof Lootable) {

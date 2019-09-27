@@ -1,5 +1,6 @@
 world: world
 entry-check-interval: 10
+control-mobs: false
 disconnect:
   timeout: 1
   min-health: 4

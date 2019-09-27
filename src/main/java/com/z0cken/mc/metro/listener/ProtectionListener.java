@@ -55,6 +55,8 @@ public class ProtectionListener implements Listener {
     @EventHandler
     public void onTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
+        //Blockglitch teleport
+        if(event.getCause() == PlayerTeleportEvent.TeleportCause.UNKNOWN) return;
 
         if(!player.hasPermission("pcs.metro.bypass") && (Metro.getInstance().getPlayersInside().contains(player) || Metro.getInstance().contains(event.getTo()))) {
             event.setCancelled(true);

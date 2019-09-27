@@ -16,6 +16,7 @@ public class PCS_Metro extends JavaPlugin {
     //public static final EnumFlag<Difficulty> DIFFICULTY_FLAG = new EnumFlag<>("difficulty", Difficulty.class);
     private final MessageBuilder messageBuilder;
     public static final StringFlag STRING_FLAG = new StringFlag("profile");
+    public final boolean CONTROL_MOBS;
     private static PCS_Metro instance;
     private Metro metro;
 
@@ -26,6 +27,7 @@ public class PCS_Metro extends JavaPlugin {
     public PCS_Metro() {
         if(instance != null) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
         messageBuilder = MessageBuilder.DEFAULT.define("PREFIX", getConfig().getString("messages.prefix"));
+        CONTROL_MOBS = getConfig().getBoolean("control-mobs");
     }
 
     @Override

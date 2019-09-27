@@ -31,13 +31,14 @@ public class MobListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntitySpawn(CreatureSpawnEvent event) {
         Entity entity = event.getEntity();
-        if(event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM && Metro.getInstance().contains(event.getLocation())) {
+        if((PCS_Metro.getInstance().CONTROL_MOBS || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) && Metro.getInstance().contains(event.getLocation())) {
             //Stop monsters from spawning in active stations (disabled)
-            if(false && Metro.getInstance().getStations().stream().filter(Station::isActive).anyMatch(s -> s.contains(entity.getLocation()))) {
+            if(Metro.getInstance().getStations().stream().filter(Station::isActive).anyMatch(s -> s.contains(entity.getLocation()))) {
                 event.setCancelled(true);
                 return;
             }
 
+            if(!PCS_Metro.getInstance().CONTROL_MOBS) return;
             String flag = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery().getApplicableRegions(BukkitAdapter.adapt(event.getLocation())).queryValue(null, PCS_Metro.STRING_FLAG);
             if(flag != null) {
                 SpawnProfile profile = Metro.getInstance().getProfile(flag);
@@ -68,7 +69,7 @@ public class MobListener implements Listener {
             PCS_Progression.progress(player, "metro_kills", 1);
             for(String s : entity.getScoreboardTags()) {
                 if(s.startsWith("metro-xp")) {
-                    final int xp = Integer.parseInt(s.split(Pattern.quote(":"))[1]);
+                    final int xp = Integer.parseInt(s.split(Pattern.quote("-"))[2]);
                     PCS_Progression.progress(player, "metro_xp", xp);
                     player.spigot().sendMessage(ChatMessageType.ACTION_BAR, PCS_Metro.getInstance().getMessageBuilder().define("AMOUNT", Integer.toString(xp)).build(PCS_Metro.getInstance().getConfig().getString("messages.xp-actionbar")));
                     break;

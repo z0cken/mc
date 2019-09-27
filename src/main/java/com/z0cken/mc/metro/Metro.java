@@ -77,9 +77,11 @@ public final class Metro {
         interval = PCS_Metro.getInstance().getConfig().getInt("lapis.interval-hours");
 
         stations = loadStations();
-        entityTemplates = loadEntityTemplates();
-        groupTemplates = loadGroupTemplates();
-        profiles = loadProfiles();
+        if(PCS_Metro.getInstance().CONTROL_MOBS) {
+            entityTemplates = loadEntityTemplates();
+            groupTemplates = loadGroupTemplates();
+            profiles = loadProfiles();
+        }
         effects = loadEffects();
         MetroMapRenderer.loadFromConfig();
 
