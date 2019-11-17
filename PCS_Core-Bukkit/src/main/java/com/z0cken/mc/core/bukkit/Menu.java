@@ -3,7 +3,7 @@ package com.z0cken.mc.core.bukkit;
 import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftInventoryCustom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -83,7 +83,7 @@ public class Menu extends CraftInventoryCustom implements Listener {
     }
 
     public void showPage(int page) {
-        if(page < 0 || page >= pages.size()) throw new IndexOutOfBoundsException("Page " + page + " doesn't exist in " + getTitle());
+        if(page < 0 || page >= pages.size()) throw new IndexOutOfBoundsException("Page " + page + " is out of bounds");
         currentPage = page;
         setContents(pages.get(page));
     }
