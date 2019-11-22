@@ -44,6 +44,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.z0cken.mc.thirdparty.executable</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.14.4-SNAPSHOT</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
             <groupId>com.z0cken.mc.core</groupId>
             <artifactId>PCS_Core-Bukkit</artifactId>
             <version>1.0-SNAPSHOT</version>
