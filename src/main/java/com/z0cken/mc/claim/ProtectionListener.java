@@ -1,9 +1,12 @@
 package com.z0cken.mc.claim;
 
 import com.z0cken.mc.core.util.MessageBuilder;
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
@@ -13,10 +16,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class ProtectionListener implements Listener {
 
@@ -302,26 +307,45 @@ class ProtectionListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerPortal(PlayerPortalEvent event) {
-        if(event.getFrom().getWorld().getEnvironment() != World.Environment.NETHER) return;
-        event.getPortalTravelAgent().setCanCreatePortal(false);
+     /*
+     private String locToString(Location location) {
+        return location.getWorld().getEnvironment().name() + " | " + location.getX()  + " | " + location.getY() + " | " + location.getZ();
+    }
 
-        Location portal = event.getPortalTravelAgent().findPortal(event.getTo());
-        Claim claim;
+    @EventHandler
+    public void onPortal(PlayerPortalEvent event) {
+        System.out.println("Portal: " + event.getCause().name() + " / " +  locToString(event.getFrom()) + " | " + locToString(event.getTo()));
 
-        if(portal != null) {
-            claim = PCS_Claim.getClaim(portal.getChunk());
-            if(claim != null && !claim.canBuild(event.getPlayer())) {
-                event.setCancelled(true);
-                event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", claim.getOwner().getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.portal-claimed")));
+        if(event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) return;
+
+        Claim claim = PCS_Claim.getClaim(event.getTo().getChunk());
+        if(claim != null && !claim.canBuild(event.getPlayer())) {
+            event.setCancelled(true);
+            event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", claim.getOwner().getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.portal-claimed")));
+        }
+        System.out.println(event.isCancelled());
+    }
+
+    public void onPortalCreate(PortalCreateEvent event) {
+        final Entity entity = event.getEntity();
+
+        System.out.println("Portal create: " + event.getReason() + " | " + entity);
+        if(event.getReason() != PortalCreateEvent.CreateReason.NETHER_PAIR) return;
+
+        event.getBlocks().forEach(blockState -> System.out.println(blockState.getWorld().getName()));
+        event.setCancelled(true);
+        if(true) return;
+
+        Set<Claim> claims = event.getBlocks().stream().map(BlockState::getChunk).map(PCS_Claim::getClaim).collect(Collectors.toSet());
+
+        if(!claims.isEmpty() && entity instanceof Player) {
+            Player player = (Player) entity;
+            if(claims.stream().anyMatch(c -> !c.canBuild(player))) {
+                //TODO Msg
             }
         }
-        else {
-            event.setCancelled(true);
-            event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.portal-new")));
-        }
-    }
+
+    }*/
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onFlow(BlockFromToEvent event) {
