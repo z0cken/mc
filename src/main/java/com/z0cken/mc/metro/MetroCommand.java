@@ -144,7 +144,7 @@ public class MetroCommand implements CommandExecutor {
                         .define("LAPIS", Integer.toString(PCS_Progression.getProgression(player, "metro_lapis")))
                         .define("KILLS", Integer.toString(PCS_Progression.getProgression(player, "metro_kills")))
                         .define("TIME", Integer.toString(PCS_Progression.getProgression(player, "metro_time") / 60));
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 String s1 = ChatColor.RED + " --- ";
                 builder = builder.define("XP", s1)
                         .define("LAPIS", s1)
