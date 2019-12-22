@@ -5,6 +5,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.z0cken.mc.claim.PCS_Claim;
 import com.z0cken.mc.core.Database;
 import com.z0cken.mc.core.util.MessageBuilder;
 import com.z0cken.mc.essentials.PCS_Essentials;
@@ -27,7 +28,7 @@ public class ModuleDiscover extends Module implements Listener {
 
     private static final Database DATABASE = Database.MAIN;
     private static int INTERVAL, MAX_DISTANCE_SQ;
-    private final Set<Place> places = new HashSet<>();
+    private Set<Place> places;
 
     ModuleDiscover(String configPath) {
         super(configPath);
@@ -55,7 +56,9 @@ public class ModuleDiscover extends Module implements Listener {
         INTERVAL = Math.max(100, getConfig().getInt("interval") * 20);
         MAX_DISTANCE_SQ = (int) Math.pow(getConfig().getInt("max-distance"), 2);
 
+        places = new HashSet<>();
         importPlaces();
+        places.forEach(System.out::println);
     }
 
     private void importPlaces() {
@@ -92,11 +95,21 @@ public class ModuleDiscover extends Module implements Listener {
 
                 event.setCancelled(true);
                 if(!hasDiscovered(event.getPlayer(), place.getRegion().getId())) event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", place.getName()).build(getConfig().getString("messages.undiscovered")));
-                else event.getPlayer().teleport(place.getTarget());
+                else new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        event.getPlayer().teleport(place.getTarget());
+                    }
+                }.runTaskLater(PCS_Claim.getInstance(), 1);
 
             } else if(place.isNearTarget(event.getFrom())) {
                 event.setCancelled(true);
-                event.getPlayer().teleport(place.getSource());
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        event.getPlayer().teleport(place.getSource());
+                    }
+                }.runTaskLater(PCS_Claim.getInstance(), 1);
             }
         }
     }
@@ -167,10 +180,12 @@ public class ModuleDiscover extends Module implements Listener {
         }
 
         public boolean isNearSource(Location location) {
+            if(location.getWorld() != source.getWorld()) return false;
             return source.distanceSquared(location) < MAX_DISTANCE_SQ;
         }
 
         public boolean isNearTarget(Location location) {
+            if(location.getWorld() != target.getWorld()) return false;
             return target.distanceSquared(location) < MAX_DISTANCE_SQ;
         }
 
