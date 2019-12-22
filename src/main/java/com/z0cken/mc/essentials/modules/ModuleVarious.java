@@ -8,10 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class ModuleVarious extends Module implements Listener {
 
-    private boolean easySleep, prohibitCure, blockFarmDrops;
+    private boolean easySleep, blockVillagers, blockFarmDrops;
 
     ModuleVarious(String configPath) {
         super(configPath);
@@ -20,7 +21,7 @@ public class ModuleVarious extends Module implements Listener {
     @Override
     protected void load() {
         easySleep = getConfig().getBoolean("easy-sleep");
-        prohibitCure = getConfig().getBoolean("prohibit-cure");
+        blockVillagers = getConfig().getBoolean("block-villagers");
         blockFarmDrops = getConfig().getBoolean("block-farm-drops");
     }
 
@@ -32,10 +33,17 @@ public class ModuleVarious extends Module implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOW)
+    public void onInteract(PlayerInteractEntityEvent event) {
+        if(blockVillagers && event.getRightClicked().getType() == EntityType.VILLAGER) {
+            event.setCancelled(true);
+            event.getRightClicked().remove();
+        }
+    }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW)
     public void onCure(CreatureSpawnEvent event) {
-        if(prohibitCure && event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) event.setCancelled(true);
+        if(blockVillagers && event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CURED) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
