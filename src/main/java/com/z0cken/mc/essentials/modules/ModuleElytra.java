@@ -1,5 +1,6 @@
 package com.z0cken.mc.essentials.modules;
 
+import com.z0cken.mc.essentials.PCS_Essentials;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ModuleElytra extends Module implements Listener {
 
@@ -27,10 +29,28 @@ public class ModuleElytra extends Module implements Listener {
     @Override
     protected void load() {
         radius = getConfig().getInt("fly-radius");
-        String worldName = getConfig().getString("end-world");
+
+        final String worldName = getConfig().getString("end-world");
         if(worldName == null) disable();
         else end = Bukkit.getWorld(worldName);
         if(end == null) disable();
+        else {
+            final int checkInterval = getConfig().getInt("check-interval");
+            tasks.add(new BukkitRunnable() {
+                int radiusSquared = (int) Math.pow(radius, 2);
+                @Override
+                public void run() {
+                    for(Player player : end.getPlayers()) {
+                        if(!(player.getLocation().distanceSquared(new Location(end, 0, player.getLocation().getY(), 0)) > radiusSquared)) {
+                            if(player.isGliding()) {
+                                player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, checkInterval + 1, 20, false, false));
+                            }
+                        }
+                    }
+                }
+            }.runTaskTimer(PCS_Essentials.getInstance(), 5, checkInterval));
+        }
     }
 
     private static Location getSafeLocation(Location origin, int range) {
