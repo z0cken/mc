@@ -40,7 +40,7 @@ public class ModuleDiscover extends Module implements Listener {
                 Bukkit.getOnlinePlayers().forEach(p -> {
                     Location location = p.getLocation();
                     places.forEach(r -> {
-                        if(r.getRegion().contains(BlockVector3.at(location.getX(), location.getY(), location.getZ()))) {
+                        if(location.getWorld().equals(r.getTarget().getWorld()) && r.getRegion().contains(BlockVector3.at(location.getX(), location.getY(), location.getZ()))) {
                             if(hasDiscovered(p, r.getRegion().getId())) return;
                             discover(p, r.getRegion().getId());
                             p.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", r.getName()).build(getConfig().getString("messages.discovered")));
