@@ -106,7 +106,16 @@ class DatabaseHelper {
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT * FROM claims WHERE x =" + chunk.getX() + " AND z = " + chunk.getZ() + ";")) {
             if(resultSet.next()) {
                 Location location = new Location(chunk.getWorld(), resultSet.getInt(4), resultSet.getInt(5), resultSet.getInt(6));
-                return new Claim(UUID.fromString(resultSet.getString(3)), location, Material.valueOf(resultSet.getString(7)));
+                String materialName = resultSet.getString(7);
+
+                Material baseMaterial;
+                try {
+                    baseMaterial = Material.valueOf(materialName);
+                } catch (IllegalArgumentException e) {
+                    PCS_Claim.getInstance().getLogger().warning(String.format("Invalid material %s for chunk: %s", materialName, location.getChunk()));
+                    baseMaterial = Material.AIR;
+                }
+                return new Claim(UUID.fromString(resultSet.getString(3)), location, baseMaterial);
             }
         } catch (SQLException e) {
             e.printStackTrace();
