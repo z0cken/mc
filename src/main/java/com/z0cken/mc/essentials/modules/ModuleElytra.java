@@ -4,7 +4,6 @@ import com.z0cken.mc.essentials.PCS_Essentials;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -20,7 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class ModuleElytra extends Module implements Listener {
 
     private World end;
-    private int radius;
+    private int radius, checkInterval, searchRadius;
 
     ModuleElytra(String configPath) {
         super(configPath);
@@ -29,13 +28,15 @@ public class ModuleElytra extends Module implements Listener {
     @Override
     protected void load() {
         radius = getConfig().getInt("fly-radius");
+        checkInterval = getConfig().getInt("check-interval");
+        searchRadius = getConfig().getInt("search-radius");
 
         final String worldName = getConfig().getString("end-world");
         if(worldName == null) disable();
         else end = Bukkit.getWorld(worldName);
+
         if(end == null) disable();
         else {
-            final int checkInterval = getConfig().getInt("check-interval");
             tasks.add(new BukkitRunnable() {
                 int radiusSquared = (int) Math.pow(radius, 2);
                 @Override
@@ -76,16 +77,17 @@ public class ModuleElytra extends Module implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onGlide(EntityToggleGlideEvent event) {
         final Player player = (Player) event.getEntity();
-        if(!player.getWorld().equals(end) || event.getEntityType() != EntityType.PLAYER) return;
+        if(!player.getWorld().equals(end)) return;
         if(event.isGliding() && !mayGlide(player)) {
 
             sendBlockTitle(player);
 
-            Location safeLocation = getSafeLocation(player.getLocation(), 10);
+            Location safeLocation = getSafeLocation(player.getLocation(), searchRadius);
             if(safeLocation != null) {
                 safeLocation.setYaw(player.getLocation().getYaw());
                 player.teleport(safeLocation);
                 event.setCancelled(true);
+                player.setGliding(false);
             } else player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 1));
         }
     }

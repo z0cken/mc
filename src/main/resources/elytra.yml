@@ -1,3 +1,4 @@
 fly-radius: 100
 end-world: world_the_end
 check-interval: 20
+search-radius: 10
