@@ -222,7 +222,6 @@ public class ModuleMinion extends Module implements Listener {
         public void onSpawn() {
             Villager v = (Villager) npc.getEntity();
             v.setProfession(Villager.Profession.NITWIT);
-            v.setCareer(Villager.Career.NITWIT);
             v.setBaby();
             v.setAgeLock(true);
 
