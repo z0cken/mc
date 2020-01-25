@@ -240,7 +240,7 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInteractEntity(PlayerInteractEntityEvent event) {
-        if(event.getRightClicked() instanceof Tameable && ((Tameable)event.getRightClicked()).getOwner().equals(event.getPlayer())) return;
+        if(event.getRightClicked() instanceof Tameable && event.getPlayer().equals(((Tameable)event.getRightClicked()).getOwner())) return;
         handleManipulation(event, event.getRightClicked().getLocation().getChunk(), event.getPlayer(), false);
     }
 
