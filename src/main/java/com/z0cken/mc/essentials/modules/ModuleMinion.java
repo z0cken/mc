@@ -93,7 +93,7 @@ public class ModuleMinion extends Module implements Listener {
             if(damager instanceof Villager && damager.getName().equals(event.getEntity().getName())) {
                 event.setDeathMessage(ChatColor.YELLOW + event.getEntity().getName() + " wurde verbessert");
                 try {
-                    PersonaAPI.getPersona(event.getEntity().getUniqueId()).awardBadge(Persona.Badge.MINION);
+                    PersonaAPI.getPersona(event.getEntity().getUniqueId()).addBadge(Persona.Badge.MINION);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

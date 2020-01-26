@@ -25,14 +25,28 @@ public class ModuleAward extends Module implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandsender, Command command, String s, String[] args) {
-        if(command.getName().equalsIgnoreCase("award")) {
-            Player target = Bukkit.getPlayer(args[0]);
-            if(target != null) {
+        if (command.getName().equalsIgnoreCase("award")) {
+            boolean add;
+            if (args[0].equalsIgnoreCase("add")) add = true;
+            else if (args[0].equalsIgnoreCase("remove")) add = false;
+            else {
+                commandsender.sendMessage("Syntax: /award [add|remove] [badge] [name]");
+                return true;
+            }
+
+            Player target = Bukkit.getPlayer(args[2]);
+            if (target != null) {
                 try {
                     Persona.Badge badge = Persona.Badge.valueOf(args[1].toUpperCase());
+                    final Persona persona = PersonaAPI.getPersona(target.getUniqueId());
 
-                    PersonaAPI.getPersona(target.getUniqueId()).awardBadge(badge);
-                    commandsender.sendMessage("Badge freigeschaltet!");
+                    if (add) {
+                        persona.addBadge(badge);
+                        commandsender.sendMessage("Badge hinzugefügt!");
+                    } else {
+                        persona.removeBadge(badge);
+                        commandsender.sendMessage("Badge entfernt!");
+                    }
 
                 } catch (IllegalArgumentException e) {
                     commandsender.sendMessage("Badge nicht gefunden!");
@@ -40,7 +54,6 @@ public class ModuleAward extends Module implements Listener, CommandExecutor {
                     commandsender.sendMessage("Datenbankfehler!");
                     e.printStackTrace();
                 }
-
             } else {
                 commandsender.sendMessage("Spieler nicht gefunden!");
             }
