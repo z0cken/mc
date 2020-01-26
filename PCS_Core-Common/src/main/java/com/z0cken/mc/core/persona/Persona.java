@@ -179,10 +179,16 @@ public final class Persona {
         Shadow.TERMS.setBoolean(uuid, b);
     }
 
-    public void awardBadge(Badge badge) throws SQLException {
-        if(badges.contains(badge)) return;
-        DatabaseHelper.awardBadge(uuid, badge);
-        badges.add(badge);
+    public boolean addBadge(Badge badge) throws SQLException {
+        if(!badges.add(badge)) return false;
+        DatabaseHelper.addBadge(uuid, badge);
+        return true;
+    }
+
+    public boolean removeBadge(Badge badge) throws SQLException {
+        if(!badges.remove(badge)) return false;
+        DatabaseHelper.removeBadge(uuid, badge);
+        return true;
     }
 
     public enum Badge {

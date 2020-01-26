@@ -68,9 +68,18 @@ final class DatabaseHelper {
         return true;
     }
 
-    static void awardBadge(@Nonnull UUID uuid, @Nonnull Persona.Badge badge) throws SQLException {
+    static void addBadge(@Nonnull UUID uuid, @Nonnull Persona.Badge badge) throws SQLException {
         try (Connection connection = DATABASE.getConnection();
              PreparedStatement pstmt = connection.prepareStatement("INSERT IGNORE INTO badges VALUES (?, ?)")) {
+            pstmt.setString(1, uuid.toString());
+            pstmt.setString(2, badge.name());
+            pstmt.executeUpdate();
+        }
+    }
+
+    static void removeBadge(@Nonnull UUID uuid, @Nonnull Persona.Badge badge) throws SQLException {
+        try (Connection connection = DATABASE.getConnection();
+             PreparedStatement pstmt = connection.prepareStatement("DELETE FROM badges WHERE player = ? AND badge = ?")) {
             pstmt.setString(1, uuid.toString());
             pstmt.setString(2, badge.name());
             pstmt.executeUpdate();
