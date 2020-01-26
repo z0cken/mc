@@ -24,10 +24,13 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /** @author Flare */
 public final class PCS_Checkpoint extends Plugin implements Listener {
@@ -41,6 +44,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     private static LuckPermsApi luckPermsApi;
 
     private static Queue<ProxiedPlayer> queue = new LinkedList<>();
+    private static Collection<Pattern> publicPatterns;
     private static Configuration config;
     private static ServerInfo hub;
     private static ServerInfo main;
@@ -111,8 +115,9 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         if(!event.getTarget().equals(hub)) {
 
             Persona persona = PersonaAPI.getPersona(player.getUniqueId());
+            boolean pub = publicPatterns.stream().anyMatch(p -> p.matcher(event.getTarget().getName()).find());
 
-            if(!persona.isVerified() && !persona.isGuest()) {
+            if(!persona.isVerified() && !persona.isGuest() && !pub) {
                 player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.verify.prompt")));
                 if(player.getServer() == null) event.setTarget(hub);
                 else event.setCancelled(true);
@@ -225,6 +230,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         hub = getProxy().getServerInfo(config.getString("hub-name"));
         main = getProxy().getServerInfo(config.getString("main-name"));
         mainSlots = config.getInt("main-slots");
+        publicPatterns = config.getStringList("public").stream().map(Pattern::compile).collect(Collectors.toSet());
 
         RequestHelper.load();
         CommandVerify.load();

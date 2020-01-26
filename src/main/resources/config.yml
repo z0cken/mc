@@ -10,6 +10,8 @@ bot:
   password:
   login-timeout-multiplier: 3
   cookie:
+public:
+  - (event)[0-9]*
 messages:
   error: §c§l>_ §7Ein Fehler ist aufgetreten...
   anon:
