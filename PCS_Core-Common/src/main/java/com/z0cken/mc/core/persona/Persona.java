@@ -193,7 +193,8 @@ public final class Persona {
 
     public enum Badge {
         EARLY_SUPPORTER("Früher Vogel", ChatColor.DARK_AQUA),
-        MINION("Unverbesserlich", ChatColor.YELLOW);
+        MINION("Unverbesserlich", ChatColor.YELLOW),
+        BEDWARS("Fliesentischkrieger", ChatColor.GRAY);
 
         private String title;
         private ChatColor color;
