@@ -15,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -154,7 +155,12 @@ public class Menu extends CraftInventoryCustom implements Listener {
     public void onClose(InventoryCloseEvent event) {
         if (event.getInventory() != this) return;
 
-        if (parent != null) event.getPlayer().openInventory(parent);
+        if (parent != null) new BukkitRunnable() {
+            @Override
+            public void run() {
+                event.getPlayer().openInventory(parent);
+            }
+        }.runTaskLater(PCS_Core.getInstance(), 1);
     }
 
     public static class Button extends ItemStack {
