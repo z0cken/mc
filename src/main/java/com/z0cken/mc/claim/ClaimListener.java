@@ -90,6 +90,8 @@ class ClaimListener implements Listener {
     }
 
     private static boolean isClaimable(Chunk chunk) {
+        if(!PCS_Claim.getMainWorld().equals(chunk.getWorld())) return false;
+
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(chunk.getWorld()));
         if(regionManager == null) return false;
         BlockVector3 v1 = BlockVector3.at(chunk.getX() << 4, 0, chunk.getZ() << 4);

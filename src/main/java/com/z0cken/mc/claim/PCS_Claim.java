@@ -251,7 +251,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     }
 
     public static Claim claim(@Nullable OfflinePlayer player, @Nonnull Block baseBlock) {
-        if(!baseBlock.getWorld().equals(mainWorld)) return null;
         Claim claim = new Claim(player == null ? null : player.getUniqueId(), baseBlock);
         DatabaseHelper.commit(claim);
 
@@ -280,6 +279,10 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     public static boolean isOverriding(@Nonnull Player player) {
         return overriding.contains(player);
+    }
+
+    public static World getMainWorld() {
+        return mainWorld;
     }
 
     public static class Unsafe {
