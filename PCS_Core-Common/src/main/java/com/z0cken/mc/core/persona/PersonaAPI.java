@@ -28,7 +28,12 @@ public final class PersonaAPI {
             old.invalidateAll();
         }
 
-        Unirest.setTimeouts(configBridge.getInt("persona.connection-timeout"), configBridge.getInt("persona.socket-timeout"));
+        //Can't set timeouts when using custom HttpClient for TLS workaround in Checkpoint
+        try {
+            Unirest.setTimeouts(configBridge.getInt("persona.connection-timeout"), configBridge.getInt("persona.socket-timeout"));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Persona getPersona(UUID uuid) {
