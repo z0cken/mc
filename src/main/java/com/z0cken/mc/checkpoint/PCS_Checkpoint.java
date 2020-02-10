@@ -1,6 +1,7 @@
 package com.z0cken.mc.checkpoint;
 
 import com.google.common.io.ByteStreams;
+import com.mashape.unirest.http.Unirest;
 import com.z0cken.mc.core.persona.BoardProfile;
 import com.z0cken.mc.core.persona.Persona;
 import com.z0cken.mc.core.persona.PersonaAPI;
@@ -20,8 +21,12 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContexts;
 
 import java.io.*;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -86,6 +91,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         //Prevents runtime changes by user to be overwritten
         loadConfig();
         config.set("bot.timestamp", RequestHelper.timestamp);
+        config.set("bot.cookie", RequestHelper.cookie);
 
         try {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(config, new File(getDataFolder(), "config.yml"));
@@ -225,20 +231,27 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
 
     void load() {
         loadConfig();
-        config.set("bot.timestamp", RequestHelper.timestamp);
 
         hub = getProxy().getServerInfo(config.getString("hub-name"));
         main = getProxy().getServerInfo(config.getString("main-name"));
         mainSlots = config.getInt("main-slots");
         publicPatterns = config.getStringList("public").stream().map(Pattern::compile).collect(Collectors.toSet());
 
+        //Workaround for https://stackoverflow.com/q/52574050/12076840
+        try {
+            Unirest.setHttpClient(HttpClientBuilder.create().setSSLContext(SSLContexts.custom().useProtocol("TLSv1.2").build()).build());
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+
         RequestHelper.load();
         CommandVerify.load();
         CommandInvite.load();
         CommandAnon.load();
 
+        //In case of reload, cancel existing tasks
         if(messageTask != null) messageTask.cancel();
-        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchMessages, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
+        messageTask = getProxy().getScheduler().schedule(this, RequestHelper::fetchConversations, 5 , config.getInt("bot.interval"), TimeUnit.SECONDS);
 
         if(queueTask != null) queueTask.cancel();
         queueTask = getProxy().getScheduler().schedule(this, this::processQueue, 5 , config.getInt("queue-interval"), TimeUnit.SECONDS);

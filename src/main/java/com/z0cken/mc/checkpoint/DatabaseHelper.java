@@ -63,6 +63,7 @@ class DatabaseHelper {
             statement.executeUpdate("INSERT IGNORE INTO verified(player, username, invites) VALUES ('" + uuid + "', '" + name + "', 0);");
             statement.executeUpdate("DELETE FROM pending WHERE player = '" + uuid.toString() + "'");
             statement.executeUpdate("DELETE FROM guests WHERE guest = '" + uuid.toString() + "'");
+            log.info(String.format("Successfully verified %s as %s", uuid, name));
         } catch (SQLException e) {
             e.printStackTrace();
             log.severe(String.format("A database error occurred while verifying %s", uuid));
