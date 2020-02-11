@@ -85,7 +85,7 @@ public final class CommandFriend extends Command {
                         playerRequests.add(target);
 
                         targetComponent.thenAcceptAsync(component -> player.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.add-first"))));
-                        playerComponent.thenAcceptAsync(component -> target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).build(config.getString("messages.add-third"))));
+                        playerComponent.thenAcceptAsync(component -> target.sendMessage(MessageBuilder.DEFAULT.define("PLAYER", component).define("NAME", player.getName()).build(config.getString("messages.add-third"))));
 
                     } else {
                         player.sendMessage(MessageBuilder.DEFAULT.build(config.getString("messages.not-found")));
