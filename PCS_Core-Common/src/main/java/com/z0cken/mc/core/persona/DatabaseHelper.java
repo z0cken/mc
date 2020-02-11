@@ -90,7 +90,14 @@ final class DatabaseHelper {
         SortedSet<Persona.Badge> set = new TreeSet<>();
         try(Connection connection = DATABASE.getConnection();
             ResultSet resultSet = connection.createStatement().executeQuery("SELECT badge FROM badges WHERE player = '" + uuid.toString() + "'")) {
-            while(resultSet.next()) set.add(Persona.Badge.valueOf(resultSet.getString(1)));
+            while(resultSet.next()) {
+                final String badge = resultSet.getString(1);
+                try {
+                    set.add(Persona.Badge.valueOf(badge));
+                } catch (IllegalArgumentException e) {
+                    CoreBridge.getPlugin().getLogger().warning("Encountered an unknown badge: " + badge);
+                }
+            }
         }
 
         return set;
