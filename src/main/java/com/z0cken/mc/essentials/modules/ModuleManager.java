@@ -25,6 +25,7 @@ public class ModuleManager {
             .put("inactive", ModuleInactive.class)
             .put("nether", ModuleNether.class)
             .put("elytra", ModuleElytra.class)
+            .put("restart", ModuleRestart.class)
         .build();
 
     private static final Set<Module> activeModules = new HashSet<>();
