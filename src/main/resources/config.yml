@@ -44,6 +44,8 @@ messages:
     no-guests: "§c§l>_§7 Du hast keine Bürgschaften!"
     list-header: "§7------------< §fBürgschaften §7>------------"
     list: "§7> {NAME} §8: {DATE}"
+    add: "§a§l>_ Du hast {INVITES} Invites an {NAME} gegeben!"
+    get: "§a§l>_ {NAME} hat derzeit {INVITES} Invites!"
   verify:
     prompt: §c§l>_ §7Bitte nutze §c§l/verify §7um deinen Account zu bestätigen!
     denied-isverified: §c§l>_ §7Dein Account ist bereits bestätigt!

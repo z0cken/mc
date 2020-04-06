@@ -39,47 +39,73 @@ class CommandInvite extends Command {
 
     @Override
     public void execute(CommandSender commandSender, String[] args) {
-        if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer player = (ProxiedPlayer) commandSender;
+        if (!(commandSender instanceof ProxiedPlayer)) return;
 
-            Persona persona = PersonaAPI.getPersona(player.getUniqueId());
+        final ProxiedPlayer player = (ProxiedPlayer) commandSender;
+        final Persona persona = PersonaAPI.getPersona(player.getUniqueId());
 
+        if (persona != null && !persona.isGuest()) {
+            MessageBuilder builder = MessageBuilder.DEFAULT;
 
-            if (persona != null && !persona.isGuest()) {
-                int invites = DatabaseHelper.getInvites(player.getUniqueId());
-                MessageBuilder builder = MessageBuilder.DEFAULT.define("INVITES", Integer.toString(invites));
+            if (args.length > 0) {
+                if (args[0].equalsIgnoreCase("list")) {
+                    try {
+                        Map<UUID, Timestamp> guests = DatabaseHelper.getGuests(player.getUniqueId());
 
-                if (args.length > 0) {
-                    if(args[0].equalsIgnoreCase("list")) {
-                        try {
-                            Map<UUID, Timestamp> guests = DatabaseHelper.getGuests(player.getUniqueId());
+                        if (guests.isEmpty())
+                            player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("no-guests")));
+                        else {
+                            String s = cfg.getString("list");
 
-                            if (guests.isEmpty()) player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("no-guests")));
-                            else {
-                                String s = cfg.getString("list");
-
-                                List<BaseComponent[]> set = new ArrayList<>(guests.size());
-                                for(Map.Entry<UUID, Timestamp> entry : guests.entrySet()) {
-                                    try {
-                                        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(entry.getKey());
-                                        set.add(MessageBuilder.DEFAULT.define("NAME", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
-                                    } catch (SQLException e) {
-                                        player.sendMessage(MessageBuilder.DEFAULT.build(PCS_Checkpoint.getConfig().getString("messages.error")));
-                                        e.printStackTrace();
-                                        return;
-                                    }
+                            List<BaseComponent[]> set = new ArrayList<>(guests.size());
+                            for (Map.Entry<UUID, Timestamp> entry : guests.entrySet()) {
+                                try {
+                                    ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(entry.getKey());
+                                    set.add(MessageBuilder.DEFAULT.define("NAME", proxiedPlayer != null ? proxiedPlayer.getName() : Shadow.NAME.getString(entry.getKey())).define("DATE", entry.getValue().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd.MM.yy").withZone(ZoneId.ofOffset("UTC", ZoneOffset.of("+1"))))).build(s));
+                                } catch (SQLException e) {
+                                    player.sendMessage(MessageBuilder.DEFAULT.build(PCS_Checkpoint.getConfig().getString("messages.error")));
+                                    e.printStackTrace();
+                                    return;
                                 }
-                                player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("list-header")));
-                                set.forEach(player::sendMessage);
                             }
+                            player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("list-header")));
+                            set.forEach(player::sendMessage);
+                        }
 
+                    } catch (SQLException e) {
+                        player.sendMessage(builder.build(PCS_Checkpoint.getConfig().getString("messages.error")));
+                        e.printStackTrace();
+                    }
+
+                } else if (args[0].equalsIgnoreCase("add") && player.hasPermission("pcs.checkpoint.invite.add")) {
+                    if (args.length > 2) {
+                        final ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
+                        final int invites = Integer.parseInt(args[2]);
+                        try {
+                            DatabaseHelper.giveInvites(target.getUniqueId(), invites);
+                            player.sendMessage(builder
+                                    .define("NAME", target.getName())
+                                    .define("INVITES", String.valueOf(invites))
+                                    .build(PCS_Checkpoint.getConfig().getString("messages.invite.add"))
+                            );
                         } catch (SQLException e) {
                             player.sendMessage(builder.build(PCS_Checkpoint.getConfig().getString("messages.error")));
                             e.printStackTrace();
                         }
+                    }
+                } else {
+                    final int invites = DatabaseHelper.getInvites(player.getUniqueId());
+                    builder = builder.define("INVITES", String.valueOf(invites));
 
+                    if (args.length > 1 && args[0].equalsIgnoreCase("get") && player.hasPermission("pcs.checkpoint.invite.get")) {
+                        final ProxiedPlayer target = ProxyServer.getInstance().getPlayer(args[1]);
+                        player.sendMessage(builder
+                                .define("NAME", target.getName())
+                                .build(PCS_Checkpoint.getConfig().getString("messages.invite.get"))
+                        );
                     } else if (invites > 0) {
                         builder = builder.define("NAME", args[0]);
+
                         try {
                             UUID uuid = CoreUtil.getMojangUUID(args[0]);
                             if (uuid.equals(player.getUniqueId())) {
@@ -94,7 +120,7 @@ class CommandInvite extends Command {
                                     player.sendMessage(builder.build(cfg.getString("confirmed")));
 
                                     ProxiedPlayer guest = ProxyServer.getInstance().getPlayer(uuid);
-                                    if(guest != null) {
+                                    if (guest != null) {
                                         guest.sendMessage(MessageBuilder.DEFAULT.define("NAME", player.getName()).build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
                                     }
                                 } else {
@@ -113,15 +139,14 @@ class CommandInvite extends Command {
                     } else {
                         player.sendMessage(builder.build(cfg.getString("denied-noinvites")));
                     }
-                } else {
-                    for (String s : cfg.getStringList("instructions")) {
-                        player.sendMessage(builder.build(s));
-                    }
                 }
             } else {
-                player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("denied-nomember")));
+                for (String s : cfg.getStringList("instructions")) {
+                    player.sendMessage(builder.build(s));
+                }
             }
-
+        } else {
+            player.sendMessage(MessageBuilder.DEFAULT.build(cfg.getString("denied-nomember")));
         }
     }
 
