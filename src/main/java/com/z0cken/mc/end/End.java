@@ -3,12 +3,8 @@ package com.z0cken.mc.end;
 import com.z0cken.mc.end.phase.EndPhase;
 import com.z0cken.mc.end.phase.PhaseType;
 import com.z0cken.mc.progression.PCS_Progression;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,15 +14,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 public class End implements Listener {
 
-    private ConfigurationSection configSection;
+    private final ConfigurationSection configSection;
 
     private final long respawnTime;
     private final World world;
@@ -34,9 +28,9 @@ public class End implements Listener {
 
     private EndPhase phase;
     private DragonRespawnRunnable respawnRunnable;
-    private Set<Player> mainPlayers = new HashSet<>();
+    private final Set<Player> mainPlayers = new HashSet<>();
 
-    private File elytrasFile;
+    private final ElytraManager elytraManager;
 
     //TODO Define rollback area
     End(ConfigurationSection section) {
@@ -44,13 +38,14 @@ public class End implements Listener {
 
         final String worldName = section.getString("world");
         World w = Bukkit.getWorld(worldName);
-        world = w != null ? w : new ManagedEndCreator(worldName, section.getInt("max-elytra")).getWorld();
+        world = w != null ? w : Bukkit.createWorld(new WorldCreator(worldName).environment(World.Environment.THE_END));
+        //world = w != null ? w : new ManagedEndCreator(worldName, section.getInt("max-elytra")).getWorld();
 
         this.respawnTime = section.getLong("respawn-time");
         this.mainRadius = section.getInt("main-radius");
         getWorld().setSpawnLocation(section.getSerializable("spawn", Location.class));
 
-        elytrasFile = new File(PCS_End.getInstance().getDataFolder(), worldName + ".yml");
+        elytraManager = new ElytraManager(world);
 
         final String lastPhase = section.getString("last-phase");
         new BukkitRunnable() {
@@ -152,6 +147,10 @@ public class End implements Listener {
         return respawnRunnable;
     }
 
+    public ElytraManager getElytraManager() {
+        return elytraManager;
+    }
+
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         if(!event.getPlayer().getWorld().equals(getWorld())) return;
@@ -171,32 +170,5 @@ public class End implements Listener {
         } else if(event.getFrom().equals(getWorld())) {
             //Leave
         }
-    }
-
-    public void tryFindElytra(Location location) {
-        YamlConfiguration matches = YamlConfiguration.loadConfiguration(elytrasFile);
-
-        for(String key : matches.getKeys(false)) {
-            Location matchLoc = matches.getSerializable(key + ".location", Location.class);
-            if(matchLoc.distanceSquared(location) < 1 && !matches.getBoolean(key + " .found")) {
-                matches.set(key + ".found", true);
-                try {
-                    matches.save(elytrasFile);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public int getAvailableElytra() {
-        YamlConfiguration matches = YamlConfiguration.loadConfiguration(elytrasFile);
-
-        int available = 0;
-        for(String key : matches.getKeys(false)) {
-            if(!matches.getBoolean(key + ".found")) available++;
-        }
-
-        return available;
     }
 }

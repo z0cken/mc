@@ -9,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+
 public class PCS_End extends JavaPlugin {
 
     private static PCS_End instance;
@@ -53,7 +55,13 @@ public class PCS_End extends JavaPlugin {
             end.getPhase().stop();
         }
 
-        getEnd().rollback();
+        try {
+            end.getElytraManager().save();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        end.rollback();
         saveConfig();
 
         MagicEgg.getEggs().forEach(MagicEgg::expire);

@@ -17,17 +17,15 @@ import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class EndCommand implements CommandExecutor {
-
-    private BukkitTask scanTask;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -44,7 +42,7 @@ public class EndCommand implements CommandExecutor {
                         stringBuilder.append(p.getName());
                         if(i < list.size()) stringBuilder.append(", ");
                     }
-                    if(stringBuilder.length() > 0) player.spigot().sendMessage(PCS_End.getInstance().getMessageBuilder().define("VALUE", Integer.toString(list.size())).define("LIST", stringBuilder.toString()).build(PCS_End.getInstance().getConfig().getString("messages.list")));
+                    if(stringBuilder.length() > 0) player.spigot().sendMessage(PCS_End.getInstance().getMessageBuilder().define("VALUE", String.valueOf(list.size())).define("LIST", stringBuilder.toString()).build(PCS_End.getInstance().getConfig().getString("messages.list")));
                     break;
                 case "top":
                     try {
@@ -58,12 +56,12 @@ public class EndCommand implements CommandExecutor {
                         for(Map.Entry<OfflinePlayer, Integer> entry : leaderboard.entrySet()) {
                             j++;
                             player.spigot().sendMessage(MessageBuilder.DEFAULT
-                                    .define("INDEX", Integer.toString(j))
+                                    .define("INDEX", String.valueOf(j))
                                     .define("PLAYER", entry.getKey().getName())
                                     .define("DAMAGE", entry.getValue().toString())
                                     .define("CRYSTALS", lapis.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "end_crystals")).toString())
                                     .define("KILLS", kills.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "end_kills")).toString())
-                                    .define("TIME", Integer.toString(time.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "end_time")) / 60))
+                                    .define("TIME", String.valueOf(time.getOrDefault(entry.getKey(), PCS_Progression.getProgression(entry.getKey(), "end_time")) / 60))
                                     .build(PCS_End.getInstance().getConfig().getString("messages.leaderboard")));
                         }
                     } catch (SQLException e) {
@@ -107,9 +105,13 @@ public class EndCommand implements CommandExecutor {
                     break;
                 case "scan":
                     if(!player.hasPermission("pcs.end.scan")) break;
-                    if(scanTask == null || scanTask.isCancelled()) {
-                        scanTask = new ManagedEndCreator(PCS_End.getInstance().getEnd().getWorld()).scan(Integer.parseInt(args[1]));
-                    } else scanTask.cancel();
+                    final ElytraScanner scanner = PCS_End.getInstance().getEnd().getElytraManager().getScanner();
+                    if(scanner.isScanning()) {
+                        scanner.cancel();
+                        break;
+                    }
+                    scanner.startingSize(Integer.parseInt(args[1])).sizeLimit(Integer.parseInt(args[2])).matchLimit(Integer.parseInt(args[3])).timeLimit(Integer.parseInt(args[4]), TimeUnit.SECONDS);
+                    PCS_End.getInstance().getEnd().getElytraManager().scan(scanner);
                     break;
             }
         } else {
@@ -126,13 +128,13 @@ public class EndCommand implements CommandExecutor {
                     break;
             }
 
-            MessageBuilder builder = MessageBuilder.DEFAULT.define("STATUS", status).define("ELYTRA", Integer.toString(PCS_End.getInstance().getEnd().getAvailableElytra()));
+            MessageBuilder builder = MessageBuilder.DEFAULT.define("STATUS", status).define("ELYTRA", String.valueOf(PCS_End.getInstance().getEnd().getElytraManager().getAvailableElytras().size()));
 
             try {
-                builder = builder.define("DAMAGE-G", Integer.toString(PCS_Progression.getSum("end_damage")))
-                        .define("CRYSTALS-G", Integer.toString(PCS_Progression.getSum("end_crystals")))
-                        .define("KILLS-G", Integer.toString(PCS_Progression.getSum("end_kills")))
-                        .define("TIME-G", Integer.toString(PCS_Progression.getSum("end_time") / 60));
+                builder = builder.define("DAMAGE-G", String.valueOf(PCS_Progression.getSum("end_damage")))
+                        .define("CRYSTALS-G", String.valueOf(PCS_Progression.getSum("end_crystals")))
+                        .define("KILLS-G", String.valueOf(PCS_Progression.getSum("end_kills")))
+                        .define("TIME-G", String.valueOf(PCS_Progression.getSum("end_time") / 60));
             } catch (SQLException e) {
                 String s1 = net.md_5.bungee.api.ChatColor.RED + " --- ";
                 builder = builder.define("DAMAGE-G", s1)
@@ -142,19 +144,10 @@ public class EndCommand implements CommandExecutor {
                 e.printStackTrace();
             }
 
-            try {
-                builder = builder.define("DAMAGE", Integer.toString(PCS_Progression.getProgression(player, "end_damage")))
-                        .define("CRYSTALS", Integer.toString(PCS_Progression.getProgression(player, "end_crystals")))
-                        .define("KILLS", Integer.toString(PCS_Progression.getProgression(player, "end_kills")))
-                        .define("TIME", Integer.toString(PCS_Progression.getProgression(player, "end_time") / 60));
-            } catch (SQLException e) {
-                String s1 = net.md_5.bungee.api.ChatColor.RED + " --- ";
-                builder = builder.define("DAMAGE", s1)
-                        .define("CRYSTALS", s1)
-                        .define("KILLS", s1)
-                        .define("TIME", s1);
-                e.printStackTrace();
-            }
+            builder = builder.define("DAMAGE", String.valueOf(PCS_Progression.getProgression(player, "end_damage")))
+                    .define("CRYSTALS", String.valueOf(PCS_Progression.getProgression(player, "end_crystals")))
+                    .define("KILLS", String.valueOf(PCS_Progression.getProgression(player, "end_kills")))
+                    .define("TIME", String.valueOf(PCS_Progression.getProgression(player, "end_time") / 60));
 
             for(String msg : PCS_End.getInstance().getConfig().getStringList("messages.info")) {
                 player.spigot().sendMessage(builder.build(msg));

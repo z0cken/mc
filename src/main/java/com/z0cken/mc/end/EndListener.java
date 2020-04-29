@@ -1,8 +1,6 @@
 package com.z0cken.mc.end;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
@@ -13,10 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTeleportEvent;
-import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -30,19 +25,18 @@ public class EndListener implements Listener {
         this.end = end;
     }
 
-    private Location getSafeLocation(Location origin, int range) {
+    private static Location getSafeLocation(Location origin, int range) {
         for(int x = -range; x <= range; x++) {
             for(int z = -range; z <= range; z++) {
                 for(int y = range; y >=-range; y--) {
                     final Block block = origin.clone().add(x, y, z).getBlock();
-                    if(block.getType() != Material.AIR && block.getType().isSolid() && block.getRelative(BlockFace.UP).getType() == Material.AIR) return block.getLocation().add(0, 1, 0);
+                    if(block.getType() != Material.AIR && block.getType().isSolid() && block.getRelative(BlockFace.UP).getType() == Material.AIR) return block.getLocation().add(0.5, 1, 0.5);
                 }
             }
         }
         return null;
     }
 
-    @SuppressWarnings("SuspiciousMethodCalls")
     @EventHandler(ignoreCancelled = true)
     public void onGlide(EntityToggleGlideEvent event) {
         final Player player = (Player) event.getEntity();
@@ -89,7 +83,7 @@ public class EndListener implements Listener {
         if(event.getRightClicked().getType() == EntityType.ITEM_FRAME) {
             ItemFrame itemFrame = (ItemFrame) event.getRightClicked();
             if(itemFrame.getItem().getType() == Material.ELYTRA) {
-                end.tryFindElytra(itemFrame.getLocation());
+                end.getElytraManager().discover(itemFrame);
             }
         }
     }
@@ -109,22 +103,38 @@ public class EndListener implements Listener {
         if(Math.abs(event.getEntity().getLocation().getX()) < fallRadius && Math.abs(event.getEntity().getLocation().getZ()) < fallRadius) event.setCancelled(true);
     }
 
-    @EventHandler
-    public void onPortal(PlayerPortalEvent event) {
-        if(event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL && event.getTo().getWorld().equals(end.getWorld())) event.setTo(end.getWorld().getSpawnLocation());
-    }
-
-
     //TODO Why
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageByEntityEvent event) {
-        if(event.getEntityType() != EntityType.PLAYER || !event.getEntity().getWorld().equals(end.getWorld())) return;
-        event.setCancelled(false);
+        if(event.getEntityType() == EntityType.PLAYER && event.getEntity().getWorld().equals(end.getWorld())) event.setCancelled(false);
     }
 
     @EventHandler
-    public void onTeleport(EntityTeleportEvent event) {
-        if(event.getEntityType() != EntityType.ENDER_DRAGON || event.getFrom().getWorld().equals(PCS_End.getInstance().getEnd().getWorld())) return;
-        event.setCancelled(true);
+    public void onEntityTeleport(EntityTeleportEvent event) {
+        if(event.getEntityType() == EntityType.ENDER_DRAGON && event.getFrom().getWorld().equals(end.getWorld())) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        final Location to = event.getTo();
+        final World endWorld = end.getWorld();
+
+        if(event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL && to.getWorld().equals(endWorld)) event.setTo(endWorld.getSpawnLocation());
+        else if(event.getCause() == PlayerTeleportEvent.TeleportCause.END_GATEWAY && !endWorld.getWorldBorder().isInside(to)) endWorld.getWorldBorder().setSize(Math.max(to.getX(), to.getZ()) + 10);
+    }
+
+    @EventHandler
+    public void onTarget(EntityTargetLivingEntityEvent event) {
+        if (event.getEntityType() != EntityType.ENDER_DRAGON || !event.getEntity().getWorld().equals(end.getWorld()))
+            return;
+        if (!end.getMainPlayers().contains(event.getTarget())) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if(Bukkit.getOnlinePlayers().size() == 0 /* Check Time*/) {
+            int limit = ((int) end.getWorld().getWorldBorder().getSize() >> 4) + 16;
+            end.getElytraManager().scan(end.getElytraManager().getScanner().sizeLimit(limit).skip(end.getElytraManager().getScannedLayers()));
+        }
     }
 }
