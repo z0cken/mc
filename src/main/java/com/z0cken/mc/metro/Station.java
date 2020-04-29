@@ -245,7 +245,7 @@ public class Station implements Listener {
             } else {
                 //Own
                 if(event.isShiftClick()) {
-                    if(currentItem.getType() == Material.LAPIS_LAZULI) {
+                    if(currentItem != null && currentItem.getType() == Material.LAPIS_LAZULI) {
                         final int cost = addLapis(currentItem.getAmount());
                         currentItem.setAmount(currentItem.getAmount() - cost);
                         event.getClickedInventory().setItem(event.getSlot(), currentItem);
