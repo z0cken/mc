@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -49,7 +50,9 @@ public class ModuleVarious extends Module implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDeath(EntityDeathEvent event) {
         if(!blockFarmDrops || event.getEntityType() == EntityType.PLAYER) return;
-        switch (event.getEntity().getLastDamageCause().getCause()) {
+        final EntityDamageEvent lastDamageCause = event.getEntity().getLastDamageCause();
+        if(lastDamageCause == null) return;
+        switch (lastDamageCause.getCause()) {
             case CRAMMING:
             case FALL:
             case SUFFOCATION:
