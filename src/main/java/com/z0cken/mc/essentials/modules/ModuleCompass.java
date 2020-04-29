@@ -119,11 +119,11 @@ public class ModuleCompass extends Module implements Listener {
     }, Material.ARROW);
 
     private static final Menu.Button BACK = new Menu.Button((menu, button, player, event) -> {
-        player.openInventory(menu.getParent());
+        player.closeInventory();
     }, Material.BOOK);
 
     private final Menu.Button.ClickEvent FRIENDS_EVENT = (menu, button, player, event) -> {
-        Set<Player> friends;
+        final Set<Player> friends;
         try {
             friends = FriendsAPI.getFriends(player.getUniqueId()).keySet().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).filter(Player::isOnline).collect(Collectors.toSet());
         } catch (SQLException e) {
@@ -133,22 +133,25 @@ public class ModuleCompass extends Module implements Listener {
 
         if(friends.size() == 0) return;
 
-        final int rows = calculateRows(friends.size());
-        final boolean multiPage = friends.size() > 9*6;
+        final int price = getConfig().getInt("friend-price");
+        final int rows = calculateTotalRows(friends.size());
+        final boolean multiPage = rows > 6;
+        final int contentSlots = (multiPage ? 5 : rows) * 9;
 
-        Menu friendMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, getConfig().getString("titles.friends"), menu);
+        final Menu friendMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, getConfig().getString("titles.friends"), menu);
 
         int i = 0;
-        int price = getConfig().getInt("friend-price");
         for(Player friend : friends) {
-            int page = Math.max(0, (int)((double) i / (friendMenu.getSize() - (multiPage ? 9 : 0))));
-            int slot = i % (friendMenu.getSize() - (multiPage ? 9 : 0));
+            final int page = i / contentSlots;
+            final int slot = (i % contentSlots);
 
-            Menu.PricedButton friendButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
-                if(player1.getWorld().equals(friend.getWorld())){
-                    setTarget(player1, friend);
-                    player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.selected")));
-                } else player1.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", friend.getName()).build(getConfig().getString("messages.other-world")));
+            Menu.PricedButton friendButton = new Menu.PricedButton((m, b, p, e) -> {
+                final MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("TARGET", friend.getName());
+
+                if(p.getWorld().equals(friend.getWorld())){
+                    setTarget(p, friend);
+                    p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.selected")));
+                } else p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.other-world")));
 
             }, price, Material.PLAYER_HEAD);
 
@@ -165,7 +168,7 @@ public class ModuleCompass extends Module implements Listener {
             i++;
         }
 
-        if(multiPage) addNavigation(friendMenu, rows);
+        if(multiPage) addNavigation(friendMenu);
 
         player.openInventory(friendMenu);
 
@@ -174,25 +177,30 @@ public class ModuleCompass extends Module implements Listener {
     private final Menu.Button.ClickEvent CLAIMS_EVENT = (menu, button, player, event) -> {
         if(!Bukkit.getPluginManager().isPluginEnabled("PCS_Claim")) return;
 
-        Set<Claim> claims = PCS_Claim.Unsafe.getClaims(player.getWorld(), player);
+        final Set<Claim> claims = PCS_Claim.Unsafe.getClaims(player.getWorld(), player);
         if(claims.size() == 0) return;
-        final int rows = calculateRows(claims.size());
 
-        final boolean multiPage = claims.size() > 9*6;
+        final int price = getConfig().getInt("claim-price");
+        final int rows = calculateTotalRows(claims.size());
+        final boolean multiPage = rows > 6;
+        final int contentSlots = (multiPage ? 5 : rows) * 9;
 
-        Menu chunkMenu = new Menu(PCS_Claim.getInstance(), multiPage ? rows + 1 : rows, getConfig().getString("titles.claims"), menu);
+        final Menu chunkMenu = new Menu(PCS_Claim.getInstance(), multiPage ? 6 : rows, getConfig().getString("titles.claims"), menu);
 
         int i = 0;
-        int price = getConfig().getInt("claim-price");
         for(Claim claim : claims) {
-            int page = Math.max(0, (int)((double) i / (chunkMenu.getSize() - (multiPage ? 9 : 0))));
-            int slot = i % (chunkMenu.getSize() - (multiPage ? 9 : 0));
+            final int page = i / contentSlots;
+            final int slot = (i % contentSlots);
 
             Material base = claim.getBaseMaterial();
 
-            Menu.Button chunkButton = new Menu.PricedButton((menu1, button1, player1, event1) -> {
-                setTarget(player1, new Location(claim.getWorld(), claim.getBaseLocation().getX(), claim.getBaseLocation().getY(), claim.getBaseLocation().getBlockZ()));
-                player.spigot().sendMessage(MessageBuilder.DEFAULT.define("TARGET", claim.getName()).build(getConfig().getString("messages.selected")));
+            Menu.Button chunkButton = new Menu.PricedButton((m, b, p, e) -> {
+                final MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("TARGET", claim.getName());
+
+                if(p.getWorld().equals(claim.getWorld())) {
+                    setTarget(p, new Location(claim.getWorld(), claim.getBaseLocation().getX(), claim.getBaseLocation().getY(), claim.getBaseLocation().getBlockZ()));
+                    player.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.selected")));
+                } else p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.other-world")));
             }, price, base.isSolid() ? base : Material.END_PORTAL_FRAME);
 
             ItemMeta itemMeta = chunkButton.getItemMeta();
@@ -204,7 +212,7 @@ public class ModuleCompass extends Module implements Listener {
             i++;
         }
 
-        if(multiPage) addNavigation(chunkMenu, rows);
+        if(multiPage) addNavigation(chunkMenu);
 
         player.openInventory(chunkMenu);
     };
@@ -221,29 +229,20 @@ public class ModuleCompass extends Module implements Listener {
         player.setCompassTarget(location);
     }
 
-    private static void addNavigation(Menu menu, int rows) {
+    private static void addNavigation(Menu menu) {
+        int rows = 5;
         for(int j = 0; j < menu.getPageCount(); j++) {
             menu.setItem(j, rows * 9 + 4, BACK);
-            if(j > 0) menu.setItem(j, rows * 9 + 2, PREVIOUS_PAGE);
-            if(j < menu.getPageCount() - 1) menu.setItem(j, rows * 9 + 6, NEXT_PAGE);
+            if(j > 0) menu.setItem(j, rows * 9 + 3, PREVIOUS_PAGE);
+            if(j < menu.getPageCount() - 1) menu.setItem(j, rows * 9 + 5, NEXT_PAGE);
         }
     }
 
 
-    private static int calculateRows(int items) {
-        if(items <= 9*6) return 6;
-        int max = Integer.MAX_VALUE;
-        int result = 6;
-        for(int i = result; i > 2; i--) {
-            if(items % (i * 9) == 0) return i;
-
-            int val = i * 9 - items % (i * 9);
-            if(val < max) {
-                max = val;
-                result = i;
-            }
-        }
-        return result;
+    private static int calculateTotalRows(int items) {
+        int rows = items / 9;
+        if(items % 9 != 0) rows++;
+        return rows;
     }
 
     class CompassMenu extends Menu {
