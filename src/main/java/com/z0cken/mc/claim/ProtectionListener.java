@@ -6,7 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Container;
 import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
@@ -16,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -221,8 +221,11 @@ class ProtectionListener implements Listener {
         final Player player = event.getPlayer();
         if(block != null && block.getState() instanceof Container && player.hasPermission("pcs.claim.override")) return;
 
+        boolean legal = handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player))
+                        && handleManipulation(event, event.getClickedBlock().getRelative(event.getBlockFace()).getChunk(), player, mutedFor.containsKey(player));
+
         //Whitelist TNT
-        if(handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player))) {
+        if(legal) {
             if(event.getAction() == Action.RIGHT_CLICK_BLOCK && block.getType() == Material.TNT && (event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.FIRE_CHARGE)) {
                 new BukkitRunnable() {
                     @Override
@@ -277,6 +280,12 @@ class ProtectionListener implements Listener {
         if(entity.getType() != EntityType.PLAYER) return;
         handleManipulation(event, event.getItem().getLocation().getChunk(), (Player) entity, mutedFor.containsKey(entity));
         muteFor((Player) entity);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onVehicleDestroy(VehicleDestroyEvent event) {
+        if(event.getAttacker() == null) return;
+        onEntityDamageByEntity(new EntityDamageByEntityEvent(event.getVehicle(), event.getAttacker(), EntityDamageEvent.DamageCause.CUSTOM, 100));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
