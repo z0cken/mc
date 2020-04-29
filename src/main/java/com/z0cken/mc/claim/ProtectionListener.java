@@ -281,7 +281,9 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Monster || event.getEntity().getType() == EntityType.SLIME) return;
+        if(event.getEntity() instanceof Monster
+                || event.getEntityType() == EntityType.SLIME
+                || event.getEntityType() == EntityType.PHANTOM) return;
 
         Entity damager = event.getDamager();
 
