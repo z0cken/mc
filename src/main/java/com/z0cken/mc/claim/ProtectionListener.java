@@ -16,18 +16,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
-import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 class ProtectionListener implements Listener {
 
     private static final Set<Material> INTERACTABLE_BLOCKS = Set.of(
         Material.ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
-        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE, Material.LEVER,
+        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE, Material.LEVER, Material.CAKE,
 
         //Buttons
         Material.ACACIA_BUTTON,
