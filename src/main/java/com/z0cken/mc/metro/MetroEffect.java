@@ -78,7 +78,12 @@ public class MetroEffect implements Listener {
                 @Override
                 public void run() {
                     Bukkit.getOnlinePlayers().forEach(p -> {
-                        if (!p.hasPermission("pcs.metro.bypass") && !Metro.getInstance().isExcluded(p)) potionEffects.forEach(p::addPotionEffect);
+                        potionEffects.forEach(potionEffect -> {
+                            //Return if excluded or effect is negative while player has bypass
+                            if(Metro.getInstance().isExcluded(p) || !Metro.POSITIVE_EFFECTS.contains(potionEffect) && !p.hasPermission("pcs.metro.bypass")) return;
+
+                            if(!p.hasPotionEffect(potionEffect.getType())) p.addPotionEffect(potionEffect);
+                        });
                     });
                 }
             }.runTaskTimer(PCS_Metro.getInstance(), 10*20, 10*20));

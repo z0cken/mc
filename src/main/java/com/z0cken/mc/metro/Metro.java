@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public final class Metro {
 
-    private static Set<PotionEffectType> POSITIVE = Set.of(
+    public static final Set<PotionEffectType> POSITIVE_EFFECTS = Set.of(
             PotionEffectType.ABSORPTION,
             PotionEffectType.CONDUIT_POWER,
             PotionEffectType.DAMAGE_RESISTANCE,
@@ -280,7 +280,7 @@ public final class Metro {
     public boolean setExcluded(Player player, boolean value) {
         if(value) {
             final Set<PotionEffect> potionEffects = Metro.getInstance().getAppropriateEffect().getPotionEffects();
-            if(potionEffects.stream().map(PotionEffect::getType).noneMatch(POSITIVE::contains)) return false;
+            if(potionEffects.stream().map(PotionEffect::getType).noneMatch(POSITIVE_EFFECTS::contains)) return false;
             potionEffects.forEach(effect -> player.removePotionEffect(effect.getType()));
             excludedPlayers.add(player);
             return true;
