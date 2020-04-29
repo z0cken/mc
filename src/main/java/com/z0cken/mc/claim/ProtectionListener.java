@@ -288,8 +288,8 @@ class ProtectionListener implements Listener {
         if(damager.getType() != EntityType.PLAYER) {
             if(damager instanceof Projectile) {
                 ProjectileSource source = ((Projectile)damager).getShooter();
-                if(source instanceof Player) damager = (Player) source;
-                else return;
+                if(source instanceof Monster) return;
+                else if(source instanceof Player) damager = (Entity) source;
             } else return;
         }
 
