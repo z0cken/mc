@@ -6,13 +6,13 @@ import com.z0cken.mc.end.PCS_End;
 import com.z0cken.mc.end.egg.MagicEggType;
 import com.z0cken.mc.progression.PCS_Progression;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.minecraft.server.v1_13_R2.EnderDragonBattle;
-import net.minecraft.server.v1_13_R2.WorldProviderTheEnd;
+import net.minecraft.server.v1_15_R1.EnderDragonBattle;
+import net.minecraft.server.v1_15_R1.WorldProviderTheEnd;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,7 +49,7 @@ public class DragonPhase extends EndPhase implements Listener {
         try {
             Method m = EnderDragonBattle.class.getDeclaredMethod("a", List.class);
             m.setAccessible(true);
-            m.invoke(worldProviderTheEnd.r(), Collections.emptyList());
+            m.invoke(worldProviderTheEnd.o(), Collections.emptyList());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }

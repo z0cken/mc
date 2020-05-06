@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.z0cken.mc.thirdparty.executable</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <version>1.15-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
