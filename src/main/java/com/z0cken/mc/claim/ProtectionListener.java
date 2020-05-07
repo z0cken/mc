@@ -24,7 +24,7 @@ import java.util.*;
 class ProtectionListener implements Listener {
 
     private static final Set<Material> INTERACTABLE_BLOCKS = Set.of(
-        Material.ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
+        Material.ANVIL, Material.DAMAGED_ANVIL, Material.CHIPPED_ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
         Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE, Material.LEVER, Material.CAKE,
 
         //Buttons
