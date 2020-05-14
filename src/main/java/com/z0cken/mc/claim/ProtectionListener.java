@@ -369,16 +369,22 @@ class ProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         if(event.getDirection() == BlockFace.DOWN || event.getDirection() == BlockFace.UP) return;
+
         Claim origin = PCS_Claim.getClaim(event.getBlock().getChunk());
-        Claim target = PCS_Claim.getClaim(event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()).getChunk());
+        final Block targetBlock = event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()+1);
+        Claim target = PCS_Claim.getClaim(targetBlock.getChunk());
+
         if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
         if(event.getDirection() == BlockFace.DOWN || event.getDirection() == BlockFace.UP) return;
+
         Claim origin = PCS_Claim.getClaim(event.getBlock().getChunk());
-        Claim target = PCS_Claim.getClaim(event.getBlock().getRelative(event.getDirection(), event.getBlocks().size()).getChunk());
+        final Block targetBlock = event.getBlock().getRelative(event.getDirection().getOppositeFace(), event.getBlocks().size()+1);
+        Claim target = PCS_Claim.getClaim(targetBlock.getChunk());
+
         if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 
