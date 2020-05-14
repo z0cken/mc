@@ -16,6 +16,7 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -285,7 +286,9 @@ class ProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onVehicleDestroy(VehicleDestroyEvent event) {
         if(event.getAttacker() == null) return;
-        onEntityDamageByEntity(new EntityDamageByEntityEvent(event.getVehicle(), event.getAttacker(), EntityDamageEvent.DamageCause.CUSTOM, 100));
+        final EntityDamageByEntityEvent e = new EntityDamageByEntityEvent(event.getAttacker(), event.getVehicle(), EntityDamageEvent.DamageCause.CUSTOM, 100);
+        onEntityDamageByEntity(e);
+        if(e.isCancelled()) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
