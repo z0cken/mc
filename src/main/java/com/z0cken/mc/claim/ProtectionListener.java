@@ -391,6 +391,17 @@ class ProtectionListener implements Listener {
         if(target != null && (origin == null || !target.canBuild(origin.getOwner().getOfflinePlayer()))) event.setCancelled(true);
     }
 
+    @EventHandler
+    public void onStructureGrow(StructureGrowEvent event) {
+        final Claim origin = PCS_Claim.getClaim(event.getLocation().getChunk());
+        event.getBlocks().removeIf(blockState -> {
+            final Claim claim = PCS_Claim.getClaim(blockState.getChunk());
+            if(claim == null) return false;
+            if(origin == null) return true;
+            return origin.getOwner().equals(claim.getOwner());
+        } );
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onTempt(EntityTargetLivingEntityEvent event) {
         if(event.getReason() != EntityTargetEvent.TargetReason.TEMPT) return;
