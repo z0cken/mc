@@ -1,0 +1,428 @@
+﻿{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Lemon"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;164694906,-182107860,-1092635906,2089548912],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU3ZmQ1NmNhMTU5Nzg3NzkzMjRkZjUxOTM1NGI2NjM5YThkOWJjMTE5MmM3YzNkZTkyNWEzMjliYWVmNmMifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Apple"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1392201374,-1371255232,-1940155791,-885374762],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2JiMzExZjNiYTFjMDdjM2QxMTQ3Y2QyMTBkODFmZTExZmQ4YWU5ZTNkYjIxMmEwZmE3NDg5NDZjMzYzMyJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Donut (Pink)"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1266351196,1844200332,-1547932835,-1476714530],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3YzliODJiMTg2NjU2ZTlmNjM2M2EyYTFjNmE0YjViOTNjZmE5ZWY0ZGFkNmYxNmI5NGViYjVlMzYyNjc4In19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Nutella"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;21884949,2126138064,-1595899114,1266304498],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE1ZGNiMmRhMDJjZjczNDgyOWUxZTI3M2UzMDI1NjE3ZDgwNzE1MTZmOTUzMjUxYjUyNTQ1ZGE4ZDNlOGRiOCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Jam Jar (red)"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1379669389,1531072490,-1573434766,-1255286997],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzBiOGI1ODg5ZWUxYzYzODhkYzZjMmM1ZGJkNzBiNjk4NGFlZmU1NDMxOWEwOTVlNjRkYjc2MzgwOTdiODIxIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Sandwich"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-2029292198,226771811,-1862936107,-2140035906],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTVmYWZkODk3MmI2Yjc2OTBmYjEzMWRjM2Y5MTdjNTU5OTkzOGY4N2I1ODRjMmY1ZTdkNDBhMGRlNDFlNTJmIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cup of Coffee"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1750824178,285101749,-1953339000,-2095902774],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2VhMGY3NzU3MTg1YmU5ZGY1YjJmYzlkODVkNDA2NDJlYTRmZGI0NTE1ZjMxNGRhMThmNTljNjk2ZTViZTkifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cheese"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1668179069,-201439889,-1474003683,147622866],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTU1ZDYxMWE4NzhlODIxMjMxNzQ5YjI5NjU3MDhjYWQ5NDI2NTA2NzJkYjA5ZTI2ODQ3YTg4ZTJmYWMyOTQ2In19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Popcorn"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-724101614,-419542090,-1093360367,223509867],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMThlYmNkZWJhMWNmNjViZDVmODE1Mjc2YjRhNDZmMzdiYTZiY2E4NTY3M2MzNGQ0ZGQ5Nzc2MWZjNjI4YzJjMiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Monster Energy"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1354985738,-1799994036,-1520630344,1544005428],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmVkYTVlZjUzNTg2ZmZlYmIyNTQ5ZDZkY2QwMDJmMjYwMTQ1MzZmMmUwNDMwYjZiODcwMjdlNzQ0MTZmNWViYSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Pepsi"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1538883244,-1057378200,1020329384,53423729],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJiYWU2ZGY5OWRjODJiZWFmNDlkMDY0ZGY3NGExYmJjMTVlOGUzNzY1MzMyNzY5MTJjOGM4ZmU1OWNiNGY0In19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Glass of Beer"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-471418968,1111900612,-1771835940,-1629868373],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDA1M2UyNjg2N2JiNTc1MzhlOTc4OTEzN2RiYmI1Mzc3NGUxOGVkYTZmZWY1MWNiMmVkZjQyNmIzNzI2NCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Fanta"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-798376201,-207597832,-1616340951,-1153038005],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmJlOTUwNWEzOGExNGQxNTEyYzc4OTJmYzQ0ZDNkN2NlNjMzOGIxYmYwZjkxMjM3MjFiMTIxYTE0YjA5NWEzIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Fries"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1994786790,420629163,-1634264425,-1096610456],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYThmYTU2Mjg1Njk1OWRmZWZiYzEzMjhjZGZkOWQ0MzBiNjVhZjdmMjRjZjMyNjQwMDc2NzMwNWIzNGM1YjJlNSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Burger"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1407656446,746605758,-1128232505,1999677641],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjY4ZWZhNTZlZjMxMzZlNTNhOWJmNDMwZWY3NmQ1MDE1M2ZiYmNjMTI5NWU2NGIzNDdmNTNlMTBlNTU3ZjA3YSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Bread"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1401213480,1729973772,-1435315149,406187954],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE5OTdkYTY0MDQzYjI4NDgyMjExNTY0M2E2NTRmZGM0ZThhNzIyNjY2NGI0OGE0ZTFkYmI1NTdiNWMwZmUxNCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Waffles and Sirup"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;708058312,1132285571,-1996686790,356473065],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVjNmEzN2FhNjIwNzdmNmU2ZTg1YjQyYTA2MjI5OTM2MzZjM2IzNjEzMmRiYzM0MWYxZjEzMDZmNjFjMmYyNiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Muffin"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1913126638,-56340897,-1946380999,-941109101],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4NGU3N2I4OTMwYjBmMjlhYTY2Mjc5YzQxZDVlMTQ5YmVlMjYzZjIxZmUzNzI2MzZjYmY3NjhkYjljZWU0YSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Pepper Cellar"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1843953138,1331973611,-1918919587,-1624388992],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzdkOWUxN2Q3ODZiNTViZjk1MjA5NjM4ODQ4ODdmMGM1MmZlMmYzZmZhN2QwMGUxNGU1ODYzNGU5MWQ2OTExZCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Salt Cellar"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1164229058,198330560,-1266875412,-294067705],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk0Y2M3MjVlM2VjNDJkOTc0NjQwNDMxODBiNmEyYTZiNmYwZGU4OGNkZjY0NmM2NDk0NTIwODM2YTQ4YThiNyJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Toaster"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1675386264,455296178,-1725804937,-1288090284],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTMwOGRmZWJjMDBlZTljOTkxOTMyZWMyYzdlMmQ2MTA5MTkzODE5NGNiNmJkMTliNzliMWQ2MWNiMzQ3YjdjIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+]
+}
+]
+}

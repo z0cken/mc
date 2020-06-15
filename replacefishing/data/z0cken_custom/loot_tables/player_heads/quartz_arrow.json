@@ -1,0 +1,168 @@
+﻿{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1762551623,510085992,-1143880415,932701578],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk5YWFmMjQ1NmE2MTIyZGU4ZjZiNjI2ODNmMmJjMmVlZDlhYmI4MWZkNWJlYTFiNGMyM2E1ODE1NmI2NjkifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Right"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;529930544,1318537143,-1516163899,353318756],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNmYzUyMjY0ZDhhZDllNjU0ZjQxNWJlZjAxYTIzOTQ3ZWRiY2NjY2Y2NDkzNzMyODliZWE0ZDE0OTU0MWY3MCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Right Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-909367411,1323846063,-1859944867,1948923425],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWFjYWNiODM2YzVlNDI4YjQ5YjVkMjI0Y2FiMjI4MjhlZmUyZjZjNzA0Zjc1OTM2NGQ3MWM2NTZlMzAxNDIwIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Right Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-2065592140,-216250596,-1760948776,-792823674],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY2N2QxNDFjNDFiMDViNzRiYjE0NmVlYzIyYjIxYzVmZWEzMzY3ZWZkYjZjN2I1YmZiNWVmOGE5ZTM0YWEyIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Left"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1295380513,-2118761234,-1492021884,1645691172],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWYxMzNlOTE5MTlkYjBhY2VmZGMyNzJkNjdmZDg3YjRiZTg4ZGM0NGE5NTg5NTg4MjQ0NzRlMjFlMDZkNTNlNiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Left Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-755794336,309675135,-1105082486,-1364198208],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjJlZWVmZDk4NmFkMTA2NDM0YzY0ZmFjNjY5ZjcwZWY4OGRjNmJiNmM4MmNiZDdmYThkNjY0MzY5NzNkYjFhZCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Left Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-351366801,1085556908,-1520569305,-141471198],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTdkZDc2YWIzZjljNjQ1MTk2ZTI0NTg1NjRkODU1NmFkNTlmZDMyNzI1ZWQ0ODg4YzAxZTMwN2EzN2FlYiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Quartz Arrow Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-246766955,-1582280995,-1756569120,228204089],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzkxMmQ0NWIxYzc4Y2MyMjQ1MjcyM2VlNjZiYTJkMTU3NzdjYzI4ODU2OGQ2YzFiNjJhNTQ1YjI5YzcxODcifX19\"},]}}}"
+      }
+    ]
+  }
+]
+}
+]
+}
