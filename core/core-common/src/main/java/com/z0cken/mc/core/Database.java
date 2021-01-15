@@ -1,5 +1,6 @@
 package com.z0cken.mc.core;
 
+import com.z0cken.mc.core.util.CoreTask;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -64,7 +65,12 @@ public enum Database {
     private void failFast() {
         if (crucial) {
             plugin.getLogger().severe("Database \"" + name().toLowerCase() + "\" is crucial -> Server shutting down");
-            plugin.stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
+            new CoreTask(false) {
+                @Override
+                public void run() {
+                    plugin.stopServer("§c- Automatischer Shutdown -\n\nBitte benachrichtige ein Teammitglied!");
+                }
+            }.schedule();
         }
     }
 }
