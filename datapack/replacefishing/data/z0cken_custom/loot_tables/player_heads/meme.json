@@ -1,0 +1,248 @@
+﻿{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Shrek"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1555620689,181289479,-1405769496,-144683288],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZkM2VmMWY2YjRkOTNiMGMxNmJmOWJkMjVlYzdkODk5N2Q5YWFjYjExODE0OGJlZmY5Njc2ZmZjYjI5OWZjNiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Magikarp (#129)"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1635665575,1708408849,-1629546807,-399235512],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmY2ZTQwZjU1NTFlNjcxMjQ2ZGE5M2FkZTUzMjljMDkyYWNhODFhMDI4NmQ4ZWE0ZDYzODE4YWViMGE0Njc2In19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Sans"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1075612150,944654141,-1270342541,-1555910951],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTVhZWY4ZDczYzZiM2I5N2Q3YjU3MTZmY2EyMTVmNWViYTY3OTkyMTJkMTFlYjYzZTE1ODg5NDBkMWUyMWI3MyJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Snoop Dogg"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1201894897,-901822560,-1473691688,-1110913347],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTlhYWU5NzYxNzJmNWM4NmNhZDY1N2ExNmIzNGUwODQ2NWQxYzhkNDQ0YmZjZThlZWRmNGY1NDAzZWIxYmIifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Troll Face"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;2102121264,-738373683,-1293993199,1141833595],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTYyNmMwMTljOGI0MWM3YjI0OWFlOWJiNjc2MGM0ZTY5ODAwNTFjZjBkNjg5NWNiM2U2ODQ2ZDgxMjQ1YWQxMSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Red Ugandan Knuckles"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;207144174,-1304212564,-1467865760,578220602],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2YxMTJmMjhkYzUyMmM5YzJmYWQ5MDIxM2Y2NjhhM2FlMDU2NGY5ZWMwMjNlMzQ0ODZiYTk4YTZiNzMwZDcxNiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Ricardo Milos"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-357003713,-685815425,-2052371268,588249524],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjcyNmU1YmMzOGFjYWE2YTAyOWVlZWRmNTE3ZjcwNGJiODBlOTg0N2ViOTU0ZjNjMDY3YjU4YTA0YmM4MWRhOSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Pikachu (surprised) (#25)"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-1177141318,-1829025022,-1796130558,2214926],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGNlNTU5MzczMjZjNTBiODI3ZmFkODRlNTBjZTQyZTUwNDQ1MDgwODk1YzQ4NzMwN2EzZDA4ZDNiY2E5MGFmNCJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Doge"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-978942903,1852460054,-1967914206,148045636],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZThlNmY3Nzk1ZGYyZWI4ZDdmNGZmNWQwYWVkNTI5YmU4MTEzNGQ5N2JiNTEyNjNlMzhjYjY5NGQ2NzA0ZGE0In19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Dolan"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;2131083546,278938639,-1303742858,-596443454],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE1ZjU2NWI5OWNkYzVjYWFkYmVjZDg1OTg2YTM5MjYyYTA2MzU2ZWNhODdiOWZlZTUxNmIyYzc2MWM1YmEifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Spooderman"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;710928237,272516975,-1094756252,1383969630],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjZlOTgxZTYzYzlmYWVlZjNiMmUwMzFjNmI2NGI5M2ZlYmJiOTRhYTRlNjI5NGU3YWI5NjBlYTkyNzdkMyJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Pepe the Frog"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1425089502,-135246544,-1740365294,871892947],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjFlYmM3YWFkNWE2NTZkNTg0MmQ0ODExNjdiNWI3Yjk4ZWFmOWQ5MjRjMmRiYjkzNDhhMzEyMDMzMzAyNjMifX19\"},]}}}"
+      }
+    ]
+  }
+]
+}
+]
+}

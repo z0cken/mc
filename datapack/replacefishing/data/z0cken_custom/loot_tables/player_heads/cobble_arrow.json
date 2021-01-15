@@ -1,0 +1,168 @@
+﻿{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-861407594,-1358738411,-1233067802,2049425898],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMyNjg3NmE0NTQ4ODQ0ZTI4YTZmN2JhMWYzNzdjODBlNTk0OTVmN2QzMjIxNGJjYzQ5MjgwNGIxNjYxOTMzOSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Right Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1898633547,-1258401947,-2114485476,-1012594917],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjdkMTk2ZjVmYmMzMWFmZWUzMzcyZGE0Zjk2NjlkYzk1MzZlZTNlYjYwYzkxNjFiMTE2MzJhMjY4YmZkZjQ2NyJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Right Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;1908855531,1243038512,-1219155987,-1412133652],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjUzNmIwZWI3NTMxNWI1YTdlMDhjYTEzMjRkNzQzNjM0ODlhYmZlMjdlMDUxZDM5Nzk2NTUyM2RlNGVlOGYifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Right"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;905915307,176375269,-1395945809,1560963724],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2NiMzhmZGY1ZWQwNGE0OWYyMTQ5NWY0ZDk0ODM1YzhlNjI5MGFiYWNkNjVjOTY2YzFjNmNiZWZhNjZkODRiIn19fQ==\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Left Up"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;2075121801,1382958196,-1996110508,1068412723],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ3OTg4Njk3NGIxYWJjNWM3MjU5NzVmOGVjN2U5MTliMjhhZDI0MWRkNmY5NGY3Njc1ZDY4YTdkOGE1Y2JmMiJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Left Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;288632954,1953317568,-1767902468,1852471112],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmZhNzJmOWI2NWIwMzJjOGMyMWNlMmQ2ZjhlZThlMWFhYzc2NjdmOWQ1NzZhMjM5ZmRiYjQ3NzIxZjEzOTBmYSJ9fX0=\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Left"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;-945740123,1027426833,-2076086058,1871866502],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDI4NTVhOGZmYTE3ZTdjYmNhMTNkYWJhZDhjY2Y5MGU0ZGU5NzQ4YTJkMmMzMTE0NjQ2OGVmODY2MDhmZWIifX19\"},]}}}"
+      }
+    ]
+  }
+,{
+    "type": "minecraft:item",
+    "name": "minecraft:player_head",
+    "weight": 1,
+    "functions": [
+      {
+        "function": "minecraft:set_name",
+        "name": {
+          "bold": true,
+          "italic": false,
+          "color": "#ff9900",
+          "text": "Cobblestone Arrow Down"
+        }
+      },
+      {
+        "function": "minecraft:set_nbt",
+        "tag": "{SkullOwner:{Id:[I;12926425,549211205,-1807721574,-1710296945],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2U4OTE0ZGZjYThjMjA5NDMxNzVjMDUzMzMxYWUzNzNhNDhhZjQ1ZWQ1YmQxNTdjODk0OTVjYWU0NmVjOTgifX19\"},]}}}"
+      }
+    ]
+  }
+]
+}
+]
+}

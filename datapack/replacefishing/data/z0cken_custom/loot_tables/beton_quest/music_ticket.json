@@ -1,0 +1,185 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Big Enough\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Deja Vu\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Die Woodys\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Erika\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Flute Tune\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Imperial March\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Never Gonna Give You Up\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Nyan Cat\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Preussens Gloria\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Running in the 90s\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"UDSSR Hymne\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Schmusisfaction\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Shooting Stars\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Thomas the Tank Engine\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"Vitas\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "minecraft:paper",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{display:{Name:\"[{\\\"text\\\":\\\"♫ Musik Ticket ♫\\\",\\\"italic\\\":false,\\\"color\\\":\\\"dark_purple\\\"}]\",Lore:[\"[{\\\"text\\\":\\\"X Gon Give It To Ya\\\",\\\"italic\\\":false,\\\"color\\\":\\\"white\\\",\\\"bold\\\":true},{\\\"text\\\":\\\"\\\",\\\"italic\\\":false,\\\"bold\\\":false}]\",\"[{\\\"text\\\":\\\"Einmalige Nutzung\\\",\\\"italic\\\":true,\\\"bold\\\":false,\\\"color\\\":\\\"gray\\\"}]\"]}}"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
