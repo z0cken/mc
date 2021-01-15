@@ -49,8 +49,8 @@ public final class Metro {
 
     private static Metro instance;
     private final ProtectedRegion region;
-    private int rate, interval;
-    private World world;
+    private final int rate, interval, stackSize;
+    private final World world;
 
     public static Metro getInstance() {
         if(instance == null) instance = new Metro(Bukkit.getWorld("world"), "metro");
@@ -75,6 +75,7 @@ public final class Metro {
 
         rate = PCS_Metro.getInstance().getConfig().getInt("lapis.amount");
         interval = PCS_Metro.getInstance().getConfig().getInt("lapis.interval-hours");
+        stackSize = PCS_Metro.getInstance().getConfig().getInt("lapis.stack-size");
 
         stations = loadStations();
         if(PCS_Metro.getInstance().CONTROL_MOBS) {
@@ -145,6 +146,10 @@ public final class Metro {
 
     public int getRate() {
         return rate;
+    }
+
+    public int getStackSize() {
+        return stackSize;
     }
 
     public Set<Player> getPlayersInside() {

@@ -30,12 +30,11 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unused")
 public class Station implements Listener {
 
-    Metro metro;
+    private final Metro metro;
     private final String id, name;
     private final MetroBeacon beacon;
-    private boolean active = false;
     private final ProtectedRegion region;
-    private int stackSize;
+    private boolean active = false;
 
     //private final Difficulty difficulty;
 
@@ -43,8 +42,6 @@ public class Station implements Listener {
         this.metro = metro;
         this.id = id;
         this.name = name;
-
-        stackSize = metro.getRate() * metro.getInterval();
 
         int supply = DatabaseHelper.getSupply(id);
         this.beacon = new MetroBeacon(beaconLocation, supply);
@@ -59,7 +56,7 @@ public class Station implements Listener {
     }
 
     public boolean contains(Location location) {
-        if(!location.getWorld().equals(metro.getWorld())) return false;
+        if(!metro.getWorld().equals(location.getWorld())) return false;
         return region.contains((int) location.getX(), (int) location.getY(), (int) location.getZ());
     }
 
@@ -133,8 +130,9 @@ public class Station implements Listener {
             inventory.setItem(0, new ItemStack(Material.GLASS_PANE));
             inventory.setItem(8, new ItemStack(Material.GLASS_PANE));
 
-            ItemStack is = new ItemStack(Material.LAPIS_LAZULI, stackSize);
-            int stacks = supply / stackSize;
+            final int stackSize = metro.getStackSize();
+            final ItemStack is = new ItemStack(Material.LAPIS_LAZULI, stackSize);
+            final int stacks = supply / stackSize;
             if(stacks > 7) PCS_Metro.getInstance().getLogger().warning("Too much supply for station '" + id + "' (" + supply + ")");
             if(stacks == 0) inventory.setItem(1, new ItemStack(Material.LAPIS_LAZULI, supply));
             else for(int i = 0; i <= stacks && i < 7; i++) {
@@ -172,15 +170,18 @@ public class Station implements Listener {
             DatabaseHelper.setSupply(id, getSupply());
         }
 
-        private int addLapis(int amount) {
+        private int addLapis(int given) {
             int cost = 0;
             for(int i = 1; i < 8; i++) {
-                ItemStack is = inventory.getItem(i);
-                int result = Math.min(amount - cost, stackSize - (is == null ? 0 : is.getAmount()));
-                cost += result;
-                ItemStack stack = new ItemStack(Material.LAPIS_LAZULI, (is == null ? 0 : is.getAmount()) + result);
+                final ItemStack is = inventory.getItem(i);
+                final int present = is == null ? 0 : is.getAmount();
+                final int added = Math.min(given - cost, metro.getStackSize() - present);
+
+                final ItemStack stack = new ItemStack(Material.LAPIS_LAZULI, present + added);
                 inventory.setItem(i, stack);
-                if(cost == amount) break;
+
+                cost += added;
+                if(cost == given) break;
             }
 
             final int supply = getSupply();

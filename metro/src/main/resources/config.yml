@@ -7,6 +7,7 @@ disconnect:
 lapis:
   amount: 8
   interval-hours: 4
+  stack-size: 32
 experience:
   per-lapis: 4
   per-activation: 100
