@@ -1,0 +1,12 @@
+travel-to-overworld: true
+nether-spawn:
+  ==: org.bukkit.Location
+  world: world_nether
+  x: 42
+  y: 42
+  z: 42
+  pitch: 42
+  yaw: 42
+messages:
+  travel-disabled: "Diese Strecke ist derzeit deaktiviert!"
+  target-claimed: "Der Zielort liegt in einem fremden Claim!"

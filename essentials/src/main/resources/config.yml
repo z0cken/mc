@@ -1,0 +1,21 @@
+#Set true to enable
+modules:
+  chat: true
+  snowball: true
+  compass: true
+  discover: true
+  erosion: true
+  award: true
+  help: true
+  wild: true
+  entity: true
+  various: true
+  minion: true
+  inactive: true
+  nether: true
+  elytra: true
+  restart: true
+messages:
+  reload: "§a§l>_§7 Plugin neu geladen!"
+  module-reload-success: "§a§l>_§7 Modul neu geladen!"
+  module-reload-fail: "§c§l>_§7 Modul konnte nicht neu geladen werden!"

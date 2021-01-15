@@ -1,0 +1,8 @@
+max-ammo: 20
+reload-time: 60
+heal-chance: 1
+kick-threshold: 200
+messages:
+    hit: '{PLAYER} hat dir Blussi gegeben!'
+    ammo: 'Du hast noch {VALUE} Blussis übrig'
+    wait: 'Bitte warte {VALUE} Sekunden!'

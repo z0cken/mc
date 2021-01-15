@@ -1,0 +1,19 @@
+#help:
+#  title: Hilfe
+#  description: Hauptmenü
+#  text:
+#  - Zeile 1
+#  claim:
+#    alias:
+#    - claims
+#    title: 'Hilfe: Claim'
+#    description: Erklärungen zu den Claims
+#    text:
+#    - Zeile 1
+#    - Zeile 2
+#    freunde:
+#      title: 'Hilfe: Claim-Freunde'
+#      description: Erklärungen zu Freunden und Claims
+#      text:
+#      - Freunde haben volle Baurechte
+#      - '{#[help-C][help-H][Button]#}'

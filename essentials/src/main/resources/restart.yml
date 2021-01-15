@@ -1,0 +1,5 @@
+sound: "minecraft:spongebob.3uhr"
+sound-duration: 8
+warn-time: 5
+messages:
+  warning: "Serverneustart in %d Minuten!"

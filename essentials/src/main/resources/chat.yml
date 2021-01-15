@@ -1,0 +1,6 @@
+log-console: true
+formats:
+  general: "§7{#[PLAYER]#} §7>"
+  mention: "§7{#[SUGGEST|/msg {NAME}][BUBBLE][§b{NAME}]#}§7"
+  join: "§7[§a+§7] {#[PLAYER]#}"
+  quit: "§7[§c-§7] {#[PLAYER]#}"
