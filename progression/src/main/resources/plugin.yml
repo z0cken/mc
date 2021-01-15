@@ -1,0 +1,5 @@
+name: PCS_Progression
+author: Flare
+version: ${project.version}
+main: com.z0cken.mc.progression.PCS_Progression
+depend: [PCS_Core]
