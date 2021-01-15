@@ -1,0 +1,9 @@
+{
+  "1": {
+    "button": "{\"\\u003d\\u003d\":\"org.bukkit.inventory.ItemStack\",\"v\":1631,\"type\":\"ENCHANTED_BOOK\",\"meta\":{\"meta-type\":\"ENCHANTED\",\"stored-enchants\":{\"DAMAGE_UNDEAD\":5}}}",
+    "content": {
+      "40": "{\"\\u003d\\u003d\":\"org.bukkit.inventory.ItemStack\",\"v\":1631,\"type\":\"ENCHANTED_BOOK\",\"meta\":{\"meta-type\":\"ENCHANTED\",\"stored-enchants\":{\"DAMAGE_UNDEAD\":5}}}"
+    },
+    "effects": []
+  }
+}

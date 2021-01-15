@@ -1,0 +1,9 @@
+[
+  {
+    "==": "org.bukkit.Location",
+    "world": "world",
+    "x": 20,
+    "y": 6,
+    "z": 20
+  }
+]

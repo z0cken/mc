@@ -1,0 +1,9 @@
+name: PCS_Raid
+author: Flare
+version: ${project.version}
+main: com.z0cken.mc.raid.PCS_Raid
+depend: [PCS_Core]
+api-version: 1.13
+commands:
+  raid:
+  kit:
