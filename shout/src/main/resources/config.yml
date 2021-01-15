@@ -1,0 +1,16 @@
+shout:
+  messagePrefix: "[SHOUT]"
+  messages:
+    errorGeneral: "{PREFIX} Irgendwas ist richtig schief gelaufen. Bitte kontaktiere einen Admin"
+    successGeneral: "{PREFIX} Irgendwas ist gut gelaufen!"
+    successReload: "{PREFIX} Shoutouts erfolgreich neu geladen!"
+  gui:
+    lore:
+      group:
+        buyTitle: "{GROUP} Kaufen"
+        buyPrice: "Preis: {AMOUNT}"
+        buyDescription: "Klicken um zu kaufen!"
+      shout:
+        buyTitle: "{SHOUT} Kaufen"
+        buyPrice: "Preis: {AMOUNT}"
+        buyDescription: "Klicken um zu kaufen!"

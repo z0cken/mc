@@ -1,0 +1,95 @@
+#--------------------TEMPLATE----------------------
+#groups:
+#  foo:
+#    id: 1
+#    name: "foo"
+#    permission: "bla.bla"
+#    material: "IRGENDWAS AUS DEM MATERIAL ENUM"
+#    shouts:
+#      bar:
+#        id: 1
+#        name: "Bar"
+#        path: "foo.bar"
+#        material: "IRGENDWAS AUS DEM MATERIAL ENUM"
+#      bar2:
+#        id: 2
+#        permission: "foo.bar2"
+#        price: 666.66
+#        path: "foo.bar2"
+#        material: "IRGENDWAS AUS DEM MATERIAL ENUM"
+#      bar3:
+#        id: 3
+#        permission: "foo.bar3"
+#        path: "foo.bar3"
+#        material: "IRGENDWAS AUS DEM MATERIAL ENUM"
+#        volume: 10000
+#        pitch: 0.3
+#---------------------HINWEIS----------------------
+# Wenn ein Preis angegeben wird, bitte auch eine Permission
+# angeben, da diese dann dem User, beim Kauf des Shouts oder
+# der Gruppe, hinzugefügt wird!
+#
+# Die GruppenIDs, sowie die Shout-IDs sind dafür wichtig,
+# wenn ein Benutzer Favoriten abgespeichert hat, so dass
+# das Plugin die Shouts natürlich wiedererkennt.
+#
+# Falls du dir wegen des Material-Enums unsicher sein solltest
+# kannst du vom Economyplugin die adminShopConfig.yml öffnen,
+# denn da stehen alle Materials und Items alphabetisch geordnet drin.
+#--------------------------------------------------
+shouts:
+  permissions:
+    playSound: "pcs.shout"
+    bypassCooldown: "pcs.shout.cooldown.bypass"
+  settings:
+    defaultVolume: 1
+    defaultPitch: 1
+    defaultCooldown: 5
+  groups:
+    ronny:
+      id: 1
+      name: "Ronny"
+      permission: "pcs.shout.ronny"
+      material: "STONE"
+      shouts:
+        60tonnen:
+          id: 1
+          name: "60 Tonnen"
+          path: "ronny.60tonnen"
+          material: "COBBLESTONE"
+        arbeit:
+          id: 2
+          name: "Arbeit"
+          path: "ronny.arbeit"
+          material: "COBBLESTONE"
+    random:
+      id: 2
+      name: "Random"
+      permission: "pcs.shout.random"
+      material: "GLASS"
+      shouts:
+        johncena:
+          id: 1
+          name: "John Cena"
+          path: "random.johncena"
+          material: "ANVIL"
+        jodel:
+          id: 2
+          name: "Jodel"
+          path: "random.yodel"
+          material: "ANVIL"
+    shoutout:
+      id: 3
+      name: "Shoutout"
+      material: "BEACON"
+      shouts:
+        drache1:
+          id: 1
+          name: "Drache 1"
+          path: "shoutout.drache1"
+          material: "ANVIL"
+        marceldavislong:
+          id: 2
+          name: "Marcel Davis Long"
+          path: "shoutout.marceldavislong"
+          material: "ANVIL"
