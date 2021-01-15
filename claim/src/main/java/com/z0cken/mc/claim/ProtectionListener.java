@@ -397,6 +397,7 @@ class ProtectionListener implements Listener {
         event.getBlocks().removeIf(blockState -> {
             final Claim claim = PCS_Claim.getClaim(blockState.getChunk());
             if(claim == null) return false;
+            if(claim.getBaseLocation().equals(blockState.getLocation())) return true;
             if(origin == null) return true;
             return origin.getOwner().equals(claim.getOwner());
         } );
