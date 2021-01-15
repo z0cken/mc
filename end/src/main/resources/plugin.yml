@@ -1,0 +1,8 @@
+name: PCS_End
+author: Flare
+version: ${project.version}
+main: com.z0cken.mc.end.PCS_End
+depend: [PCS_Core, WorldGuard, CoreProtect]
+api-version: 1.13
+commands:
+  end:
