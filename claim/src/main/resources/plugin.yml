@@ -1,0 +1,8 @@
+name: PCS_Claim
+author: Flare
+version: ${project.version}
+main: com.z0cken.mc.claim.PCS_Claim
+depend: [PCS_Core, WorldGuard]
+api-version: 1.13
+commands:
+  claim:

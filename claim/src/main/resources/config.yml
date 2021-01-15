@@ -1,0 +1,43 @@
+push-interval: 20
+main-world: world
+eye-timer: 10
+animal-limit: 20
+messages:
+  protected: §c§l>_ §7Dieser Chunk gehört §f{NAME}
+  success: §a§l>_ §7Du hast erfolgreich den Chunk {CHUNK} beansprucht
+  denied-self: §c§l>_ §7Dieser Chunk gehört dir bereits
+  right-click: §e§l>_ §7Entschärfe den Block mit Rechtsklick
+  unclaim: §e§l>_ §7Du hast deinen Chunk {CHUNK} aufgegeben
+  unclaim-override: §e§l>_ §7Der Claim bei {CHUNK} von {NAME} wurde aufgehoben
+  enter: §f§l>_ §7Du hast das Gebiet von {NAME} betreten
+  enter-self: §f§l>_ §7Du hast dein eigenes Gebiet betreten
+  leave: §f§l>_ §7Du hast das Gebiet von {NAME} verlassen
+  leave-self: §f§l>_ §7Du hast dein eigenes Gebiet verlassen
+  not-owned: §c§l>_ §7Dieser Chunk ist nicht geclaimt!
+  portal-claimed: §c§l>_ §7Der Chunk an deinem Zielort gehört §f{NAME}!
+  portal-new: §c§l>_ §7Netherportale können nur von der Oberwelt aus erstellt werden!
+  unclaimable: §c§l>_ §7In diesem Bereich darf nicht geclaimt werden!
+  override-on: §f§l>_ §7Override-Modus §aaktiviert
+  override-off: §f§l>_ §7Override-Modus §cdeaktiviert
+  help:
+  - §7---------<§f Hilfemenü - Claims §7>---------
+  - §7> Der Claim-Block (Endportalrahmen) wird im Rathaus angeboten
+  - §7> Der §fKompass §7zeigt dir deine Claims und deren Position an
+  - §7> Alle deine Freunde haben §fBaurechte §7auf sämtlichen Claims
+  info:
+  - §7---------<§f {CLAIM} §7>---------
+  - '§7> Claimblock Position: §f{BLOCK}'
+  animals: §7> {TYPE} -> §f{VALUE}
+  animals-sum: '§7> §lSumme: §l{VALUE}'
+tracked-animals:
+  COW: Kühe
+  SHEEP: Schafe
+  CHICKEN: Hühner
+  PIG: Schweine
+  TURTLE: Schildkröten
+  HORSE: Pferde
+  RABBIT: Hasen
+  MUSHROOM_COW: Mooshrooms
+  MULE: Maultiere
+  LLAMA: Llamas
+  DONKEY: Esel
