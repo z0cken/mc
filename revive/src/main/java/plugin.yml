@@ -1,0 +1,9 @@
+name: Revive
+version: 1.0
+main: com.z0cken.mc.Revive.Revive
+author: Jalau
+api-version: 1.13
+commands:
+  respawn:
+    description: Erzwinge den Respawn von dir oder einem anderen Spieler.
+    usage: /respawn
