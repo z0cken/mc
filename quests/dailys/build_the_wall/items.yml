@@ -1,0 +1,9 @@
+standard_pickaxe: 'IRON_PICKAXE name:§rStandard_Spitzhacke lore:&2Quest_Item'
+cobblestone: 'COBBLESTONE lore:none'
+emerald: 'EMERALD'
+
+#Rare Item Part
+unknown_stone: 'COBBLESTONE name:&rSeltsamer_Stein lore:&2Quest_Item enchants:LOYALTY:1'
+special_stone: 'COBBLESTONE name:&rHerrgottmarin lore:&2Quest_Item enchants:LOYALTY:1'
+diamond: 'DIAMOND'
+lapis_lazuli: 'LAPIS_LAZULI'

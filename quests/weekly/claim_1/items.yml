@@ -1,0 +1,15 @@
+#Materials to deliver TODO remove CAPS?
+material1: stone_bricks
+material2: apple
+material3: oak_log
+material4: glass
+material5: quartz_block
+material6: purpur_block
+material7: white_wool
+material8: bricks
+material9: redstone_block
+material10: coal
+material11: iron_ingot
+material12: gold_ingot
+claimblock: end_portal_frame
+passierschein: 'paper name:§fPassierschein_A38 lore:Sehr_kompliziert_zu_bekommen;Ermöglicht_3._Home;;&2Quest_Item'

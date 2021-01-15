@@ -1,0 +1,39 @@
+npcs:
+  '360': tutorial_NPC
+  '361': mayor_Steinhoff
+  '362': digger_Oliver
+  '363': miner_Gernod
+  '364': hotel_Lydia
+  '365': metro_Vladimir
+
+cancel: ()
+
+variables:
+  world: 'world'
+
+  # Digger Quest
+  pitLocation: '5227;62;-638;$world$'
+  pitRadius: '55'
+
+  dirt_amount: '32'
+  sand_amount: '16'
+  gravel_amount: '16'
+
+  # Miner Quest
+  quarryLocation: '5031;78;-618;$world$'
+  quarryRadius: '70'
+
+  stone_amount: '16'
+  diorite_amount: '8'
+
+  # Rewards
+  digger_reward: '3'
+  miner_reward: '2'
+  hotel_discount: '16'
+  finish_reward: '1'
+
+journal_main_page:
+  greeting:
+    priority: 10
+    text: 'Tutorial'
+    conditions: 'isInTutorial'

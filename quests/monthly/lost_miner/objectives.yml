@@ -1,0 +1,4 @@
+angry1: 'delay $angry_time1$'
+angry2: 'delay $angry_time2$'
+cooldown: 'delay $cooldown$'
+cooldown_short: 'delay $cooldown_short$'

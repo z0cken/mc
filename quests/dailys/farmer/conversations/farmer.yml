@@ -1,0 +1,151 @@
+quester: 'Manfred'
+first: 'start_cooldown,start_failed,start_end,start_wait7,start_job7,start_wait6,start_job6,start_wait5,start_job5,start_wait4,start_job4,start_wait3,start_job3,start_wait2,start_job2,start_wait1,start'
+stop: 'false'
+
+NPC_options:
+  'start_failed':
+    text: 'Du hast dir zu viel Zeit gelassen, da verlernt man alles wieder. Aber du kannst es gerne nochmal vesuchen.'
+    conditions: 'failed'
+    events: 'del_failed'
+    pointer: 'start_yes,start_no'
+  'start_cooldown':
+    text: 'Du warst tüchtig. Komm morgen wieder vorbei, dann kannst du weiter Üben.'
+    conditions: 'cooldown'
+    pointer: 'ok'
+  'start':
+    text: 'He, du! Wir brauchen unbedingt mehr gute Farmer. Willst du lernen wie das geht?'
+    events: 'del_cooldown' #Removes artifact from invalid cooldown tag
+    pointer: 'start_yes,start_no,start_showoff'
+  'no_bye':
+    text: 'Nur Weicheier hier!'
+  'showoff':
+    text: 'Quatsch nicht! Hier im Dorf sind die wahren Profis!'
+    pointer: 'do_what'
+  'accept':
+    text: 'Übung macht den Meister! Ernte erstmal $amount1$ Weizen innerhalb von 2 Stunden, dann komm zurück zu mir.'
+    events: 'job1'
+  'start_wait1':
+    text: 'Es fehlen noch %math.calc:0-objective.job1.left% Weizen und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job1_running'
+    pointer: 'ok,stop_quest'
+  'start_job2':
+    text: 'Glückwunsch. Das ging ja einfach. Dann machen wir direkt mal weiter mit Karotten. Die Erntemethode ist sehr wichtig für jeden Bauer. Weiter $amount2$ sollten genug Übung sein.'
+    conditions: 'job1'
+    events: 'del_job_done,money1'
+    pointer: 'accept_2,stop_quest'
+  'start_wait2':
+    text: 'Es fehlen noch %math.calc:0-objective.job2.left% Karotten und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job2_running'
+    pointer: 'ok,stop_quest'
+  'start_job3':
+    text: 'Jetzt solltest du auch deine Tiere mal vermehren. $amount3$ Babykühe wären gut.'
+    conditions: 'job2'
+    events: 'del_job_done,money2'
+    pointer: 'accept_3,stop_quest'
+  'start_wait3':
+    text: 'Es fehlen noch %objective.job3.left% Kühe und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job3_running'
+    pointer: 'ok,stop_quest'
+  'start_job4':
+    text: 'Nachwuchs ist doch immer schön. Weiter im Programm: $amount4$ Melonen sind jetzt dran. Vergiss nicht, dich zu beeilen.'
+    conditions: 'job3'
+    events: 'del_job_done,money3'
+    pointer: 'accept_4,stop_quest'
+  'start_wait4':
+    text: 'Es fehlen noch %math.calc:0-objective.job4.left% Melonen und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job4_running'
+    pointer: 'ok,stop_quest'
+  'start_job5':
+    text: 'Lecker, nicht wahr? Gut, nach sommerlichem Geschmackt braucht es auch winterliche Kleidung. Wolle um genau zu sein... von $amount5$ Schafen. Auf auf!'
+    conditions: 'job4'
+    events: 'del_job_done,money4'
+    pointer: 'accept_5,stop_quest'
+  'start_wait5':
+    text: 'Es fehlen noch %objective.job5.left% Schafe und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job5_running'
+    pointer: 'ok,stop_quest'
+  'start_job6':
+    text: 'Das werden viele Pullover. Gut gemacht. Jetzt darfst du dir die Hände schmutzig machen, es fehlen noch $amount6$ Kartoffeln junger Padawan.'
+    conditions: 'job5'
+    events: 'del_job_done,money5'
+    pointer: 'accept_6,stop_quest'
+  'start_wait6':
+    text: 'Es fehlen noch %math.calc:0-objective.job6.left% Kartoffeln und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job6_running'
+    pointer: 'ok,stop_quest'
+  'start_job7':
+    text: 'So, meine letzte Aufgabe für dich. Ein Bauer muss auch unschöne Sachen lernen. Schlachte $amount7$ Hähnchen. Aber mach bitte keine Sauerei.'
+    conditions: 'job6'
+    events: 'del_job_done,money6'
+    pointer: 'accept_7,stop_quest'
+  'start_wait7':
+    text: 'Es fehlen noch %objective.job7.left% Hähnchen und du hast noch %objective.timer.left% Zeit'
+    conditions: 'job7_running'
+    pointer: 'ok,stop_quest'
+  'start_end':
+    text: 'Glückwunsch! Du hast alle Aufgaben geschafft. Möchtest du als Belohnung etwas Dekoration die ich übrig habe oder ein Pferd?'
+    conditions: 'job7'
+    events: 'del_job_done'
+    pointer: 'money,head'
+
+    # Conversation
+  'money_give':
+    text: 'Hier dein geiler Gaul. Bitteschön.'
+    events: 'utilities-statistics.daily_farmer,money7,reset_quest,cooldown_timer'
+  'head_give':
+    text: 'Gute Wahl! Das Ding habe ich auf dem Dachboden gefunden.'
+    events: 'utilities-statistics.daily_farmer,head,reset_quest,cooldown_timer'
+  'stop_ask':
+    text: 'Bist du dir sicher? Danach musst du wieder von vorne anfangen.'
+    pointer: 'stop_accept,stop_no'
+
+#########################################################################
+player_options:
+  #start
+  'start_yes':
+    text: 'Ja, klar!'
+    pointer: 'accept'
+  'accept_2':
+    text: 'Und weiter gehts!'
+    events: 'job2,del_money1'
+  'accept_3':
+    text: 'Meine Kühe haben eh hunger!'
+    events: 'job3,del_money2'
+  'accept_4':
+    text: 'Kein Problem.'
+    events: 'job4,del_money3'
+  'accept_5':
+    text: 'Zeit für einen Wollpullover!'
+    events: 'job5,del_money4'
+  'accept_6':
+    text: 'Deutsche Kartoffel voraus!'
+    events: 'job6,,del_money5'
+  'accept_7':
+    text: 'Grausam, aber auch das will ich lernen.'
+    events: 'job7,,del_money6'
+
+  'start_no':
+    text: 'Ne, danke.'
+    pointer: 'no_bye'
+  'start_showoff':
+    text: 'Ich bin schon Farmerprofi!'
+    pointer: 'showoff'
+  'do_what':
+    text: 'Was kann ich tun?'
+    pointer: 'accept'
+  'ok':
+    text: 'Alles klar!'
+  'stop_quest':
+    text: 'Ich möchte das nicht mehr machen.'
+    pointer: 'stop_ask'
+  'money':
+    text: 'Ich nehme lieber das Pferd.'
+    pointer: 'money_give'
+  'head':
+    text: 'Ich nehme lieber den Dekokopf.'
+    pointer: 'head_give'
+  'stop_accept':
+    text: 'Ja, ich breche das hier ab.'
+    events: 'cancel_quest'
+  'stop_no':
+    text: 'Dann versuche ich es weiter!'

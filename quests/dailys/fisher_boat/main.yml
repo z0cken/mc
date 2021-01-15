@@ -1,0 +1,17 @@
+# § means something needs to get placed in later on
+
+npcs:
+  '0': fisher
+  'Lasse': fischer
+
+journal_main_page:
+  greeting:
+    priority: 1
+    text: 'Lasses Mahlzeit'
+    conditions: 'isQuestRunning'
+
+variables:
+  swarmLocation: 0;0;0;world
+  swarmRadius: '5'
+  salmonAmount: '4'
+  seaLevel: '64' # The height for the condition if the player is in a boat or swimming

@@ -1,0 +1,19 @@
+variables:
+  var1: 0
+
+npcs:
+  '00': npc
+
+cancel:
+  questname: #change!
+    name: ''
+    conditions: ''
+    objectives: ''
+    tags: ''
+    journal: ''
+    events: ''
+journal_main_page:
+  questname: #change!
+    priority: 1
+    text: ''
+    conditions: ''

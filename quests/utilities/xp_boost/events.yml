@@ -1,0 +1,5 @@
+change_boost: 'folder boost1,boost2,unsetboost1,unsetboost2'
+boost1: 'command lp group guest permission set mcmmo.perks.xp.50percentboost.%ph.javascript_boost1%'
+boost2: 'command lp group guest permission set mcmmo.perks.xp.50percentboost.%ph.javascript_boost2%'
+unsetboost1: 'command lp group guest permission unset mcmmo.perks.xp.50percentboost.%ph.javascript_unboost1%'
+unsetboost2: 'command lp group guest permission unset mcmmo.perks.xp.50percentboost.%ph.javascript_unboost2%'

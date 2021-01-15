@@ -1,0 +1,133 @@
+quester: 'Hartmut Hautdrauf'
+first: 'start_cooldown,start_known,start_special,start_unknown,start,start_active'
+stop: ''
+
+NPC_options:
+  'start':
+    text: 'Suchst du Arbeit? Ich brauche dringend noch ein paar Leute die mit einer Spitzhacke umgehen können.'
+    conditions: '!active,!special'
+    pointer: 'start_yes,start_no'
+  'yes_tell':
+    text: 'Ich bin hier im Auftrag des Bürgermeisters der Stadt Erbgut. Die ständigen Angriffe von Skeletten und Zombies setzen unserer Stadtmauer schwer zu. Dementsprechend müssen meine Kollegen vor Ort konstant Reparaturen durchführen und langsam geht uns das Material aus. Bruchsteine sind gefragt wie nie. Ich bin autorisiert pro Ladung Bruchsteine (64 Stück) aus dem Steinbruch einen Smaragd auszuzahlen.'
+    pointer: 'yes_accept,yes_ask'
+  'no_bye':
+    text: 'Ah ja, ich sehe du hast die samtweichen Hände eines Programmierers. Entschuldige, mir hätte deine Nutzlosigkeit sofort auffallen müssen.'
+  'accept_givepick':
+    text: 'Moment noch! Hier hast du eine Spitzhacke. Um eine gleichbleibende Qualität des Materials zu gewährleisten erhält jeder Arbeiter eine Hacke die der Norm Industrieller Grab- und Gartengeräte zur Einheitlichen Rohstoffgewinnung entsprechen.'
+    events: 'tag_add_active,start_points,give_pickaxe,journal_add_job,start_counter'
+    pointer: 'givepick_joke'
+  'ask_tell':
+    text: 'Qualität ist das Stichwort mein Freund. Denkst du wir schleppen die ganzen Steine von hier nach Erbgut weil wir als Steinmetze nicht genug körperliche Ertüchtigung bekommen? Nur mit den Steinen aus diesem Steinbruch hier können wir die Integrität der Stadtmauer ansatzweise garantieren. Also?'
+    pointer: 'tell_bye'
+  'bye_givepick':
+    text: 'Prima. Hier ist eine Standard Hacke. Nur die sind von den Erbguter Behörden zugelassen. '
+    events: 'tag_add_active,start_points,give_pickaxe,journal_add_job,start_counter'
+  'joke_tell':
+    text: 'Nein, bisher ist noch niemandem eins eingefallen. Jetzt stell keine doofen Fragen und ran an die Arbeit! '
+  #End of accept-conversation
+
+  'start_active':
+    text: 'Fertig?'
+    conditions: 'active,!has_unknown,!special'
+    pointer: 'active_finish,active_break'
+  'finish_lot':
+    text: 'Gut, hier ist dein Lohn. Komm gerne Morgen wieder wenn die nächste Lieferung fällig ist. '
+    conditions: 'mined_stack,has_blocks,has_stack'
+    events: 'utilities-statistics.daily_build_the_wall,finish_quest,take_pickaxe,take_cobble,tag_del_active,journal_del_go_back,journal_del_job,start_cooldown,payout,start_points'
+  'finish_little':
+    text: 'Bisschen mau. Bist dir wohl zu fein für ehrliche Arbeit. Gib mir die Hacke wieder, ich gebe sie jemandem der bereit ist sie zu benutzen.'
+    conditions: '!mined_stack,has_blocks'
+    events: 'utilities-statistics.daily_build_the_wall,finish_quest,take_pickaxe,take_cobble,tag_del_active,journal_del_job,journal_del_go_back,start_cooldown'
+  'finish_fake':
+    text: 'Aber du hast weniger Bruchstein im Inventar als du gefarmt hast. Wo ist der Rest hin?'
+    conditions: '!has_blocks'
+    pointer: 'fake_get'
+  #End of normal Quest
+
+  'start_unknown':
+    text: 'Bei Steffipants Zitzen! Das…*hust* äh… ist äh… ein vollkommen herkömmlicher unbedeutender wertloser Stein. Gib ihn mir ich entsorge ihn für dich.'
+    conditions: 'has_unknown,!special'
+    pointer: 'unknown_give,unknown_no,'
+  'start_known':
+    text: 'Bei Steffipants Zitzen! Das…*hust* äh… ist äh… ein vollkommen herkömmlicher unbedeutender wertloser Stein. Gib ihn mir ich entsorge ihn für dich.'
+    conditions: 'has_special,active'
+    pointer: 'unknown_give,unknown_no,known'
+  'break_go':
+    text: 'Pause?! Wir sind doch hier nicht an der Uni! Schwing die Hufe du fauler Hund!'
+  'give_end':
+    text: 'Kein Problem. Ich habe beschlossen für heute Schluss zu machen. Hier hast du fünf Smaragde und jetzt geht nach Hause.'
+    events: 'utilities-statistics.daily_build_the_wall,utilities-statistics.daily_build_the_wall_sidequest,take_unknown,take_cobble,take_pickaxe,tag_del_active,start_cooldown,journal_del_go_back,finish_quest,special_payout'
+  'special_give_bye':
+    text: 'Super, Ich habe beschlossen für heute Schluss zu machen. Hier hast du fünf Smaragde und jetzt geht nach Hause.'
+    events: 'tag_del_special,journal_del_search,journal_del_find_trader,take_unknown,start_cooldown,special_payout'
+  'no_angry':
+    text: 'Du widersetzt dich deinem Vorgesetzten? Ich glaube dir geht es zu gut! Du bist entlassen und glaub bloß nicht, dass du auch nur einen Smaragd bekommst!'
+    events: 'utilities-statistics.daily_build_the_wall,take_pickaxe,take_cobble,journal_del_go_back,journal_add_search,journal_add_find_trader,tag_del_active,tag_add_special,finish_quest,journal_update'
+
+  'start_special':
+    text: 'Hast du es dir anders überlegt und willst mir den schäbigen Stein doch überlassen?'
+    pointer: 'special_give,special_no,known'
+    conditions: 'special'
+  'start_cooldown':
+    text: 'Hey, ich kann dir erst morgen wieder Arbeit geben.'
+    conditions: 'cooldown'
+  'known_price':
+    text: 'Verdammt, hätte ja klappen können... Wie wäre es mit 10 Emeralds?'
+    pointer: 'deal,nodeal'
+  'take_pickaxe':
+    text: 'Dann tschüss und her mit meiner Spitzhacke!'
+    events: 'utilities-statistics.daily_build_the_wall,take_pickaxe,tag_del_active,finish_quest,start_cooldown'
+
+#########################################################################
+player_options:
+  'start_yes':
+    text: 'Du wirst es nicht glauben, aber ich habe schon das ein oder andere mal eine Hacke geschwungen. Was steht an?'
+    pointer: 'yes_tell'
+  'start_no':
+    text: 'Pff, klingt mir zu anstrengend. Nein danke.'
+    pointer: 'no_bye'
+  'yes_accept':
+    text: 'Verstanden. Ich mache mich sofort an die Arbeit.'
+    pointer: 'accept_givepick'
+  'yes_ask':
+    text: 'Wieso müssen die Steine von hier sein? Stein ist doch Stein?'
+    pointer: 'ask_tell'
+  'givepick_joke':
+    text: 'Klingt das geschwollen. Habt ihr da kein Akronym für?'
+    pointer: 'joke_tell'
+  'tell_bye':
+    text: 'Ich verstehe. Dann leg ich mal los.'
+    pointer: 'bye_givepick'
+  #End of accept-conversation
+
+  'active_finish':
+    text: 'Ja, für heute war es das.'
+    pointer: 'finish_lot,finish_little,finish_fake'
+  'active_break':
+    text: 'Nein noch nicht, ich brauche nur eine Pause.'
+    pointer: 'break_go'
+  'fake_get':
+    text: 'Oh, den habe ich wohl in eine Kiste gelegt, ich hole ihn schnell.'
+  #End of normal Quest
+
+  'special_give':
+    text: 'Ja, hier bitte.'
+    pointer: 'special_give_bye'
+  'special_no':
+    text: 'Nein!'
+  'unknown_give':
+    text: 'Sehr freundlich von dir! Echter Ehrenmann. Hier hast du den Stein.'
+    pointer: 'give_end'
+  'unknown_no':
+    text: 'Netter Versuch! Dann versuche ich eben selbst herauszufinden was das Ding wert ist.'
+    pointer: 'no_angry'
+  'known':
+    text: 'Laber kein Scheiß, ich weiß, dass das Herrgottmarin ist. Was kannst du mir dafür geben?'
+    pointer: 'known_price'
+    conditions: 'has_special'
+  'deal':
+    text: 'Deal!'
+    events: 'utilities-statistics.daily_build_the_wall,utilities-statistics.daily_build_the_wall_sidequest,finish_quest,tag_del_active,journal_del_go_back,start_cooldown,tag_del_special,known_payout,take_pickaxe,take_special,journal_del_search,journal_del_find_trader'
+  'nodeal':
+    text: 'Da suche ich mir lieber jemanden anderen zum verkaufen!'
+    pointer: 'take_pickaxe'

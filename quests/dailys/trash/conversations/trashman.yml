@@ -1,0 +1,58 @@
+quester: 'Dieter'
+first: 'start,aktiv,ende,no_job'
+stop: 'false'
+NPC_options:
+  #start
+  'start':
+    text: 'Was willst du?'
+    conditions: '!trash_end, !trash_done, !trash_active'
+    pointer: 'start_nichts,start_hilfe'
+  'weiter':
+    text: 'Naja, bei dem Wetter macht das Müll sammeln wirklich keinen Spaß, ein wenig Hilfe könnte ich tatsächlich brauchen'
+    pointer: 'weiter_nichts,weiter_hilfe'
+  'quest_start':
+    text: 'In der Stadt gibt es viele Mülleimer, wenn du 10 ausleerst hast du mir schon gut geholfen!'
+    pointer: 'accept'
+  #aktiv
+  'aktiv':
+    text: 'Da fehlen noch %point.trash_amount.left:10% Mülleimer...'
+    conditions: 'trash_active,!trash_done'
+    pointer: 'active_ok,active_decline'
+  #ende
+  'ende':
+    text: 'Vielen Dank für deine Hilfe! Hier, eine Kleinigkeit für deine Unterstützung.'
+    event: 'utilities-statistics.daily_trash,trash_reward,trash_cooldown,removeTags,removeObjectives'
+    conditions: 'trash_done'
+    pointer: 'pay'
+  #no Job
+  'no_job':
+    text: 'Hey Kollege, heute brauche ich deine Hilfe nicht mehr. Meine nächste Schicht beginnt am %objective.cooldown.date%.'
+    conditions: 'trash_end'
+    event: 'gehweg'
+    pointer: 'no_jobs_ok'
+player_options:
+  #start
+  'start_nichts':
+    text: 'Nichts. Tschüss'
+  'start_hilfe':
+    text: 'Brauchen sie Hilfe?'
+    pointer: 'weiter'
+  'weiter_nichts':
+    text: 'Igitt, geh weg! Ist ja ekelhaft!'
+  'weiter_hilfe':
+    text: 'Klaro! Was soll ich machen'
+    pointer: 'quest_start'
+  'accept':
+    text: 'Alles klar!'
+    event: startQuest
+  #aktiv
+  'active_ok':
+    text: 'Upsi, mache gleich weiter.'
+  'active_decline':
+    text: 'Ich hab keinen Bock mehr auf den Mist!'
+    event: trash_cancel
+  #end
+  'pay':
+    text: Vielen Dank!
+  'no_jobs_ok':
+    text: 'Dann bis morgen!'

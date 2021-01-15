@@ -1,0 +1,99 @@
+one_open: 'or !cooldown1,!cooldown2,!cooldown3'
+cooldown1: 'or cooldown_long1,cooldown_short1'
+cooldown2: 'or cooldown_long2,cooldown_short2'
+cooldown3: 'or cooldown_long3,cooldown_short3'
+cooldown_long1: 'objective cooldown1'
+cooldown_long2: 'objective cooldown2'
+cooldown_long3: 'objective cooldown3'
+cooldown_short1: 'objective cooldown_short1'
+cooldown_short2: 'objective cooldown_short2'
+cooldown_short3: 'objective cooldown_short3'
+claim1_active: 'tag claim1'
+claim2_active: 'tag claim2'
+claim3_active: 'tag claim3'
+
+material_active: 'or material1,material2,material3,material4,material5,material6,material7,material8,material9,material10,material11,material12'
+material1: 'tag material1'
+material2: 'tag material2'
+material3: 'tag material3'
+material4: 'tag material4'
+material5: 'tag material5'
+material6: 'tag material6'
+material7: 'tag material7'
+material8: 'tag material8'
+material9: 'tag material9'
+material10: 'tag material10'
+material11: 'tag material11'
+material12: 'tag material12'
+
+has_material: 'or has_mat1,has_mat2,has_mat3,has_mat4,has_mat5,has_mat6,has_mat7,has_mat8,has_mat9,has_mat10,has_mat11,has_mat12'
+has_mat1: 'item $material1$'
+has_mat2: 'item $material2$'
+has_mat3: 'item $material3$'
+has_mat4: 'item $material4$'
+has_mat5: 'item $material5$'
+has_mat6: 'item $material6$'
+has_mat7: 'item $material7$'
+has_mat8: 'item $material8$'
+has_mat9: 'item $material9$'
+has_mat10: 'item $material10$'
+has_mat11: 'item $material11$'
+has_mat12: 'item $material12$'
+
+block_active: 'or block1,block2,block3,block4,block5,block6,block7,block8,block9,block10,block11,block12'
+block1: 'objective block1'
+block2: 'objective block2'
+block3: 'objective block3'
+block4: 'objective block4'
+block5: 'objective block5'
+block6: 'objective block6'
+block7: 'objective block7'
+block8: 'objective block8'
+block9: 'objective block9'
+block10: 'objective block10'
+block11: 'objective block11'
+block12: 'objective block12'
+
+mob_active: 'or mob1,mob2,mob3,mob4,mob5,mob6,mob7,mob8,mob9,mob10'
+mob1: 'objective mob1'
+mob2: 'objective mob2'
+mob3: 'objective mob3'
+mob4: 'objective mob4'
+mob5: 'objective mob5'
+mob6: 'objective mob6'
+mob7: 'objective mob7'
+mob8: 'objective mob8'
+mob9: 'objective mob9'
+mob10: 'objective mob10'
+
+#Home Conditions
+has_home1: 'permission essentials.sethome.multiple.zwei'
+has_home2: 'permission essentials.sethome.multiple.drei'
+has_playtime: 'variable %ph.javascript_hasHours% true'
+home2_levels: 'and has_minlevel,has_toplevel'
+home2_claims: 'item claimblock:$claims_for_home2$'
+tag_homeclaims: 'tag homeclaims'
+has_pass: 'item passierschein'
+
+has_minlevel: 'and mcmmo1,mcmmo2,mcmmo3,mcmmo4,mcmmo5,mcmmo6,mcmmo7,mcmmo8,mcmmo9'
+has_toplevel: 'or tmcmmo1,tmcmmo2,tmcmmo3,tmcmmo4,tmcmmo5,tmcmmo6,tmcmmo7,tmcmmo8,tmcmmo9'
+
+mcmmo1: mcmmolevel acrobatics $minlevel$
+mcmmo2: mcmmolevel archery $minlevel$
+mcmmo3: mcmmolevel axes $minlevel$
+mcmmo4: mcmmolevel excavation $minlevel$
+mcmmo5: mcmmolevel fishing $minlevel$
+mcmmo6: mcmmolevel herbalism $minlevel$
+mcmmo7: mcmmolevel mining $minlevel$
+mcmmo8: mcmmolevel swords $minlevel$
+mcmmo9: mcmmolevel unarmed $minlevel$
+
+tmcmmo1: mcmmolevel acrobatics $toplevel$
+tmcmmo2: mcmmolevel archery $toplevel$
+tmcmmo3: mcmmolevel axes $toplevel$
+tmcmmo4: mcmmolevel excavation $toplevel$
+tmcmmo5: mcmmolevel fishing $toplevel$
+tmcmmo6: mcmmolevel herbalism $toplevel$
+tmcmmo7: mcmmolevel mining $toplevel$
+tmcmmo8: mcmmolevel swords $toplevel$
+tmcmmo9: mcmmolevel unarmed $toplevel$

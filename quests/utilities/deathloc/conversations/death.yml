@@ -1,0 +1,134 @@
+quester: 'Thanatos'
+first: 'mq_start_active,mq_start,start_cooldown,start,start_loc,start_skip,start_dead'
+stop: 'false'
+NPC_options:
+  #start
+  'start_cooldown':
+    text: 'Du bist erst gestorben! Meine Fähigkeiten sind nicht unendlich.'
+    condition: 'cooldown,!got_location'
+    pointer: 'sad'
+  'start':
+    text: 'Salve, sterblicher. Hast du Angst vor dem Tod? Vielleicht kann ich dir helfen.'
+    conditions: '!death_loc,!death_skip,!got_location'
+    pointer: 'help,death_loc,death_skip'
+  'start_loc':
+    text: 'Salve, sterblicher. Du bist noch nicht gestorben, also habe ich auch keine Koordinaten für dich.'
+    conditions: 'death_loc,!death_skip,!got_location'
+    pointer: 'ok'
+  'start_skip':
+    text: 'Salve, sterblicher. Du bist noch nicht gestorben und hast noch einen Tod frei bei mir. Also zisch ab!'
+    conditions: '!death_loc,death_skip,!got_location'
+    pointer: 'ok'
+  'start_dead':
+    text: 'Salve, sterblicher. Endlich bist du gestorben. Dein Tod war bei %objective.location.location.y%.'
+    conditions: '!death_loc,!death_skip,got_location'
+    pointer: 'ok'
+    events: 'del_got_location,del_location'
+
+  'help_text':
+    text: 'Ich bestimme Ort und Zeit für jeden Tod auf dieser Welt. Also kann ich auch deinen nächsten Tod bestimmen oder dir sagen, wo du gestorben bist! Aber natürlich nicht umsonst. Die Hölle ist auch knapp bei Kasse.'
+    pointer: 'death_loc,death_skip'
+  'death_loc_ask':
+    text: 'Ich kann dir einmal die Koordinaten deines nächsten Todes sagen, sobald du gestorben bist. Das kostet dich aber 10 Diamanten'
+    pointer: 'death_loc_confirm,no'
+  'death_skip_ask':
+    text: 'Ich kann deinen nächsten Tod verhindern. Er wird einfach nicht passieren. Aus Tod wird Leben. Kein Verlust, Keine Nebenwirkungen... Naja fast, es klappt nicht in der Metro. Nur 10 Emeralds.'
+    pointer: 'death_skip_confirm,no'
+  'bye':
+    text: 'Alles klar, wir sehen uns!'
+    events: 'sound_laugh'
+  'deal_loc':
+    text: 'Wundervoll. Einen frohen Tod!'
+    condition: 'has_loc_money'
+    events: 'utilities-statistics.util_deathloc_loc,death_loc_buy,sound_laugh'
+  'deal_skip':
+    text: 'Wundervoll. Einen frohen Tod!'
+    condition: 'has_skip_money'
+    events: 'utilities-statistics.util_deathloc_skip,death_skip_buy,sound_laugh'
+  'deal_loc_fail':
+    text: 'Moment! Du bist ja pleite! Verpiss dich du Pöbel'
+    condition: '!has_loc_money'
+  'deal_skip_fail':
+    text: 'Moment! Du bist ja pleite! Verpiss dich du Pöbel'
+    condition: '!has_skip_money'
+
+  #Minerquest
+  'mq_start':
+    text: 'Weiche zurück, Sterbliche Seele! Welch Wahnsinn treibt deinesgleichen dazu vor der anbestimmten Zeit meine Kreise zu stören?'
+    conditions: 'minerquest_active,!get_egg,!objective_egg,!has_bone,get_anorexium,!dailys-smith.wither_coal'
+    pointer: 'mq_start_ask'
+  'mq_ask_tell':
+    text: 'Anorexium hmm? Du hast Glück. Mein altes Skelettpferd ist mir gerade an Osteoporose eingegangen. Skelettpferdknochen enthalten eine Menge Anorexium, nur so können die Pferde ihr Gewicht halten. Ich brauche ein neues Pferd. Jage ein Skelettpferd und bring mir ein Skelettpferd Ei, dann überlasse ich dir die alten Knochen.'
+    pointer: 'mw_tell_accept,mq_tell_egg'
+  'mq_egg_accept':
+    text: 'Ja selbstverständlich. Soll ich dir jetzt noch die Geschichte von den Honigkadsen und den Blumen erzählen? Los, los, keine Eier, keine Knochen'
+  'mq_start_active':
+    text: 'Hast du das Ei?'
+    conditions: 'minerquest_active,get_egg'
+    pointer: 'mq_active_help,mq_active_no,mq_has_egg'
+  'help_tell':
+    text: 'Skelettpferde entstehen, wenn normale Pferde vom Blitz getroffen werden. Halte Ausschau nach Gewittern.'
+  'no_punish':
+    text: 'Du wagst es einen Handel mit mir zu missachten! Hinfort mit dir, du Made!'
+    events: 'monthly-lost_miner.cancel,teleport_nether,sound_laugh'
+  'mq_take':
+    text: 'Mal schauen. Jawohl! Du hast mir einen großen Dienst erwiesen. Endlich kann ich wieder meine Sense schwingend durch die Städte reiten und Köpfe abschlagen! HAHAHA! Achso, und hier sind deine Knochen, wie versprochen.'
+    conditions: 'has_egg'
+    events: 'take_egg,obj_del_egg,journal_del_go_back,tag_del_get_egg,give_bone,journal_add_go_rebron'
+  'mq_fake':
+    text: 'Ähm, wo ist es hin?'
+    conditions: '!has_egg'
+
+#================================================================
+player_options:
+  #start
+  'help':
+    text: 'Wie meinst du das?'
+    pointer: 'help_text'
+  'death_loc':
+    text: 'Ich möchte beim nächsten Tod wissen, wo ich gestorben bin!'
+    pointer: 'death_loc_ask'
+  'death_skip':
+    text: 'Ich möchte den Tod überlisten!'
+    pointer: 'death_skip_ask'
+  'death_loc_confirm':
+    text: 'Deal!'
+    conditions: 'has_loc_money'
+    pointer: 'deal_loc,deal_loc_fail'
+  'death_skip_confirm':
+    text: 'Deal!'
+    conditions: 'has_skip_money'
+    pointer: 'deal_skip,deal_skip_fail'
+  'no':
+    text: 'Ach nein, besser nicht. Ist mir eh zu teuer.'
+    conditions: ''
+    pointer: 'bye'
+  'ok':
+    text: 'Gut zu wissen.'
+  'sad':
+    text: 'Schade'
+
+  #Minerquest
+  'mq_start_ask':
+    text: 'Ich bin auf der Suche nach Anorexium um ein paar Minenarbeiter vor dem To….ääh um sie bei Ausgrabungen zu unterstützen.'
+    pointer: 'mq_ask_tell'
+  'mw_tell_accept':
+    text: 'Ok, ich mache mich auf die Suche.'
+    events: 'tag_add_get_egg,obj_add_egg,journal_add_get_egg'
+    pointer: ''
+  'mq_tell_egg':
+    text: 'Skelettpferde legen Eier?'
+    events: 'tag_add_get_egg,obj_add_egg,journal_add_get_egg'
+    pointer: 'mq_egg_accept'
+  'mq_active_help':
+    text: 'Ich finde kein Skelettpferd. Hast du einen Tipp für mich?'
+    conditions: '!has_egg'
+    pointer: 'help_tell'
+  'mq_active_no':
+    text: 'Mir ist eingefallen, dass ich allergisch auf Eier bin und deswegen die Aufgabe nicht erfüllen kann. Machs gut, Gevatter Tod.'
+    conditions: '!has_egg'
+    pointer: 'no_punish'
+  'mq_has_egg':
+    text: 'Ja, hier ist das Ei.'
+    conditions: 'has_egg'
+    pointer: 'mq_take,mq_fake'

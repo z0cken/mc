@@ -1,0 +1,19 @@
+variables:
+  coal_head_amount: '10' #Minerquest
+  coal_delay: '15' #Minuten #Minerquest
+  woodtype: 'ACACIA_LOG' #Minerquest
+npcs:
+  '357': ore_trader #Gibmir al Deingeld
+  '356': smith
+  'Rebron': smith
+cancel:
+  trash:
+    name: 'Rebron'
+    conditions: 'get_ores,!deal_done'
+    tags: 'get_ores,deal_done'
+    journal: 'get_ores'
+journal_main_page:
+  greeting:
+    priority: 2
+    text: 'Schmied Rebron'
+    conditions: 'get_ores'

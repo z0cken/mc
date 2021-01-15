@@ -1,0 +1,3 @@
+cobble_counter: 'block $miningblock$ -1 persistent events:break_block,unknown_stone,special_stone conditions:holds_pickaxe,at_steinbruch'
+cooldown: 'delay $cooldown$'
+#Rare Item Part

@@ -1,0 +1,53 @@
+# ============================================================================================ #
+# === Tutorial === #
+
+isInTutorial: 'tag isInTutorial'
+isTutorialFinished: 'tag isTutorialFinished'
+
+# ============================================================================================ #
+# === Tutorial Progress === #
+
+isTutorialNPCFinished: 'tag isTutorialNPCFinished'
+isMayorFinished: 'tag isMayorFinished'
+isDiggerFinished: 'tag isDiggerFinished'
+isMinerFinished: 'tag isMinerFinished'
+isHotelFinished: 'tag isHotelFinished'
+isMetroFinished: 'tag isMetroFinished'
+
+# ============================================================================================ #
+# === NPC specific === #
+
+# Mayor
+nameAsked: 'tag nameAsked'
+foodGiven: 'tag foodGiven'
+
+# Digger
+shovelGiven: 'tag shovelGiven'
+
+# Digger Quest
+DQ_dirtFinished: 'tag DQ_dirtFinished'
+DQ_sandFinished: 'tag DQ_sandFinished'
+DQ_gravelFinished: 'tag DQ_gravelFinished'
+DQ_isRunning: 'tag DQ_isRunning'
+DQ_isFinished: 'tag DQ_isFinished'
+DQ_rewardGiven: 'tag DQ_rewardGiven'
+
+DQ_isPlayerInPit: 'location $pitLocation$ $pitRadius$'
+DQ_hasBlocks: 'item dirt:$dirt_amount$,sand:$sand_amount$,gravel:$gravel_amount$'
+
+# Miner
+pickaxeGiven: 'tag pickaxeGiven'
+
+# Miner Quest
+MQ_stoneFinished: 'tag MQ_stoneFinished'
+MQ_dioriteFinished: 'tag MQ_dioriteFinished'
+MQ_isRunning: 'tag MQ_isRunning'
+MQ_isFinished: 'tag MQ_isFinished'
+MQ_rewardGiven: tag MQ_rewardGiven'
+
+MQ_isPlayerInQuarry: 'location $quarryLocation$ $quarryRadius$'
+
+MQ_preparingQuest: 'tag MQ_preparingQuest'
+
+# Hotel
+discountGiven: 'tag discountGiven'

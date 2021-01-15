@@ -1,0 +1,10 @@
+variables:
+  arena_location: '5563;73;-3246;world'
+  arena_radius: '14'
+  teleporter_location: '5524;67;-3239;world'
+  teleporter_radius: '2'
+  entry_item: 'EMERALD'
+  entry_name: 'Emeralds'
+  entry_amount: '3'
+  respawn_location: '5536;68;-3249;world;0;0'
+  global_radius: '100' # distance between every teleporter & Exit

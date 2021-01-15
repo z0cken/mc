@@ -1,0 +1,199 @@
+quester: 'Steinhoff'
+first: 'NA_tut_start_food,NA_tut_start_noFood,NA_tut_finish,NA_def_start'
+stop: 'false'
+
+# PA = "Player Answer"
+# NA = "NPC Answer"
+
+NPC_options:
+  # === NPC Tutorial Conversation === #
+
+  # Starts
+  'NA_tut_start_food':
+    text:
+      'Hallo %player% und ein herzliches Willkommen in Gambberg. Ich bin der Bürgermeister dieser Stadt.\n
+      Sicherlich bist du hungrig nach der Reise, möchtest du etwas zu Essen haben?'
+    events: 'tt_del_gotoCityHall'
+    conditions: '!isMayorFinished,!foodGiven,isInTutorial,!isTutorialFinished,!isMetroFinished'
+    pointer: 'PA_tut_nameAsk,PA_tut_food_bigHunger,PA_tut_food_lowHunger,PA_tut_food_noHunger'
+
+  'NA_tut_start_noFood':
+    text: 'Hallo %player%, was kann ich für dich tun?'
+    conditions: '!isMayorFinished,foodGiven,isInTutorial,!isTutorialFinished,!isMetroFinished'
+    pointer: 'PA_tut_continue'
+
+  # Tutorial Pre Conversation
+  'NA_tut_nameAnswer':
+    text:
+      'Er steht über deinem Kopf. Jeder kann deinen Namen sehen. Außerdem... bitte lass uns duzen.\n
+      Aber zurück zu meiner Frage: Möchtest du etwas zu Essen haben?'
+    events: 'addTag_mayor_nameAsked'
+    pointer: 'PA_tut_food_bigHunger,PA_tut_food_lowHunger,PA_tut_food_noHunger'
+
+  'NA_tut_food_bigHungerResponse':
+    text: 'Haha ja, der typische pr0gramm Fettsack. Hier, gönn dir dein Schwein.'
+    events: 'givePlayer_mayor_foodA,addTag_mayor_foodGiven'
+    pointer: 'PA_tut_food_continue'
+
+  'NA_tut_food_lowHungerResponse':
+    text: 'Bescheiden, gefällt mir. Hier bitte, etwas Brot für dich.'
+    events: 'givePlayer_mayor_foodB,addTag_mayor_foodGiven'
+    pointer: 'PA_tut_food_continue'
+
+  'NA_tut_food_noHungerResponse':
+    text: 'Ich bitte dich. Etwas zu essen hat noch niemandem geschadet. Nimm wenigstens ein paar Kartoffeln.'
+    events: 'givePlayer_mayor_foodC,addTag_mayor_foodGiven'
+    pointer: 'PA_tut_food_continue'
+
+  # Tutorial Conversation
+  'NA_tut_continue':
+    text:
+      'Natürlich. Also du befindest dich in der Hauptstadt. Hier gibt es verschiedene Locations wie den Marktplatz, den Baggersee, das Hotel, den Steinbruch und weitere Orte.\n
+      In deinem Inventar findest du einen Kompass. Mit ihm kannst du all diese Orte finden.'
+    pointer: 'PA_tut_compassAsk'
+
+  'NA_tut_compassAnswer':
+    text:
+      'Das tut er, solange du keinen Ort ausgewählt hast. Halt den Kompass in deiner Hand und mach einen Rechtsklick, dann öffnet sich ein GUI in dem du die Orte von Gambberg auswählen kannst.\n
+      Ist ein Ort ausgewählt, so zeigt der Kompass dort hin.\n
+      Nun... genug über den Kompass. Was soll ich dir als nächstes erzählen: Unsere Gemeinschaft oder mehr über die Hauptstadt?'
+    pointer: 'PA_currencyAsk,PA_capitalAsk,PA_tut_thanksInfo'
+
+  'NA_tut_nextStep':
+    text: 'Gerne. Ich stehe immer für Hilfe zur Verfügung.\n
+      Ich möchte dich als nächstes bitten zum Baggersee zu gehen und mit Oliver zu sprechen. Wähl den Baggersee am besten als Ziel in deinem Kompass aus.'
+    events: 'addProgress_mayor,tt_add_gotoDigger'
+    pointer: 'PA_tut_nextStepEnd'
+
+  # Finishing the Tutorial
+  'NA_tut_finish':
+    text:
+      'Willkommen zurück %player%, ich hoffe, dir hat die Tour über den Server gefallen.\n
+      Solltest du jemals Fragen haben, kannst du die besuchten NPCs jederzeit wieder ansprechen. Ansonsten stehen dir auch Mods und Admins des Servers für Hilfe zur Verfügung.\n
+      Um dir den Start noch etwas zu erleichtern, möchte ich dir noch ein Present machen, aber sag es nicht weiter.'
+    events: 'tt_del_gotoMayor'
+    conditions: 'isMetroFinished'
+    pointer: 'PA_tut_thanksMoney'
+
+  'NA_tut_complete':
+    text: 'Sehr gut. Alles klar, dann danke ich für deine Geduld und wünsche dir noch viel Spaß auf dem Server.'
+    events: 'clear_tutorial,end_tutorial'
+
+  # === NPC Default Conversation === #
+
+  # Start
+  'NA_def_start':
+    text: 'Hallo %player%, hast du Fragen bei denen ich dir helfen kann?'
+    pointer: 'PA_currencyAsk,PA_capitalAsk,PA_def_end'
+
+  # Information
+  'NA_currencyAnswer':
+    text:
+      'Hier auf dem Server gibt es KEINE Währung. Alles basiert auf Handel und der Community.\n.
+      Handeln mit Spielern kannst du auf 2 Arten: Schreiben und Items zuwerfen.\n
+      Oder aber mit /trade [Name] wenn sich der Spieler in deine nähe befindet - Das ist die sichere Variante. \n
+      Weiter kannst du im Trademenü auch XP handeln.'
+    pointer: 'PA_getMoneyAsk,PA_chestShopsAsk,PA_tut_thanksInfo,PA_def_end'
+
+  'NA_chestShopsAnswer':
+    text: 'Grundstücke sind kostenlos, aber bringen Verantwortung!\n
+      Du kannst dir ein Grundstück in der Stadt mit /gs claim nehmen, wenn du darauf stehst. \n
+      Die Stadt soll ein gemeinsames Gebiet sein, in dem man schön baut und handelt. \n
+      Beachte deshalb die jeweiligen Bauregeln /help bauregeln und den Bauzwang! \n
+      Inaktive oder hässliche Grundstücke werden OHNE Warnung nach 7 Tagen gelöscht.'
+    pointer: 'PA_currencyAsk,PA_capitalAsk,PA_tut_thanksInfo,PA_def_end'
+
+  'NA_getMoneyAnswer':
+    text:
+      'Geld gibt es wie gesagt nicht. Alles basiert auf Handeln zwischen Spielern.\n
+      Emeralds und Mendingbücher sind aber ganz gut als Tauschware. \n
+      Es gibt zudem auf der ganzen Welt Quests, die dir Belohnungen geben. Suche einfach nach anderen NPCs.
+      Noch weitere fragen?'
+    pointer: 'PA_chestShopsAsk,PA_capitalAsk,PA_tut_thanksInfo,PA_def_end'
+
+  'NA_capitalAnswer':
+    text:
+      'Hier in Gambberg findest du verschiedene Locations über deinen Kompass. Du befindest dich gerade im Rathaus, direkt am Spawn.\n
+      Im Rathaus findest du einen Händler für Claimblöcke, ein Portal zum End und zum Nether.\n
+      Wenn du aus dem Rathaus und nach rechts gehst findest du das Portalhaus und den Marktplatz. Über das Portalhaus kannst du weitere Städte des Servers und die Farmwelt bereisen und auf dem Marktplatz mit Spielern handeln oder ein paar Items an Server NPCs verkaufen.\n
+      Kann ich dir sonst noch behilflich sein?'
+    pointer: 'PA_currencyAsk,PA_tut_thanksInfo,PA_def_end'
+
+  # End
+  'NA_def_end':
+    text: 'Passt schon, danke. Auf Wiedersehen'
+    pointer: ''
+
+player_options:
+  # === Player Tutorial Conversation === #
+
+  # Pre-Tutorial Conversation
+  'PA_tut_nameAsk':
+    text: 'Woher kennt ihr meinen Namen?'
+    condition: '!nameAsked'
+    pointer: 'NA_tut_nameAnswer'
+
+  'PA_tut_food_bigHunger':
+    text: 'Ich könnte ein ganzes Schwein verdrücken!'
+    conditions: '!foodGiven'
+    pointer: 'NA_tut_food_bigHungerResponse'
+
+  'PA_tut_food_lowHunger':
+    text: 'Ein wenig Brot würde bestimmt nicht schaden.'
+    conditions: '!foodGiven'
+    pointer: 'NA_tut_food_lowHungerResponse'
+
+  'PA_tut_food_noHunger':
+    text: 'Ich habe keinen Hunger, danke.'
+    conditions: '!foodGiven'
+    pointer: 'NA_tut_food_noHungerResponse'
+
+  'PA_tut_food_continue':
+    text: 'Danke. Ich wurde übrigens hierher geschickt, um etwas über den Server zu erfahren. (Weiter im Tutorial)'
+    pointer: 'NA_tut_continue'
+
+  'PA_tut_continue':
+    text: 'Ich wurde hierher geschickt um etwas über den Server zu erfahren. (Weiter im Tutorial)'
+    pointer: 'NA_tut_continue'
+
+  # Tutorial Coversation
+  'PA_tut_compassAsk':
+    text: 'Zeigt ein Kompass nicht nach Norden?'
+    pointer: 'NA_tut_compassAnswer'
+
+  'PA_tut_thanksInfo':
+    text: 'Danke für die Informationen (Weiter im Tutorial)'
+    conditions: '!isMayorFinished,isInTutorial,!isTutorialFinished'
+    pointer: 'NA_tut_nextStep'
+
+  'PA_tut_nextStepEnd':
+    text: 'Alles klar, auf Wiedersehen.'
+    pointer: ''
+
+  # Finishing the Tutorial
+  'PA_tut_thanksMoney':
+    text: 'Danke sehr. Nein, ich werde es keinem verraten. (Tutorial abschließen)'
+    events: 'givePlayer_mayor_reward'
+    pointer: 'NA_tut_complete'
+
+  # === Player Default Conversation === #
+  'PA_currencyAsk':
+    text: 'Wie funktioniert das mit Geld?'
+    pointer: 'NA_currencyAnswer'
+
+  'PA_getMoneyAsk':
+    text: 'Okay, danke. Und wie verdiene ich etwas?'
+    pointer: 'NA_getMoneyAnswer'
+
+  'PA_chestShopsAsk':
+    text: 'Wie funktionieren dann Grundstücke?'
+    pointer: 'NA_chestShopsAnswer'
+
+  'PA_capitalAsk':
+    text: 'Was gibt es in Gambberg?'
+    pointer: 'NA_capitalAnswer'
+
+  'PA_def_end':
+    text: 'Nein. Auf Wiedersehen.'
+    conditions: '!isInTutorial'
+    pointer: ''

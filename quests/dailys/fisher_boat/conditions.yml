@@ -1,0 +1,5 @@
+isQuestRunning: 'tag isQuestRunning'
+isQuestFinished: 'tag isQuestFinished'
+
+isPlayerSwimming: 'height $seaLevel$'
+isAtLocation: 'location $swarmLocation$ $swarmRadius$'

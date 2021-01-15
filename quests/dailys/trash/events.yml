@@ -1,0 +1,89 @@
+startQuest: 'folder tag_active,start_objectives,addJournal'
+addJournal: 'journal add trash_started'
+tag_active: 'tag add trash_active'
+start_objectives: 'folder bin1,bin2,bin3,bin4,bin5,bin6,bin7,bin8,bin9,bin10,bin11,bin12,bin13,bin14,bin15,bin16,bin17,bin18,bin19,bin20,bin21,randomTags'
+randomTags: 'folder tbin1,tbin2,tbin3,tbin4,tbin5,tbin6,tbin7,tbin8,tbin9,tbin10,tbin11,tbin12,tbin13,tbin14,tbin15,tbin16,tbin17,tbin18,tbin19,tbin20,tbin21 random:14'
+gehweg: 'playsound shoutout.heygehweg category:PLAYERS'
+
+bin1: 'objective start trash_bin1'
+bin2: 'objective start trash_bin2'
+bin3: 'objective start trash_bin3'
+bin4: 'objective start trash_bin4'
+bin5: 'objective start trash_bin5'
+bin6: 'objective start trash_bin6'
+bin7: 'objective start trash_bin7'
+bin8: 'objective start trash_bin8'
+bin9: 'objective start trash_bin9'
+bin10: 'objective start trash_bin10'
+bin11: 'objective start trash_bin11'
+bin12: 'objective start trash_bin12'
+bin13: 'objective start trash_bin13'
+bin14: 'objective start trash_bin14'
+bin15: 'objective start trash_bin15'
+bin16: 'objective start trash_bin16'
+bin17: 'objective start trash_bin17'
+bin18: 'objective start trash_bin18'
+bin19: 'objective start trash_bin19'
+bin20: 'objective start trash_bin20'
+bin21: 'objective start trash_bin21'
+
+tbin1: 'tag add trash_bin1'
+tbin2: 'tag add trash_bin2'
+tbin3: 'tag add trash_bin3'
+tbin4: 'tag add trash_bin4'
+tbin5: 'tag add trash_bin5'
+tbin6: 'tag add trash_bin6'
+tbin7: 'tag add trash_bin7'
+tbin8: 'tag add trash_bin8'
+tbin9: 'tag add trash_bin9'
+tbin10: 'tag add trash_bin10'
+tbin11: 'tag add trash_bin11'
+tbin12: 'tag add trash_bin12'
+tbin13: 'tag add trash_bin13'
+tbin14: 'tag add trash_bin14'
+tbin15: 'tag add trash_bin15'
+tbin16: 'tag add trash_bin16'
+tbin17: 'tag add trash_bin17'
+tbin18: 'tag add trash_bin18'
+tbin19: 'tag add trash_bin19'
+tbin20: 'tag add trash_bin20'
+tbin21: 'tag add trash_bin21'
+
+done_bin1: if trash_bin1 done_pos else done_neg
+done_bin2: if trash_bin2 done_pos else done_neg
+done_bin3: if trash_bin3 done_pos else done_neg
+done_bin4: if trash_bin4 done_pos else done_neg
+done_bin5: if trash_bin5 done_pos else done_neg
+done_bin6: if trash_bin6 done_pos else done_neg
+done_bin7: if trash_bin7 done_pos else done_neg
+done_bin8: if trash_bin8 done_pos else done_neg
+done_bin9: if trash_bin9 done_pos else done_neg
+done_bin10: if trash_bin10 done_pos else done_neg
+done_bin11: if trash_bin11 done_pos else done_neg
+done_bin12: if trash_bin12 done_pos else done_neg
+done_bin13: if trash_bin13 done_pos else done_neg
+done_bin14: if trash_bin14 done_pos else done_neg
+done_bin15: if trash_bin15 done_pos else done_neg
+done_bin16: if trash_bin16 done_pos else done_neg
+done_bin17: if trash_bin17 done_pos else done_neg
+done_bin18: if trash_bin18 done_pos else done_neg
+done_bin19: if trash_bin19 done_pos else done_neg
+done_bin20: if trash_bin20 done_pos else done_neg
+done_bin21: if trash_bin21 done_pos else done_neg
+
+removeTags: 'run ^tag remove trash_bin1 ^tag remove trash_bin2 ^tag remove trash_bin3 ^tag remove trash_bin4 ^tag remove trash_bin5 ^tag remove trash_bin6 ^tag remove trash_bin7 ^tag remove trash_bin8 ^tag remove trash_bin9 ^tag remove trash_bin10 ^tag remove trash_bin11 ^tag remove trash_bin12 ^tag remove trash_bin13 ^tag remove trash_bin14 ^tag remove trash_bin15 ^tag remove trash_bin16 ^tag remove trash_bin17 ^tag remove trash_bin18 ^tag remove trash_bin19 ^tag remove trash_bin20 ^tag remove trash_bin21'
+removeObjectives: 'run ^objective delete trash_bin1 ^objective delete trash_bin2 ^objective delete trash_bin3 ^objective delete trash_bin4 ^objective delete trash_bin5 ^objective delete trash_bin6 ^objective delete trash_bin7 ^objective delete trash_bin8 ^objective delete trash_bin9 ^objective delete trash_bin10 ^objective delete trash_bin11 ^objective delete trash_bin12 ^objective delete trash_bin13 ^objective delete trash_bin14 ^objective delete trash_bin15 ^objective delete trash_bin16 ^objective delete trash_bin17 ^objective delete trash_bin18 ^objective delete trash_bin19 ^objective delete trash_bin20 ^objective delete trash_bin21'
+
+done_pos: 'folder done_static,done_message_multiple,done_message_one,done_message_none'
+done_neg: 'message §7§oDieser Mülleimer ist leer, suche weiter.'
+done_static: 'run ^point trash_amount 1 ^playsound entity.bat.takeoff category:BLOCKS'
+
+done_message_multiple: 'message §7§oDieser Mülleimer war voll. Noch %point.trash_amount.left:10% weitere. conditions:!trash_done,!message_one'
+done_message_one: 'message §7§oDieser Mülleimer war voll. Jetzt fehlt nur noch einer. conditions:!trash_done,message_one'
+done_message_none: 'run ^message §7§oDas waren 10 Eimer. Ich sollte sie bei Dieter abgeben! ^journal del trash_started ^journal add trash_done conditions:trash_done,!message_one'
+trash_reward: 'folder trash_reward_delay delay:2'
+trash_reward_delay: 'run ^give honey:3 ^message §7§oDu hast 3 Honigwaben bekommen! ^playsound entity.experience_orb.pickup category:AMBIENT'
+trash_cooldown: 'run ^point trash_amount *0 ^tag add trash_end ^tag remove trash_done ^tag remove trash_active ^objective start cooldown ^journal del trash_done'
+
+trash_reset: 'run ^point trash_amount *0 ^tag remove trash_end'
+trash_cancel: 'cancel trash'

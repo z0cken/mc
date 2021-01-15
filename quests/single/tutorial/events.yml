@@ -1,0 +1,75 @@
+# ============================================================================================ #
+# === Tutorial === #
+
+start_tutorial: 'tag add isInTutorial'
+restart_tutorial: 'run ^tag del isTutorialNPCFinished ^tag del isMayorFinished ^tag del isDiggerFinished ^tag del isHotelFinished ^tag del isMinerFinished ^tag del isMetroFinished ^tag del isInTutorial'
+clear_tutorial: 'run ^tag del nameAsked ^tag del foodGiven ^tag del shovelGiven ^tag del pickaxeGiven ^tag del discountGiven ^tag del isTutorialNPCFinished ^tag del isMayorFinished ^tag del isDiggerFinished ^tag del isMinerFinished ^tag del isHotelFinished ^tag del isMetroFinished ^tag del DQ_rewardGiven ^tag del MQ_rewardGiven'
+end_tutorial: 'run ^tag del isInTutorial ^tag add isTutorialFinished'
+
+# Mayor
+addTag_mayor_nameAsked: 'tag add nameAsked'
+addTag_mayor_foodGiven: 'tag add foodGiven'
+givePlayer_mayor_foodA: 'command give %player% cooked_porkchop 32'
+givePlayer_mayor_foodB: 'command give %player% bread 16'
+givePlayer_mayor_foodC: 'command give %player% baked_potato 8'
+givePlayer_mayor_reward: 'run ^give iron_helmet:$finish_reward$,iron_pants:$finish_reward$,iron_chestplate:$finish_reward$,iron_boots:$finish_reward$,iron_pickaxe:$finish_reward$,iron_sword:$finish_reward$ ^message §7§oDu hast etwas Equipment erhalten.'
+
+# Digger
+addTag_digger_shovelGiven: 'tag add shovelGiven'
+givePlayer_digger_shovel: 'command give %player% stone_shovel 1'
+
+# Miner
+addTag_miner_prepareQuest: 'tag add MQ_preparingQuest'
+delTag_miner_prepareQuest: 'tag del MQ_preparingQuest'
+addTag_miner_pickaxeGiven: 'tag add pickaxeGiven'
+givePlayer_miner_pickaxe: 'command minecraft:give %player% minecraft:iron_pickaxe{display:{Name:"\"§fGernods alte Spitzhacke\""},Damage:193} 1'
+
+# Hotel
+addTag_hotel_discountGiven: 'tag add discountGiven'
+givePlayer_hotel_discount: 'run ^give cookie:$hotel_discount$ ^message §7§oDu hast $hotel_discount$ Kekse erhalten'
+
+# ============================================================================================ #
+# === Tutorial Progress === #
+
+addProgress_tutorialNPC: 'tag add isTutorialNPCFinished'
+addProgress_mayor: 'tag add isMayorFinished'
+addProgress_digger: 'run ^tag add isDiggerFinished ^tag del DQ_isFinished'
+addProgress_miner: 'run ^tag add isMinerFinished ^tag del MQ_isFinished'
+addProgress_hotel: 'tag add isHotelFinished'
+addProgress_metro: 'tag add isMetroFinished'
+
+# ============================================================================================ #
+# === "TT" Tutorial Travels" === #
+tt_add_gotoCityHall: 'journal add gotoCityHall'
+tt_del_gotoCityHall: 'journal del gotoCityHall'
+tt_add_gotoDigger: 'journal add gotoDigger'
+tt_del_gotoDigger: 'journal del gotoDigger'
+tt_add_gotoMiner: 'journal add gotoMiner'
+tt_del_gotoMiner: 'journal del gotoMiner'
+tt_add_gotoHotel: 'journal add gotoHotel'
+tt_del_gotoHotel: 'journal del gotoHotel'
+tt_add_gotoMetro: 'journal add gotoMetro'
+tt_del_gotoMetro: 'journal del gotoMetro'
+tt_add_gotoMayor: 'journal add gotoMayor'
+tt_del_gotoMayor: 'journal del gotoMayor'
+
+# ============================================================================================ #
+# === Quests / Tasks === #
+
+# Digger Quest
+addQuest_digger: 'run ^journal add getBlocks_digger ^tag add DQ_isRunning ^objective start get_DQ_dirt ^objective start get_DQ_sand ^objective start get_DQ_gravel'
+finishQuest_digger: 'run ^give bucket:$digger_reward$ ^journal del returnBlocks_digger ^tag del DQ_isRunning ^tag del DQ_dirtFinished ^tag del DQ_sandFinished ^tag del DQ_gravelFinished ^tag add DQ_isFinished ^message §7§oDu hast $digger_reward$ Eimer erhalten ^tag add DQ_rewardGiven'
+
+DQ_dirtFinished: 'run ^tag add DQ_dirtFinished ^message §7§oDu hast genug Erde ausgegraben'
+DQ_sandFinished: 'run ^tag add DQ_sandFinished ^message §7§oDu hast genug Sand ausgegraben'
+DQ_gravelFinished: 'run ^tag add DQ_gravelFinished ^message §7§oDu hast genug Kies ausgegraben'
+DQ_finished: 'run ^journal del getBlocks_digger ^journal add returnBlocks_digger ^message §7§oDu hast alle benötigten blöcke. Geh zurück zu Oliver. conditions:DQ_dirtFinished,DQ_sandFinished,DQ_gravelFinished'
+DQ_takeBlocks: 'take dirt:$dirt_amount$,sand:$sand_amount$,gravel:$gravel_amount$'
+
+# Miner Quest
+addQuest_miner: 'run ^journal add getBlocks_miner ^tag add MQ_isRunning ^objective start get_MQ_stone ^objective start get_MQ_diorite'
+finishQuest_miner: 'run ^give diamond:$miner_reward$ ^journal del returnBlocks_miner ^tag del MQ_isRunning ^tag del MQ_stoneFinished ^tag del MQ_dioriteFinished ^message §7§oDu hast $miner_reward$ Diamanten erhalten ^tag add MQ_rewardGiven'
+
+MQ_stoneFinished: 'run ^tag add MQ_stoneFinished ^message §7§oDu hast genug Stein abgebaut'
+MQ_dioriteFinished: 'run ^tag add MQ_dioriteFinished ^message §7§oDu hast genug Diorit abgebaut'
+MQ_finished: 'run ^journal del getBlocks_miner ^journal add returnBlocks_miner ^message §7§oDu hast alle benötigten blöcke. Geh zurück zu Gernod. conditions:MQ_stoneFinished,MQ_dioriteFinished'

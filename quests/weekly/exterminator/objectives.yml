@@ -1,0 +1,7 @@
+entrance1: 'location $entrance1$ $entrance1radius$ events:found_entrance'
+entrance2: 'location $entrance2$ $entrance2radius$ events:found_entrance'
+entrance3: 'location $entrance3$ $entrance3radius$ events:found_entrance'
+entrance4: 'location $entrance4$ $entrance4radius$ events:found_entrance'
+entrance5: 'location $entrance5$ $entrance5radius$ events:found_entrance'
+kill: 'mobkill ENDERMITE $amount_rats$ name:Ratte events:done_killing conditions:in_canals'
+cooldown: 'delay $cooldown$ events:tag_del_cooldown'

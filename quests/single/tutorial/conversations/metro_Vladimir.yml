@@ -1,0 +1,140 @@
+quester: 'Vladimir'
+first: 'NA_tut_start,NA_def_start'
+stop: 'false'
+
+NPC_options:
+  # === NPC Tutorial Conversation === #
+  'NA_tut_start':
+    text: 'Aha. Frischfleisch.'
+    conditions: 'isInTutorial,isHotelFinished,!isMetroFinished'
+    events: 'tt_del_gotoMetro'
+    pointer: 'PA_tut_start'
+
+  'NA_tut_newbie':
+    text: 'Das ist doch offensichtlich, du bist ein Neuling. Mit anderen Worten: Futter für die Metro.'
+    pointer: 'PA_tut_notKind'
+
+  'NA_tut_notKind':
+    text: 'Geh mal da runter, dann verstehst du. Geh da 1000 mal rein und du bist innerlich ebenso kalt.'
+    pointer: 'PA_tut_whatsMetro'
+
+  'NA_tut_whatsMetro':
+    text:
+      'Ist das nicht offensichtlich? Eine Metro. Überfallen von Untoten und Monstern.\n
+      Okay, woher solltest du es auch schon wissen. Dieses verlassene U-Bahn System wurde vor Jahren von Monstern überfallen.\n
+      Nun müssen wir darum kämpfen, die Stationen weiterhin in Betrieb zu halten.'
+    pointer: 'PA_tut_metroSize'
+
+  'NA_tut_metroSize':
+    text:
+      'Die größe ist schwer zu sagen. Es gibt zwar eine Karte der Metro, wo man die verbundenen Stationen sieht.\n
+      Aber es gibt noch viele kleine zusätzliche Tunnel, die nicht zu den Hauptstrecken gehören. Zu den Stationen: Es gibt insgesamt 7 Stück.'
+    pointer: 'PA_tut_stations'
+
+  'NA_tut_stationPowers':
+    text:
+      'Die Stationen geben dem Server kraft und aktive Stationen halten Monster fern. Sind alle aktiv profitieren alle Spieler von ihren Boni. Fallen ein paar aus, so entfallen diese Boni.\n
+      Verlieren wir die Kontrolle über die Metro komplett, so wird dies negative Einflüsse haben.'
+    pointer: 'PA_tut_howToPower'
+
+  'NA_tut_howToPower':
+    text:
+      'In jeder Station gibt es Leuchtfeuer. Sind diese aktiv. so ist die jeweilige Station aktiv. Die Leuchtfeuer benötigen Lapislazuli als Brennstoff.\n
+      Einmal komplett aufgefüllt reicht der Lapis Vorrat für 5 Tage je Station. Dabei verbraucht jede Station pro Tag 12 Lapis. Die Station erlischt, wenn der Vorrat aufgebraucht ist.'
+    pointer: 'PA_tut_danger'
+
+  'NA_tut_danger':
+    text:
+      'MIT WELCHEN? ALLE! Ich würde dir wärmstens empfehlen, dort NICHT alleine rein zu gehen. Eine Gruppe erhöht deine Überlebenschancen massiv.\n
+      Solltest du es dennoch alleine probieren wollen, so empfehle ich dir eine entsprechend gute Vorbereitung.'
+    pointer: 'PA_tut_cautions'
+
+  'NA_tut_cautions':
+    text:
+      'In der Tat. Bist du einmal in die Metro gegangen, so musst du auch selbstständig wieder heraus. /home und /spawn funktionieren da unten nicht.
+      Aber nun gut... genug der Schauergeschichten und keine Sorge, niemand verlangt von dir in die Metro zu gehen. Erst recht nicht direkt am Anfang.\n
+      Möchtest du mal hier rein, frag andere Spieler oder bereite dich gut vor.'
+    pointer: 'PA_boni,PA_tut_continue'
+
+  'NA_tut_continue':
+    text:
+      'Es sind keine Geschichten, aber es war mir eine Freude. Gelegentlich kann ich dir übrigens ein wenig Hilfe für die Metro anbieten.\n
+      Geh als nächstes wieder zum Bürgermeister, sobald du dich beruhigt hast.'
+    events: 'tt_add_gotoMayor,addProgress_metro'
+
+  # === NPC Default Conversation === #
+  'NA_def_start':
+    text: 'Hallo! Bereit in den Kampf zu ziehen?'
+    pointer: 'PA_boni,PA_metroHelp,PA_betterNot'
+
+  # TODO
+  'NA_boni':
+    text: 'Ich denke, es wäre zuviel es dir hier zu erklären. Die Informationen dazu findest du in der Hilfe unter /help metro'
+    pointer: 'PA_tut_continue,PA_end'
+
+  # TODO
+  'NA_metroHelp':
+    text: 'Ich denke schon, lass mich nachsehen.'
+
+  'NA_fool':
+    text: 'War ja zu erwarten. In Russland gab es solche Feiglinge nicht!'
+
+  'NA_end':
+    text: 'Werde ich haben. Auf wiedersehen.'
+
+player_options:
+  # === Player Tutorial Conversation === #
+  'PA_tut_start':
+    text: 'Bitte was?'
+    pointer: 'NA_tut_newbie'
+
+  'PA_tut_notKind':
+    text: 'Ähh ja.. Bist du immer so unfreundlich?'
+    pointer: 'NA_tut_notKind'
+
+  'PA_tut_whatsMetro':
+    text: 'Danke, ich passe vorerst. Aber erzähl mir mal, was das hier ist.'
+    pointer: 'NA_tut_whatsMetro'
+
+  'PA_tut_metroSize':
+    text: 'Wie groß ist die Metro denn und wie viele Stationen gibt es?'
+    pointer: 'NA_tut_metroSize'
+
+  'PA_tut_stations':
+    text: 'Und was meinst du mit die Stationen müssen in Betrieb gehalten werden, wenn die Metro doch von Monstern überfallen ist?'
+    pointer: 'NA_tut_stationPowers'
+
+  'PA_tut_howToPower':
+    text: 'Und wie werden die Stationen betrieben bzw wie aktiviert man sie?'
+    pointer: 'NA_tut_howToPower'
+
+  'PA_tut_danger':
+    text: 'Mit welchen Gefahren muss ich rechnen, wenn ich dort hinein gehe?'
+    pointer: 'NA_tut_danger'
+
+  'PA_tut_cautions':
+    text: 'Muss ich da unten noch irgendwas beachten?'
+    pointer: 'NA_tut_cautions'
+
+  'PA_tut_continue':
+    text: 'Danke für die Horrorgeschichten. Ich geh dann mal weiter. (Weiter im Tutorial)'
+    conditions: 'isInTutorial,isHotelFinished,!isMetroFinished'
+    pointer: 'NA_tut_continue'
+
+  # === Player Default Conversation === #
+  'PA_boni':
+    text: 'Welche Boni kann man durch die Metro erhalten?'
+    pointer: 'NA_boni'
+
+  'PA_metroHelp':
+    text: 'Hättest du etwas Hilfe anzubieten?'
+    pointer: 'NA_metroHelp'
+
+  'PA_betterNot':
+    text: 'Nee.. lass mal. Ich bin nicht lebensmüde.'
+    pointer: 'NA_fool'
+
+  'PA_end':
+    text: 'Viel spaß in der Metro.'
+    conditions: '!isInTutorial'
+    pointer: 'NA_end'

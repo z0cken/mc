@@ -1,0 +1,84 @@
+variables:
+  cooldown_short: '240' #in Minutes (= 4 Stunden)
+  cooldown_online: '10000' #in Minutes (= 6.9 Tage)
+  #blocks to break
+  block1: 'STONE'
+  block2: 'ANDESITE'
+  block3: 'DIORITE'
+  block4: 'GRANITE'
+  block5: 'SAND'
+  block6: 'DIRT'
+  block7: 'GRAVEL'
+  block8: 'NETHER_QUARTZ_ORE'
+  block9: 'NETHERRACK'
+  block10: 'COAL_ORE'
+  block11: 'IRON_ORE'
+  block12: 'GOLD_ORE'
+
+  mob1: 'ZOMBIE'
+  mob2: 'SKELETON'
+  mob3: 'CREEPER'
+  mob4: 'ENDERMAN'
+  mob5: 'PHANTOM'
+  mob6: 'PIG_ZOMBIE'
+  mob7: 'STRAY'
+  mob8: 'WITHER_SKELETON'
+  mob9: 'HUSK'
+  mob10: 'GHAST'
+
+  material1: 'material1:300' #stone_bricks
+  material2: 'material2:50' #apple
+  material3: 'material3:200' #oak_log
+  material4: 'material4:400' #glass
+  material5: 'material5:64' #quartz_block
+  material6: 'material6:64' #purpur_block
+  material7: 'material7:64' #white_wool
+  material8: 'material8:64' #bricks
+  material9: 'material9:64' #redstone_block
+  material10: 'material10:64' #coal
+  material11: 'material11:32' #iron_ingot
+  material12: 'material12:16' #gold_ingot
+
+  #home variables:
+  claims_for_home2: '10'
+  minlevel: '40'
+  toplevel: '100'
+
+npcs:
+  '349': claimnpc
+  'Claim': claimnpc
+cancel:
+  claim1:
+    name: 'Claim 1'
+    conditions: 'material_active'
+    tags: 'claim1,material1,material2,material3,material4,material5,material6,material7,material8,material9,material10,material11,material12'
+    journal: 'mat1,mat2,mat3,mat4,mat5,mat6,mat7,mat8,mat9,mat10,mat11,mat12'
+    events: 'cooldown_short1'
+  claim2:
+    name: 'Claim 2'
+    conditions: 'block_active'
+    objectives: 'block1,block2,block3,block4,block5,block6,block7,block8,block9,block10,block11,block12'
+    tags: 'claim2'
+    journal: 'c2_obj1,c2_obj2,c2_obj3,c2_obj4,c2_obj5,c2_obj6,c2_obj7,c2_obj8,c2_obj9,c2_obj10,c2_obj11,c2_obj12'
+    events: 'cooldown_short2'
+  claim3:
+    name: 'Claim 3'
+    conditions: 'mob_active'
+    objectives: 'mob1,mob2,mob3,mob4,mob5,mob6,mob7,mob8,mob9,mob10'
+    tags: 'claim3'
+    journal: 'c3_obj1,c3_obj2,c3_obj3,c3_obj4,c3_obj5,c3_obj6,c3_obj7,c3_obj8,c3_obj9,c3_obj10,c3_obj11,c3_obj12'
+    events: 'cooldown_short3'
+
+journal_main_page:
+  claim1:
+    priority: 3
+    text: 'Claimblock: Materialien'
+    conditions: 'material_active'
+  claim2:
+    priority: 4
+    text: 'Claimblock: Blöcke'
+    conditions: 'block_active'
+  claim3:
+    priority: 5
+    text: 'Claimblock: Monster'
+    conditions: 'mob_active'

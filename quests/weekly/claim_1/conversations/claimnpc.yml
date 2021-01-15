@@ -1,0 +1,260 @@
+quester: 'Günther'
+first: 'claim1_giveclaim,claim1_start,claim2_start,claim3_start,claim2_finish,claim3_finish,start'
+
+NPC_options:
+  'start':
+    text: 'Guten Tag, wie kann ich ihnen helfen?'
+    pointer: 'start_claim,start_nothing,start_homes'
+  'intext_start':
+    text: 'Kann ich ihnen sonst noch helfen?'
+    pointer: 'start_claim,start_nothing,start_homes'
+  'claim_1':
+    text: 'Die Stadt ist mal wieder pleite und braucht etwas unterstützung bei aktuellen Projekten. Würden Sie uns mit Materialien unterstützen?'
+    conditions: '!cooldown1'
+    pointer: 'claim1_yes,claim1_no,bye'
+  'claim_2':
+    text: 'Gamb fordert, dass auf dem Server mehr gebaut wird. Spielst du aktiv und würdest mithelfen beim bauen?'
+    conditions: '!cooldown2,'
+    pointer: 'claim2_yes,claim2_no,bye'
+  'claim_3':
+    text: 'Es sind zu viele Monster auf dem Server. Die Fiecher müssten mal wieder weg. Kannst du sie töten?'
+    conditions: '!cooldown3'
+    pointer: 'claim3_yes,claim3_no,bye'
+  'claim_none':
+    text: 'Leider habe ich aktuell keine weiteren Aufgaben. Kommen sie die Tage wieder vorbei!'
+    pointer: 'claim_restart,bye'
+  'claim1_text':
+    text: 'Super. Ich schaue kurz nach was wir brauchen und schreibe es in ihr Tagebuch. (/j)'
+    pointer: 'ok'
+  'claim2_text':
+    text: 'Sehr gut. Ich habe alle Aufgaben in ihr Tagebuch geschrieben. (/j)'
+    pointer: 'ok'
+  'claim3_text':
+    text: 'Vielen Dank! Ich habe alle Monster in ihr Tagebuch geschrieben. (/j)'
+    pointer: 'ok'
+  'bye':
+    text: 'Alles klar, dann noch einen schönen Tag.'
+  'claim1_start': #claim mission 1 is active
+    text: 'Hey, hast du schon Materialien dabei?'
+    conditions: 'claim1_active,material_active'
+    pointer: 'claim1_take,claim1_abort'
+  'claim2_start': #claim mission 2 is active
+    text: 'Du musst alle Aufgaben erfüllen. Sie stehen in deinem Journal.'
+    conditions: 'claim2_active,block_active'
+    pointer: 'claim2_abort,ok'
+  'claim3_start': #claim mission 3 is active
+    text: 'Du musst alle Aufgaben erfüllen. Sie stehen in deinem Journal.'
+    conditions: 'claim3_active,mob_active'
+    pointer: 'claim3_abort,ok'
+  'claim2_finish':
+    text: 'Super, gamb ist endlich wieder zufrieden! Hier hast du deinen Claimblock.'
+    conditions: 'claim2_active,!block_active'
+    pointer: 'thx,more_claims'
+    events: 'claim2_end'
+  'claim3_finish':
+    text: 'Endlich sind die Fiecher wieder weg! Hier hast du deinen Claimblock.'
+    conditions: 'claim3_active,!mob_active'
+    pointer: 'thx,more_claims'
+    events: 'claim3_end'
+  'claim1_confirm_take':
+    text: 'Dankeschön.'
+    pointer: 'claim1_ask,claim1_finished'
+  'claim1_giveclaim':
+    text: 'Hier hast du deinen Claimblock.'
+    pointer: 'thx,more_claims'
+    conditions: '!material_active,claim1_active'
+    events: 'claim1_end'
+  'claim1_todo':
+    text: 'Du musst noch weitere Materialien bringen. Sie stehen in deinem Journal.'
+    conditions: 'material_active'
+  'canceled':
+    text: 'Alles klar, kann ich dir sonst irgendwie helfen?'
+    pointer: 'start_claim,start_nothing'
+  'abort1_text':
+    text: 'Bist du dir sicher? Dann kannst du die Aufgabe für eine Woche nicht mehr annehmen.'
+    pointer: 'abort1_confirm,abort_cancel'
+  'abort2_text':
+    text: 'Bist du dir sicher? Dann kannst du die Aufgabe für eine Woche nicht mehr annehmen.'
+    pointer: 'abort2_confirm,abort_cancel'
+  'abort3_text':
+    text: 'Bist du dir sicher? Dann kannst du die Aufgabe für eine Woche nicht mehr annehmen.'
+    pointer: 'abort3_confirm,abort_cancel'
+  'home_1':
+    text: 'Ich sehe, deine Teleportoptionen sind sehr begrenzt, aber ich kann da was machen. Spielst du denn aktiv genug?'
+    conditions: '!has_home1'
+    pointer: 'home_yes,home_no'
+  'home_2':
+    text: 'Ich sehe, du hast bereits einen zweiten Home, aber da kann man noch was machen. Hast du schon genug Skills dafür?'
+    conditions: 'has_home1,!has_home2,!tag_homeclaims'
+    pointer: 'home_2yes,home_no'
+  'home_decline':
+    text: 'Du hast schon die maximale Menge an Homes.'
+    conditions: 'has_home1'
+    pointer: 'home_ask,bye'
+  'home_bye':
+    text: 'Dann kann ich dir nicht helfen. Du musst schon aktiv spielen, um Vorteile zu erhalten.'
+  'home1_100h':
+    text: 'Perfekt, du hast über 100 Spielstunden und erhältst somit deinen zweiten Homepunkt!'
+    conditions: 'has_playtime'
+    events: 'give_home1'
+    pointer: 'thx'
+  'home_bye2':
+    text: 'Laut meinem Register hast du aber noch keine 100 Stunden Spielzeit. Komm doch wieder, wenn du länger aktiv warst.'
+    conditions: '!has_playtime'
+  'home_bye3':
+    text: 'Deine Skills müssen alle auf mindestens Level $minlevel$ sein und einer deiner Skills auf Level $toplevel$.'
+    conditions: '!home2_levels'
+    pointer: 'exit'
+  'ask_text':
+    text: 'Du benennst deine Homes einfach beim setzen mit §3/sethome Haus§c§o und teleportierst dich mit §3/home Haus§c§o.'
+  'home2_levels':
+    text: 'Stimmt! Aber ich sehe gerade, ich brauche auch noch $claims_for_home2$ Claimblöcke für deinen Antrag.'
+    conditions: 'home2_levels'
+    pointer: 'claim_yes,claim_no'
+  'claims_give':
+    text: 'Dankesehr. Dann geben sie mir bitte ihren Passierschein A38.'
+    conditions: 'home2_claims'
+    events: 'take_claims,tag_add_homeclaims'
+    pointer: 'claim_pass,claim_pass2'
+  'claims_missing':
+    text: 'Ähm. Nein? Sie haben nicht genug Claims im Inventar. Sie müssen die schon mitbringen.'
+    conditions: '!home2_claims'
+    pointer: 'ok'
+  'pass_text':
+    text: 'In Darmstadt im Hochhaus....' #TODO Erkärung ORT passierschein a38
+    pointer: 'bye_ok'
+  'pass_text2':
+    text: 'Sie benötigen den Passierschein A38. Ansonsten darf ich ihnen keinen weiteren Home geben.' #TODO Erkärung passierschein a38
+    pointer: 'claim_pass,bye_ok,pass_give'
+  'home2_pass':
+    text: 'Sie benötigen noch Passierschein A38 für ihren weiteren Homepunkt.'
+    conditions: 'tag_homeclaims'
+    pointer: 'claim_pass,claim_pass2,pass_give'
+  'pass_take':
+    text: 'Vielen Dank. Dann haben sie jetzt die Möglichkeit einen dritten Homepunkt zu setzen.'
+    events: 'take_pass,give_home2,tag_del_homeclaims'
+    conditions: 'has_pass'
+    pointer: 'thx,home_ask'
+  'pass_fake':
+    text: 'Ähm nein. Ich sehe ihn nicht in ihrem Inventar.'
+    conditions: '!has_pass'
+    pointer: 'exit'
+
+#########################################################################
+player_options:
+  'start_claim':
+    text: 'Ich würde gerne einen Claimblock erwerben.'
+    pointer: 'claim_1,claim_2,claim_3,claim_none'
+  'start_nothing':
+    text: 'Eigentlich nicht, tschüss.'
+  'claim1_yes':
+    text: 'Ja, mache ich!'
+    events: 'claim1_start'
+    pointer: 'claim1_text'
+  'claim1_no':
+    text: 'Das ist nichts für mich, gibts es noch andere Aufgaben?'
+    pointer: 'claim_2,claim_3,claim_none'
+  'claim2_yes':
+    text: 'Ja, mache ich!'
+    events: 'claim2_start'
+    pointer: 'claim2_text'
+  'claim2_no':
+    text: 'Das ist nichts für mich, gibts es noch andere Aufgaben?'
+    pointer: 'claim_3,claim_none'
+  'claim3_yes':
+    text: 'Ja, mache ich!'
+    events: 'claim3_start'
+    pointer: 'claim3_text'
+  'claim3_no':
+    text: 'Das ist nichts für mich, gibts es noch andere Aufgaben?'
+    pointer: 'claim_none'
+  'claim_restart':
+    text: 'Können sie mir die Aufgaben noch einmal sagen?'
+    conditions: 'one_open'
+    pointer: 'claim_1,claim_2,claim_3'
+  'bye':
+    text: 'Ok, dann gehe ich wieder. Tschüss!'
+  'ok':
+    text: 'Ok, ich mache mich auf den Weg!'
+  'claim1_take':
+    text: 'Ja, hier bitte.'
+    conditions: 'has_material'
+    events: 'take_mat1,take_mat2,take_mat3,take_mat4,take_mat5,take_mat6,take_mat7,take_mat8,take_mat9,take_mat10,take_mat11,take_mat12'
+    pointer: 'claim1_confirm_take'
+  'claim1_notake':
+    text: 'Nein, noch nicht.'
+  'claim1_abort':
+    text: 'Ich möchte die Aufgabe abbrechen.'
+    pointer: 'abort1_text'
+  'claim2_abort':
+    text: 'Ich möchte die Aufgabe abbrechen.'
+    pointer: 'abort2_text'
+  'claim3_abort':
+    text: 'Ich möchte die Aufgabe abbrechen.'
+    pointer: 'abort3_text'
+  'abort1_confirm':
+    text: 'Ja, ich möchte abbrechen!'
+    pointer: 'canceled'
+    events: 'cancel_claim1,cooldown_short1'
+  'abort2_confirm':
+    text: 'Ja, ich möchte abbrechen!'
+    pointer: 'canceled'
+    events: 'cancel_claim2,cooldown_short2'
+  'abort3_confirm':
+    text: 'Ja, ich möchte abbrechen!'
+    pointer: 'canceled'
+    events: 'cancel_claim3,cooldown_short3'
+  'abort_cancel':
+    text: 'Nein, ich versuche es weiter!'
+    pointer: 'bye'
+  'thx':
+    text: 'Vielen Dank!'
+  'more_claims':
+    text: 'Ich würde gerne noch eine Aufgabe machen.'
+    pointer: 'claim_1,claim_2,claim_3,claim_none'
+  'claim1_ask':
+    text: 'Was jetzt?'
+    pointer: 'claim1_todo,claim1_giveclaim'
+  'claim1_finished':
+    text: 'Bekomme ich jetzt meinen Claimblock?'
+    pointer: 'claim1_giveclaim'
+    conditions: '!material_active'
+  'start_homes':
+    text: 'Ich würde gern ein weiteres Home besitzen.'
+    pointer: 'home_1,home_2,home2_pass,home_decline'
+  'home_yes':
+    text: 'Ja, klar mache ich das.'
+    pointer: 'home1_100h,home_bye2'
+  'home_2yes':
+    text: 'Ja klar, hab schon total viele Skill-Level.'
+    pointer: 'home2_levels,home_bye3'
+  'home_no':
+    text: 'Nein, ich glaube nicht.'
+    pointer: 'home_bye'
+  'home_ask':
+    text: 'Wie geht das jetzt mit dem zweiten Homepunkt?'
+    pointer: 'ask_text'
+  'claim_yes':
+    text: 'Hier bitte, ich habe die $claims_for_home2$ Claimblöcke dabei.'
+    conditions: 'home2_claims'
+    pointer: 'claims_give,claims_missing'
+  'claim_no':
+    text: 'Oh, die muss ich noch besorgen.'
+    conditions: '!home2_claims'
+    pointer: 'intext_start'
+  'claim_pass':
+    text: '...Wo bekomme ich diesen Schein?'
+    conditions: '!has_pass'
+    pointer: 'pass_text'
+  'claim_pass2':
+    text: 'Welcher Passierschein?'
+    conditions: '!has_pass'
+    pointer: 'pass_text2'
+  'bye_ok':
+    text: 'Danke für nichts... Bis später.'
+  'pass_give':
+    text: 'Ich habe ihn. Bitteschön.'
+    pointer: 'pass_take,pass_fake'
+    conditions: 'has_pass'
+  'exit':
+    text: 'Oh, ok.'

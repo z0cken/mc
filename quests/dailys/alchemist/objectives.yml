@@ -1,0 +1,5 @@
+listening: delay $listening$
+brewing_1: delay $brewing_2$ events:done_brewing
+brewing_2: delay $brewing_2$ events:final_brewing
+cooldown1: delay $cooldown1$
+cooldown2: delay $cooldown2$

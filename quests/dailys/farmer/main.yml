@@ -1,0 +1,34 @@
+variables:
+  #money payout per step
+  payout1: '1'
+  payout2: '1'
+  payout3: '1'
+  payout4: '1'
+  payout5: '1'
+  payout6: '1'
+  payout7: '1'
+  #Amout for objectives
+  amount1: '200' #wheat farm
+  amount2: '300' #carrots farm
+  amount3: '15' #cow breed
+  amount4: '300' #melon farm
+  amount5: '40' #sheep shear
+  amount6: '400' #potato farm
+  amount7: '30' #chicken kill
+  timer: '120' #in Minutes for a job
+  cooldown: '1200' #in Minutes for quest 20h
+npcs:
+  'Manfred': farmer
+  '352': farmer
+cancel:
+  farmer:
+    name: 'Farmen üben'
+    conditions: 'running'
+    objectives: 'job1,job2,job3,job4,job5,job6,job7'
+    tags: 'job1,job2,job3,job4,job5,job6,job7,money1,money2,money3,money4,money5,money6,money7'
+    journal: 'job1,job2,job3,job4,job5,job6,job7'
+journal_main_page:
+  greeting:
+    priority: 1
+    text: 'Farmen üben'
+    conditions: 'running'

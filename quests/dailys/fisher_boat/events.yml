@@ -1,0 +1,3 @@
+startQuest: 'run ^tag add isQuestRunning ^objective start findLocation ^journal add findLocation'
+updateQuest: 'run ^journal del findLocation ^journal add getFish ^objective start getFish'
+updateQuestDone: 'run ^journal del getFish ^journal add returnFish'

@@ -1,0 +1,50 @@
+
+Questname:  ???
+Quester:    ???
+Questtyp:   Weekly/Monthly ODER: Immer, wenn sie befallen ist können Spieler versuchen sie zu säubern. Nicht machbar bis zum nächsten befall.
+Location:   Erbgut "Oper"
+
+Background Story:
+    Die Oper wurde von Untoten/Monstern überfallen.
+
+Aufgabe:
+    Säubere die Oper.
+
+Belohnung:
+    1x Paper: Urkunde "Arenameister"
+    Schekel, Mob Loot?
+
+Globale belohnungen, wenn die Oper "sauber" ist: (Ist das möglich?)
+    + 10 Schekel pro stunde durch Oper aufführungen (wie metro, für alle spieler)
+
+Quest bedingungen:
+    Der Spieler muss eine Rüstung abhaben (conditions: rating)
+
+Quest aufbau:
+    Man nimmt die Quest für die säuberung an und muss rein gehen. (Quest kann nur von einem gleichzeitig gemacht werden, keine gruppen)
+    Sobald man drin ist schließen sich die Türen (conditions: location, events: door), man darf sich nicht wegporten dürfen.
+    Es spawnen nun mob-wellen auf der bühne, an den türen, auf der empore.
+
+    Welle 1: Slime (4? big)
+    Welle 2: Silverfish (10?)
+    Welle 3: Zombie (7?)
+    Welle 4: Skeleton (5?)
+    Welle 5: Spider (5?)
+    (pause)
+    Welle 6: Creeper (5?)
+    Welle 7: Wither Skeleton + Skeleton (3 + 3?)
+    Welle 8: Zombie Pigman + Blaze (3 + 3?)
+    Welle 9: Charged Creeper + Ghast (3 + 2?)
+    (pause)
+    Welle 10: Endboss? (Custom Mob)
+
+Falls der Spieler stirbt: (objective: die)
+    Spawnt er vor der Arena, die Quest bricht ab und wird zurückgesetzt.
+    Items droppen beim sterben - er muss wieder reinlaufen zum items holen, aber Türen schließen nicht.
+
+Loggt sich der Spieler aus: (objective: logout)
+    Bricht die Quest ab, die türen öffnen sich.
+
+Optionales:
+    Die aktuelle Welle könnte an einer Wand oder auf dem Boden mit redstone lamps angezeigt werden, und/oder als chat output (events: setblock / message)
+

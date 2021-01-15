@@ -1,0 +1,79 @@
+quester: 'Bernd'
+first: 'start_cooldown,start_timeout,start_during,start_done,start'
+stop: 'false'
+NPC_options:
+  #start
+  'start':
+    text: 'Hey du! Hast du kurz Zeit?'
+    conditions: '!obj_active,!running,!timeout,!cooldown'
+    pointer: 'start_yes,start_no'
+    events: 'del_timeout'
+  'yes_tell':
+    text: 'Ich wollte heute ein Festmahl machen, aber die Kühlung ist ausgefallen und alle Fische verdorben. Könntest du mir innerhalb einer Stunde neue Angeln?'
+    pointer: 'tell_accept,tell_no'
+  'accept_bye':
+    text: 'Super. Aber wirklich nur frisch geangelte Fische!'
+    events: 'select_cod,select_salmon,select_puffer,select_tropical,add_running'
+  'start_during':
+    text: 'Hast du schon alle Fische geangelt?'
+    conditions: 'obj_active'
+    pointer: 'during_no,during_cancel'
+  'cancel_ask':
+    text: 'Möchtest du die Aufgabe abbrechen?'
+    pointer: 'cancel_confirm,no'
+  'start_done':
+    text: 'Hey, da bist du ja wieder!'
+    conditions: 'running,!obj_active'
+    pointer: 'done_finished'
+  'finished_tell':
+    text: 'Ja... Meine Freunde haben mit gerade mitgeteilt, dass sie gar keinen Fisch mögen. Das tut mir wirklich Leid! Hier hast du aber etwas Entschädigung für deinen Aufwand.'
+    events: 'utilities-statistics.daily_fishmeal,del_running,cooldown,payout'
+  'start_timeout':
+    text: 'Hey, jetzt brauche ich die Fische nicht mehr. Ich hatte dir gesagt innerhalb einer Stunde!'
+    conditions: 'timeout,running'
+    pointer: 'timeout_bye'
+    events: 'del_timeout,del_timeout_journal,cancel'
+  'start_cooldown':
+    text: 'Hey, danke nochmal für deinen Einsatz! Komm doch in %objective.cooldown.left% wieder vorbei.'
+    conditions: 'cooldown'
+    pointer: 'cooldown_bye'
+  'no_bye':
+    text: 'Alles klar, Tschüss'
+  'time_tell':
+    text: 'Noch %objective.timeout.left%! Beeil dich besser.'
+    pointer: 'during_cancel,cooldown_bye'
+
+player_options:
+  #start
+  'start_yes':
+    text: 'Öhm. Joa? Was gibts?'
+    pointer: 'yes_tell'
+  'start_no':
+    text: 'Bin nur auf der Durchreise!'
+    pointer: 'no_bye'
+  'tell_accept':
+    text: 'Selbstverständlich! Ich mache mich direkt auf den Weg.'
+    pointer: 'accept_bye'
+  'tell_no':
+    text: 'Ich kann nicht angeln.'
+    pointer: 'no_bye'
+  'during_no':
+    text: 'Leider nein. Ich bin noch dabei.'
+  'during_time':
+    text: 'Leider nein. Aber wie viel Zeit habe ich denn noch?'
+    pointer: 'time_tell'
+  'during_cancel':
+    text: 'Ich schaffe das nicht.'
+    pointer: 'cancel_ask'
+  'cancel_confirm':
+    text: 'Ja. Das ist zu viel'
+    events: 'cancel'
+  'no':
+    text: 'Nein, ich versuche es nochmal'
+  'done_finished':
+    text: 'Ja, ich habe alle Fische geangelt!'
+    pointer: 'finished_tell'
+  'timeout_bye':
+    text: 'Oh. Das tut mir leid.'
+  'cooldown_bye':
+    text: 'Kein Problem, man sieht sich!'

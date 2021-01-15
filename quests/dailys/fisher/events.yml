@@ -1,0 +1,33 @@
+setNoFish: 'tag add noFish'
+removeNoFish: 'tag del noFish'
+blockQuest: 'run ^objective remove blockQuest ^objective start blockQuest'
+sorry: 'tag add saidSorry'
+removeSorry: 'tag del saidSorry'
+
+#buy fish
+buyFish: 'if hasMoney makeTransaction else noMoney'
+makeTransaction: 'run ^take iron_ingot:2 ^give cooked_salmon:1 condition:hasMoney ^tag add noFish'
+noMoney: 'message §7§oDu hast nicht genug Eisen.'
+#Journal Update
+startJob: 'run ^journal add job_start ^tag add jobActive ^objective start findRoses' #restart Quest with <2 fish in Location & jobactive
+
+#Journal Update
+foundRoses: 'run ^message §7§oDas dürfte die Angelstelle sein, die Tjark gemeint hat. ^objective start fishing ^journal add location_found ^journal del job_start'
+
+oneFish: 'folder changeSalmon,addObjective delay:1' #1 Fish catched. Change to Questitem [+restart objective]
+changeSalmon: 'folder doChange,doneFishing,jobPay condition:hasSalmon'
+doChange: 'run ^take salmon ^give big_salmon ^message §7§oDieser Fisch sieht besonders groß aus! ^tag add catchedFish'
+addObjective: 'objective start fishing'
+#Journal Update
+doneFishing: 'run ^message §7§oIch sollte die Fische bei Tjark abgeben ^journal add job_done condition:hasAllFish'
+
+jobPay: 'folder amount1,amount2,amount3,amount4,amount5 random:1 condition:hasAllFish,!hasPoints'
+amount1: 'point payout 41'
+amount2: 'point payout 49'
+amount3: 'point payout 53'
+amount4: 'point payout 65'
+amount5: 'point payout 78'
+payout: 'run ^take big_salmon:3 ^give lapis_lazuli:%point.payout.amount% ^tag del jobActive ^tag del catchedFish ^objective start fishCooldown ^objective start cooldown ^journal del job_done ^journal del location_found ^objective delete fishing'
+payoutMessage: 'folder delayMessage delay:1'
+delayMessage: 'run ^message §7§oDu hast %point.payout.amount% Lapis Lazulli bekommen. ^point payout *0'
+#TODO: Remove global_location Event Tag

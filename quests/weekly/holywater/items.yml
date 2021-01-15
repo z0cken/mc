@@ -1,0 +1,13 @@
+holywater: POTION durability:0 name:§lWeihwasser lore:Aus_Erbgut;;§2Quest_Item type:WATER
+glass_bottle: GLASS_BOTTLE
+material1: DARK_OAK_LOG
+material2: SPRUCE_PLANKS
+material3: TORCH
+material4: STONE_BRICKS
+material5: COAL
+material6: SPRUCE_LOG
+material7: COBBLESTONE
+material8: BLUE_STAINED_GLASS
+material9: WHITE_STAINED_GLASS
+material10: RED_STAINED_GLASS
+gold_ingot: GOLD_INGOT

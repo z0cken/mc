@@ -1,0 +1,69 @@
+blocked: 'objective start blocked'
+cooldown: 'objective start cooldown'
+
+add_get_ores: 'tag add get_ores'
+del_get_ores: 'tag del get_ores'
+
+add_journal_ores: 'journal add get_ores'
+del_journal_ores: 'journal del get_ores'
+
+add_deal_done: 'tag add deal_done' #with trader
+del_deal_done: 'tag del deal_done' #with trader
+
+add_gave_items: 'tag add gave_items'
+del_gave_items: 'tag del gave_items'
+
+buy_gold: 'run ^take emerald:1 ^give gold:4 ^objective start bought_gold condition:no_money_gold'
+buy_coal: 'run ^take emerald:1 ^give coal:8 ^objective start bought_coal condition:no_money_coal'
+buy_iron: 'run ^take emerald:1 ^give iron:10 ^objective start bought_iron condition:no_money_iron'
+
+give_truth: 'give iron:3,coal:6'
+give_lie: 'give iron:12'
+give_force: 'give diamond:1,gold:2,iron:2'
+update_journal: 'journal update'
+take_items: 'run ^take iron:3,coal:6 ^tag add gave_items ^journal del get_ores ^tag del get_ores conditions:has_items'
+
+give_pickaxe: 'command minecraft:give %player% minecraft:iron_pickaxe{display:{Name:"\"§fStahl Spitzhacke\""},Damage:154,Enchantments:[{id:"minecraft:fortune",lvl:2},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:efficiency",lvl:3}]} 1'
+give_money: 'give diamond:2'
+
+#Minerquest
+journal_del_goto_rebron: 'journal del monthly-lost_miner.goto_rebron'
+
+start_special_wood: 'objective start special_wood'
+journal_add_get_wood: 'journal add get_wood'
+tag_add_get_wood: 'tag add get_wood'
+tag_del_get_wood: 'tag del get_wood'
+
+break_log: 'pickrandom 95%nothing,5%give_item'
+nothing: 'tag del nothing'
+give_item: 'run ^message §7§oFehlerloses Kernholz erhalten. ^give corewood:1 ^journal add talk_rebron ^journal del get_wood'
+remove_wood_objective: 'run ^objective remove special_wood ^journal del get_wood ^journal del talk_rebron'
+take_wood: 'take corewood:1'
+mq_progress: 'give coal:1' #TODO pay some progress (XP)
+
+tag_add_get_anorexium: 'tag add get_anorexium'
+tag_del_get_anorexium: 'tag add get_anorexium'
+tag_add_wither_coal: 'tag add wither_coal'
+tag_del_wither_coal: 'tag del wither_coal'
+tag_add_pick_done: 'tag add pick_done'
+tag_del_pick_done: 'tag del pick_done'
+journal_add_talk_coal: 'journal add talk_coal'
+journal_del_talk_coal: 'journal del talk_coal'
+journal_add_get_coal: 'journal add get_coal'
+journal_del_get_coal: 'journal del get_coal'
+journal_add_get_pick: 'journal add get_pick'
+journal_del_get_pick: 'journal del get_pick'
+journal_add_go_back: 'journal add go_back'
+journal_del_go_back: 'journal del go_back'
+
+wither_quest: 'objective start wither_coal'
+del_wither_quest: 'objective remove wither_coal'
+
+killed_skeleton: 'pickrandom 75%drop_coal,25%nothing'
+drop_coal: 'run ^message &7&oKohlkopf erhalten. ^give wither_coal'
+test_finished: 'folder del_wither_quest,journal_del_get_coal,journal_add_talk_coal condition:has_wither_coal'
+take_wither_coal: 'take wither_coal:$coal_head_amount$'
+
+coal_payout: 'give book:1' #TODO Give enchanted book (looting 2?)
+start_coal_waiting: 'objective start coal_waiting'
+give_pick: 'give anorexium_pickaxe'

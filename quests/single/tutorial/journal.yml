@@ -1,0 +1,15 @@
+# Tutorial Travel
+gotoCityHall: 'Gehe ins Rathaus und sprich mit dem Bürgermeister'
+gotoDigger: 'Gehe zum Baggersee und rede mit Oliver'
+gotoMiner: 'Gehe zum Steinbruch un rede mit Sprengmeister Gernod'
+gotoHotel: 'Gehe zum Hotel und sprich mit Lydia an der Rezeption'
+gotoMetro: 'Gehe zum Eingang der Metro in Gambberg'
+gotoMayor: 'Kehre zum Bürgermeister zurück'
+
+# Digger
+getBlocks_digger: 'Grabe $dirt_amount$ Erde, $sand_amount$ Sand und $gravel_amount$ Kies aus dem Baggersee.'
+returnBlocks_digger: 'Bringe die ausgegrabenen Blöcke zu Oliver.'
+
+# Miner
+getBlocks_miner: 'Baue $stone_amount$ Steine und $diorite_amount$ Diorit im Steinbruch ab.'
+returnBlocks_miner: 'Bringe die abgebauten Blöcke zu Gernod.'

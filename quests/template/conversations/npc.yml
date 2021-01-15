@@ -1,0 +1,179 @@
+quester: ''
+first: ''
+stop: ''
+
+NPC_options:
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    events: ''
+    pointer: ''
+
+#########################################################################
+player_options:
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''
+  '':
+    text: ''
+    conditions: ''
+    pointer: ''

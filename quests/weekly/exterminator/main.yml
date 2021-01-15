@@ -1,0 +1,38 @@
+variables:
+  amount_rats: 15
+  zone1: 5349;57;-3261;world #location
+  zone1radius: 20
+  zone2: 5321;57;-3269;world #location
+  zone2radius: 20
+  zone3: 5290;57;-3261;world #location
+  zone3radius: 20
+  entrance1: 5316;61;-3279;world #Eingang Unterwasser
+  entrance1radius: 3
+  entrance2: 5299;64;-3277;world #Eingang beim Spawn
+  entrance2radius: 2
+  entrance3: 5357;64;-3279;world #location
+  entrance3radius: 2
+  entrance4: 5354;59;-3256;world #unterwater
+  entrance4radius: 2
+  entrance5: 5367;58;-3252;world #underwaterhole
+  entrance5radius: 2
+  payout: 10 #Gold_ingot (Add function, make quest infinite @events.yml? ~15*log(x))
+  cooldown: 1200 #Minutes - 20h
+
+npcs:
+  '367': exterminator
+  'Egon Spengler': exterminator
+
+cancel:
+  exterminator:
+    name: 'Kammerjäger'
+    conditions: 'not_finished'
+    objectives: 'entrance1,entrance2,entrance3,kill'
+    tags: 'active,search'
+    journal: 'goto,kill,done'
+    events: 'cooldown_timer,tag_add_cooldown'
+journal_main_page:
+  exterminator:
+    priority: 2
+    text: 'Kammerjäger'
+    conditions: 'tag_active'

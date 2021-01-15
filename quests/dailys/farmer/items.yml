@@ -1,0 +1,12 @@
+chicken_egg: CHICKEN_SPAWN_EGG
+sheep_egg: SHEEP_SPAWN_EGG
+pig_egg: PIG_SPAWN_EGG
+cow_egg: COW_SPAWN_EGG
+bee_egg: BEE_SPAWN_EGG
+wolf_egg: WOLF_SPAWN_EGG
+horse_egg: HORSE_SPAWN_EGG
+head1: PLAYER_HEAD name:Alte_Uhr owner:GutridTheOne
+head2: PLAYER_HEAD name:Alte_Kiste owner:Chest
+head3: PLAYER_HEAD name:Alte_Bücher owner:GoodBook1
+head4: PLAYER_HEAD name:Ausgestopfter_Karpfen owner:Fischiiihappen
+head5: PLAYER_HEAD name:Ausgestopftes_Hühnchen owner:Celopan

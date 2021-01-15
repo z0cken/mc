@@ -1,0 +1,85 @@
+quester: 'Lasse'
+first: 'NA_start,NA_start_inQuest,NA_start_questFinished,NA_start_questFailed'
+stop: 'false'
+
+NPC_options:
+  #start
+  'NA_start':
+    text: 'Moin moin min Jung. Suchst du was bestimmtes?'
+    conditions: '!isQuestRunning,!isQuestFinished'
+    pointer: 'PA_start,PA_smalltalk'
+
+  # Smalltalk
+  'na_st':
+    text: 'Gut erkannt. Ich schipper mit meinem Kahn immer zwischen dem Fischerdorf und Lokus hin und her und liefere denen jeden Tag frischen Fisch. Leider angel ich selber nichtmehr aktiv.'
+    pointer: 'PA_st_notActive'
+
+  'NA_st_explainNotActive':
+    text: 'Nunja.. Vor einiger Zeit habe ich öfter auch meine eigenen Angeln ausgeworfen um für mich selbst Essen zu besorgen. Dafür habe ich keine Zeit mehr dank daueraufträgen die ich machen muss um mich bei dem Lohn über Wasser halten zu können.'
+    pointer: 'PA_st_sorryForYou'
+
+  # Pre Quest
+  'NA_introduceQuest_A':
+    text: 'Das trifft sich gut, denn ich hätte da etwas: Hunger. Würdest du mir etwas Fisch angeln damit ich heute eine vernünftige Mahlzeit haben kann?'
+    pointer: 'PA_doesItWorthIt'
+
+  'NA_introduceQuest_B':
+    text: 'Es gäbe etwas, ja. Durch das viele Arbeiten und den geringen Lohn komme ich kaum über die Runden. Wenn du mir etwas Fisch angeln könntet, damit ich was zu Essen habe..'
+    pointer: 'PA_acceptQuest_B,PA_denyQuest'
+
+  'NA_rewardOffer':
+    text: 'Ich sage es mal so.. Ich würde nich nach Essen fragen müssen, wenn ich viel anzubieten hätte. Aber ein paar Schekel oder etwas zum tauschen kann ich schon anbieten.'
+    pointer: 'PA_acceptQuest_A,PA_denyQuest'
+
+  'NA_acceptQuest':
+    text:
+      'Ich danke. Und es ist zu nett, dass du auch das noch fragst. In der tat habe ich einen Wunsch: Als ich vorhin hier in den Hafen zurückkehrte mit meinem Kahn habe ich ca 30 blöcke links vom Leuchtturm einen Schwarm junger Lachse gesehen.\n
+      Nimm dieses Boot, wirf bei dem Schwarm die Angel aus. Junge Lachse sind am leckersten und da sie klein sind bitte ich dich $salmonAmount$ zu angeln. Bis bald und danke schonmal!'
+    events: 'startQuest'
+    pointer: 'PA_alright'
+
+  'NA_denyQuest':
+    text: 'Sehr schade. Aber ich danke dir dennoch für das Gespräch. Einen schönen Tag noch.'
+
+player_options:
+  # Start
+  'PA_start':
+    text: 'Naja, ich habe im moment etwas Freizeit und dachte ich könnte mir ein paar Schekel dazu verdienen.'
+    pointer: 'NA_introduceQuest_A'
+
+  # Smalltalk
+  'PA_st':
+    text: 'Du scheinst ein Seemann zu sein, richtig?'
+    pointer: 'NA_smalltalk'
+
+  'PA_st_notActive':
+    text: 'Warum?'
+    pointer: 'NA_st_explainNotActive'
+
+  'PA_st_sorryForYou':
+    text: 'Das tut mir Leid für dich. Gäbe es etwas, das ich für dich tun kann?'
+    pointer: 'NA_introduceQuest_B'
+
+  # Pre Quest
+  'PA_doesItWorthIt':
+    text: 'Ließe sich bestimmt einrichten, aber was hättest du mir anzubieten?'
+    pointer: 'NA_rewardOffer'
+
+  'PA_acceptQuest_A':
+    text: 'Nagut, ich werde etwas Fisch für dich angeln. Hättest du einen Wunsch, welchen?'
+    pointer: 'NA_acceptQuest'
+
+  'PA_acceptQuest_B':
+    text: 'Nur etwas Fisch? Kein problem. Welchem möchtest du am Liebsten und wieviel?'
+    pointer: 'NA_acceptQuest'
+
+  'PA_denyQuest':
+    text: 'Tut mir leid, angeln ist garnich meins. Ich wünsche dir viel glück für dein Essen.'
+    pointer: 'NA_denyQuest'
+
+  'PA_alright':
+    text: 'Okay, werde ich tun. Bis gleich.'
+
+  # Endings
+  'PA_end_nothing':
+    text: 'Nein, eigentlich nicht. Auf wiedersehen'

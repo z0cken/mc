@@ -1,0 +1,54 @@
+quester: 'Stephanie'
+first: 'cooldown,start,start_during'
+stop: 'false'
+
+NPC_options:
+  #start
+  'cooldown':
+    text: 'Du warst doch gerade erst hier? Die Blumen sollen auch nicht überwässert werden.'
+    conditions: 'cooldown'
+    pointer: 'bye'
+  'start':
+    text: 'Heya, würdest du mir helfen die Pflanzen im Park zu gießen?'
+    conditions: '!quest_active'
+    pointer: 'start_yes,start_no,start_how'
+  'yes_accept':
+    text: 'Super, sprich mich an wenn du fertig bist. Ich gebe dir dann eine Belohnung!'
+    events: 'start_objectives,add_journal'
+    pointer: 'start_how,bye'
+  'no_bye':
+    text: 'Alles klar, man sieht sich!'
+  'how_text':
+    text: 'Nimm einfach ein paar Eimer Wasser und klicke auf die grauen Büsche im Park. Sie sollten schnell wieder grün werden. Du kannst deine Eimer am Teich unten auffüllen!'
+  'start_during':
+    text: 'Hoi, bist du fertig?'
+    pointer: 'finish,finish_no_plant,start_how'
+  'pay':
+    text: 'Dann hast du hier deine Belohnung!'
+    events: 'end_quest,cooldown,del_journal,reload_journal'
+  'no_pay':
+    text: 'Macht nichts. Trotzdem noch einen schönen Tag!'
+    events: 'del_journal,reload_journal,stop_objectives,reset_points'
+
+#########################################################################
+player_options:
+  #start
+  'start_yes':
+    text: 'Ja, gerne!'
+    pointer: 'yes_accept'
+  'start_no':
+    text: 'Leider nein.'
+    pointer: 'no_bye'
+  'start_how':
+    text: 'Wie geht das mit dem Pflanzen gießen?'
+    pointer: 'how_text'
+  'bye':
+    text: 'Alles klar!'
+  'finish':
+    text: 'Ja, ich habe %point.watered.amount% Pflanzen gegossen!'
+    conditions: 'watered_plant'
+    pointer: 'pay'
+  'finish_no_plant':
+    text: 'Ja, aber ich habe leider keine trockene Blume gefunden!'
+    conditions: '!watered_plant'
+    pointer: 'no_pay'

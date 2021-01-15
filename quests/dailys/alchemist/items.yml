@@ -1,0 +1,14 @@
+cooked_salmon: COOKED_SALMON name:Gebratener_Lachs lore:Sehr_lecker;;&2Quest_Item
+ingredient_redstone: REDSTONE
+ingredient_phantom_membrane: PHANTOM_MEMBRANE
+ingredient_glowstone_dust: GLOWSTONE_DUST
+ingredient_feather: FEATHER
+ingredient_blaze_powder: BLAZE_POWDER
+ingredient_firework_rocket: FIREWORK_ROCKET
+ingredient_pufferfish: PUFFERFISH
+ingredient_poppy: POPPY
+ingredient_kelp: KELP
+ingredient_sugar: SUGAR
+ingredient_nether_wart: NETHER_WART
+gunpowder: GUNPOWDER
+levitation_potion: POTION durability:0 name:§5§lLevitation_Potion lore:Enthält_Nebenwirkungen;;&2Quest_Item type:WATER effects:LEVITATION:1:10

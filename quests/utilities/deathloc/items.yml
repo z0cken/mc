@@ -1,0 +1,4 @@
+emerald: 'EMERALD'
+diamond: 'DIAMOND'
+horse_egg: 'SKELETON_HORSE_SPAWN_EGG lore:&2Quest_Item'
+horse_bone: 'BONE name:§rSkelettpferdknochen lore:Enthält_Anorexium;;&2Quest_Item'

@@ -1,0 +1,11 @@
+coal: 'COAL'
+iron: 'IRON_INGOT'
+gold: 'GOLD_INGOT'
+diamond: 'DIAMOND'
+emerald: 'EMERALD'
+
+#minerquest
+corewood: 'STRIPPED_ACACIA_LOG name:§rFehlerloses_Kernholz lore:&2Quest_Item'
+wither_coal: 'CHARCOAL name:§rKohlkopf lore:Von_einem_Witherskelett;Circa_1_Kilo;;&2Quest_Item'
+anorexium_pickaxe: 'IRON_PICKAXE name:§rAnorexium_Spitzhacke lore:Perfekt_für_Speckstein;;&2Quest_Item'
+book: 'ENCHANTED_BOOK enchants:LOOT_BONUS_MOBS:2'

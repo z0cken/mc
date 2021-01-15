@@ -1,0 +1,67 @@
+variables:
+  plant1: 5122;70;-462;world
+  plant2: 5150;71;-455;world
+  plant3: 5160;73;-472;world
+  plant4: 5182;75;-459;world
+  plant5: 5177;75;-471;world
+  plant6: 5154;71;-446;world
+  plant7: 5175;75;-486;world
+  plant8: 5187;75;-474;world
+  plant9: 5197;75;-469;world
+  plant10: 5194;75;-477;world
+  plant11: 5204;75;-481;world
+  plant12: 5200;75;-493;world
+  plant13: 5197;75;-504;world
+  plant14: 5188;75;-500;world
+  plant15: 5178;75;-507;world
+  plant16: 5189;75;-516;world
+  plant17: 5174;75;-521;world
+  plant18: 5162;75;-507;world
+  plant19: 5158;75;-518;world
+  plant20: 5152;75;-528;world
+  radius: 22
+  dead_plant: DEAD_BRAIN_CORAL
+  normal_plant: CORNFLOWER
+  location_lake: 5144;70;-471;world
+  cooldown: 1200 #in minutes = 20h
+static:
+  '01:00': regrow
+  '02:00': regrow
+  '03:00': regrow
+  '04:00': regrow
+  '05:00': regrow
+  '06:00': regrow
+  '07:00': regrow
+  '08:00': regrow
+  '09:00': regrow
+  '10:00': regrow
+  '11:00': regrow
+  '12:00': regrow
+  '13:00': regrow
+  '14:00': regrow
+  '15:00': regrow
+  '16:00': regrow
+  '17:00': regrow
+  '18:00': regrow
+  '19:00': regrow
+  '20:00': regrow
+  '21:00': regrow
+  '22:00': regrow
+  '23:00': regrow
+  '23:50': regrow
+npcs:
+  'Stephanie': gardener
+  '359': gardener
+cancel:
+  trash:
+    name: 'Pflanzen gießen'
+    conditions: 'quest_active'
+    objectives:
+    tags:
+    journal:
+    events:
+journal_main_page:
+  greeting:
+    priority: 1
+    text: 'Pflanzen gießen'
+    conditions: 'quest_active'

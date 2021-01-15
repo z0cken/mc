@@ -1,0 +1,9 @@
+blocked: 'or rebron_active1,rebron_active2' #TODO (Thanatos)
+rebron_active1: 'tag dailys-smith.get_ores'
+rebron_active2: 'tag dailys-smith.gave_items'
+angry1: 'objective angry1'
+angry2: 'objective angry2'
+quest_active: 'tag minerquest'
+has_pickaxe: 'item dailys-smith.anorexium_pickaxe'
+cooldown: 'objective cooldown'
+cooldown_short: 'objective cooldown_short'

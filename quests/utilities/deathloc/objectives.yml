@@ -1,0 +1,7 @@
+death_loc_listener: 'die events:get_loc,add_got_location,sound_laugh,start_cooldown'
+death_skip_listener: 'die cancel respawn:$respawn_location$ events:skip_death,sound_laugh,start_cooldown'
+location: 'variable loaction: loc no-chat'
+cooldown: 'delay $cooldown$'
+
+#Minerquest
+egg: 'mobkill SKELETON_HORSE 1 persistent events:kill_horse,journal_add_go_back,journal_del_get_egg,message_egg conditions:!has_egg'

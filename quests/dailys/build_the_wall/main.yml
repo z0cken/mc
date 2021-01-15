@@ -1,0 +1,33 @@
+variables:
+  steinbruch: '5030;75;-620;world'
+  steinbruch_radius: '70'
+  cooldown: '1200' #in Minutes = 20h
+  miningblock: 'STONE'
+
+npcs:
+  '371': hartmut
+  '372': miner
+
+cancel:
+  build_the_wall:
+    name: 'Build the Wall'
+    conditions: 'active,!special'
+    objectives: 'cobble_counter'
+    tags: 'active'
+    journal: 'job'
+    events: 'start_cooldown,start_points,take_pickaxe'
+  klunker:
+    name: 'Klunker im B…erg'
+    conditions: '!active,special'
+    tags: 'special'
+    journal: 'go_back,search,find_trader'
+    events: 'start_cooldown,take_special,take_pickaxe'
+journal_main_page:
+  build_the_wall:
+    priority: 1
+    text: 'Build the Wall'
+    conditions: 'active,!special'
+  klunker:
+    priority: 2
+    text: 'Klunker im B…erg'
+    conditions: '!active,special'

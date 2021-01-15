@@ -1,0 +1,3 @@
+goto: 'Finde einen Weg in die Kanalisation.'
+kill: 'Töte noch %objective.kill.left% Ratten'
+done: 'Gehe zurück zu Egon Spengler.'

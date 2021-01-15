@@ -1,0 +1,119 @@
+quester: 'Karl'
+first: 'start_quest_active,start_quest_done,start'
+stop: 'false'
+
+NPC_options:
+  #start no Quest
+  'start': #fertig
+    text: 'Sei gegrüßt mein Sohn, wie kann ich dir dienlich sein?'
+    pointer: 'start_blessing,start_nothing,start_fair'
+
+  'start_quest_done': #fertig
+    text: 'Ich danke dir vielmals! Gibt es nun etwas, was ich für dich tun kann mein Sohn?'
+    conditions: 'cooldown_quest'
+    pointer: 'start_blessing,start_nothing'
+
+  'start_quest_active':
+    text: 'Es ist mir eine Freude dich wieder zu sehen. Hast du das Weihwasser?'
+    conditions: 'get_holywater'
+    pointer: 'start_blessing,holywater_yes,holywater_no'
+
+  #Blessing Conversation
+  'blessing_money':
+    text: 'Den suchen wir alle, mein Sohn. Mit einer kleinen Kirchenspende von $blessing_price$ Gold ist dir der Herr vielleicht gewillt dir seinen Segen zu erteilen.'
+    condition: '!cooldown_blessing,!cooldown_asked_blessing'
+    pointer: 'money_accept'
+  'accept_has_money':
+    text: 'Möge der Herr stets sein Licht für dich Leuchten lassen! \n Ich freue mich auf ein baldiges Wiedersehen!'
+    conditions: 'has_money_blessing'
+    events: 'utilities-statistics.weekly_blessing,do_blessing,cooldown_blessing,pay_blessing'
+  'accept_no_money':
+    text: 'Es tut mir leid, aber es scheint als könntest du dir das nicht leisten.'
+    conditions: '!has_money_blessing'
+    events: 'cooldown_asked_blessing'
+  'blessing_no':
+    text: 'Es tut mir leid mein Sohn, du hast heute schon einen Segen erhalten.'
+    conditions: 'cooldown_blessing,!cooldown_asked_blessing'
+  'decline_bye':
+    text: 'Möge der Herr mit dir sein.'
+  'asked_cooldown':
+    text: 'Du konntest dir keinen Segen leisten. Komm doch später wieder mein Sohn.'
+    conditions: 'cooldown_asked_blessing,!cooldown_blessing'
+
+  #pre Quest
+  'fair_talk1':
+    text: 'Das ist korrekt. In kürze möchten wie eine Treffen zur Gelobigung des Herrn abhalten. Erstaunlich, dass du mich darauf anspricht, mein Sohn.'
+    pointer: 'fair_talk2'
+  'fair_talk3':
+    text: 'Nunja, es scheint als hätte dich der Herr entsandt um uns zu helfen. Vor zwei Tagen habe wir eine Taufe durchgeführt und wie wir gestern zu unserem Bedauern feststellten haben wir dort unser letztes Weihwasser verbraucht. Für die Messe benötigen wir aber Weihwasser um unser Segensgebet sprechen zu können und die Sünden der Besucher rein zu Waschen. Würdest du mir in dieser Bredoullie zur Seite stehen?'
+    pointer: 'quest_accept,quest_decline'
+  'quest_decline_bye':
+    text: 'Kein Problem. Ich finde bestimmt auch eine Lösung. Möge der Herr mit dir sein.'
+
+  # Quest start
+  'quest_info':
+    text: 'Vielen dank für deine Hilfsbereitschaft! In der Kirche von Erbgut sollte es noch einen Vorrat ein Weihwasser geben. Sprich dort bitte mit Pfarrer Albert. Er wird dich sicherlich freudig empfangen und helfen wollen.'
+    events: 'add_journal_get_holywater,add_get_holywater' #QUEST START
+    pointer: 'info_bye'
+
+  #Quest End
+  'get_holywater':
+    text: 'Ich danke dir vielmals mein Sohn, dank dir kann die Messe nun wie gewohnt stattfinden! Natürlich möchte ich dein wohlwollendes Handeln nicht unbedacht lassen, darum werde ich dir einen Teil der letzten Kirchenspenden überlassen. Es wird dir sicher weiterhelfen.'
+    conditions: 'has_holywater'
+    events: 'utilities-statistics.weekly_holywater,take_holywater,give_money,del_get_holywater,del_journal_get_holywater,cooldown_quest'
+  'get_holywater_fail':
+    text: 'Du hast ja doch kein Weihwasser bei dir!'
+    conditions: '!has_holywater'
+
+  #Smalltalk
+  'no_water_bye':
+    text: 'Auf ein baldiges wiedersehen!'
+
+#########################################################################
+player_options:
+  #start
+
+  #Blessing Conversation
+  'start_blessing':
+    text: 'Ich ersuche einen Segen'
+    pointer: 'blessing_money,blessing_no,asked_cooldown'
+  'money_accept':
+    text: 'Gerne nehme ich dieses Angebot an.'
+    pointer: 'accept_has_money,accept_no_money'
+  'money_decline':
+    text: 'Verzeiht mir, aber ich möchte so viel Geld bezahlen.'
+    pointer: 'decline_bye'
+
+  # Smaltalk Ending
+  'start_nothing':
+    text: 'Danke, ich brauche nichts'
+    pointer: 'decline_bye'
+
+  #Start Quest
+  'start_fair':
+    text: 'Guten Tag, Pfarrer Karl. Ich hörte, dass bald eine Messe stattfinden soll?'
+    pointer: 'fair_talk1'
+
+  #pre Quest
+  'fair_talk2':
+    text: 'Wieso erstaunlich?'
+    pointer: 'fair_talk3'
+  'quest_accept':
+    text: 'Natürlich, gerne. Sagt mir, wie ich helfen kann.'
+    pointer: 'quest_info'
+  'quest_decline':
+    text: 'Es tut mir leid, aber dafür habe ich leider keine Zeit.'
+    pointer: 'quest_decline_bye'
+
+  #during Quest
+  'holywater_yes':
+    text: 'Ja, ich habe es für euch besorgt.'
+    conditions: 'has_holywater'
+    pointer: 'get_holywater,get_holywater_fail'
+  'holywater_no':
+    text: 'Noch nicht, aber ich werde mich bald drum kümmern.'
+    conditions: '!has_holywater'
+    pointer: 'no_water_bye'
+  'info_bye':
+    text: 'Ich mache mich sofort auf den Weg'
+    pointer: 'decline_bye'

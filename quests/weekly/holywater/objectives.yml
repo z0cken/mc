@@ -1,0 +1,9 @@
+cooldown_blessing: 'delay 120' #2 Stunden
+cooldown_asked_blessing: 'delay 2'
+cooldown_blessing2: 'delay 120' #2 Stunden
+cooldown_asked_blessing2: 'delay 2'
+cooldown_quest: 'delay 10000' #6.9 Tage
+cooldown_materials: 'delay 10000' #6.9 Tage
+
+take_holywater1: 'action right WATER conditions:holding_glass_bottle loc:$location_holywater1$ range:$water_range$ cancel events:switch_bottle'
+wrong_holywater1: 'action right WATER conditions:!holding_glass_bottle loc:$location_holywater1$ range:$water_range$ cancel events:wrong_item persistent'

@@ -1,0 +1,1 @@
+jukebox_listener: 'action right JUKEBOX conditions:holding_ticket events:play persistent global'

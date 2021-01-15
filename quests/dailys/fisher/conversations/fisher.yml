@@ -1,0 +1,126 @@
+quester: 'Tjark'
+first: 'start,start_no_fish,start_blocked,job_active,job_catch,start_night'
+stop: 'false'
+NPC_options:
+  #start
+  'start':
+    text: 'Guten Tag der Herr, riechen sie diesen wundervoll duftenden gebratenen Lachs?'
+    conditions: '!noFish,!blocked,!jobActive,isDay'
+    pointer: 'start_buy,start_help,start_no'
+  'start_no_fish':
+    text: 'Guten Tag der Herr, leider habe ich keinen gebratenen Lachs mehr, den ich ihnen anbieten kann. Ich werde aber wieder Fische besorgen!'
+    conditions: 'noFish,!blocked,!jobActive,isDay'
+    pointer: 'start_help_2,start_no'
+  'start_night':
+    text: 'Ich putze gerade nur meinen Laden. Nachts verkaufe ich nichts'
+    condition: '!isDay'
+    pointer: 'ok'
+  #Cooldown
+  'job_cooldown':
+    text: 'Ich bedarf ihrer Dienste aktuell nicht. Aber möchten sie nicht etwas frischen Fisch?'
+    condition: 'jobCooldown'
+    pointer: 'start_buy,start_no'
+  #Bockquest - No Fish
+  'start_blocked':
+    text: 'Ich spreche nicht mit Fisch hassern!'
+    conditions: 'blocked,!jobActive,isDay'
+    pointer: 'blocked_sorry,blocked_hate'
+  'block_quest':
+    text: 'Das ist ja unerhört! Verschwinden sie!'
+  'block_egal':
+    text: 'Leere Worte! Heute brauchen sie mich nicht mehr ansprechen!'
+  #buy
+  'buy_price':
+    text: 'Der beste Lachs der Stadt nur 2 Eisenbarren.'
+    pointer: 'buy_yes,buy_no'
+  'buy_done':
+    text: 'Gute Wahl! Das war auch der letzte. Werde aber gleich wieder welchen Angeln. Guten Appetit.'
+    condition: 'hasMoney'
+    pointer: 'thanks, start_help_2'
+  'buy_no_done':
+    text: 'Qualität hat nunmal ihren Preis, schönen Tag noch!'
+  'money_scam':
+    text: 'Sie haben zu wenig Eisen.'
+    condition: '!hasMoney'
+  #job
+  'job':
+    text: 'Beim Fische Angeln? Vielleicht? Wissen sie wie das geht? Ich habe unmengen an Lapis Lazuli geangelt, die können sie dafür haben.'
+    pointer: 'job_yes,job_no'
+    condition: '!jobCooldown'
+  'job_start':
+    text: 'Wunderbar, dann nehmen sie doch ihre Angel. Sie müssen aber an einer bestimmten Stelle angeln, um die besten Lachse zu fangen. Laufen sie einfach hier hinter die Kirche. Dort sind ein paar Rosen die habe ich gepflanzt um meine Ruhe zu haben. An dieser Stelle beißen die schönsten Lachse. Bringen sie mir 3 große Lachse und ich gebe ihnen pro Kilo Fisch Lapis Lazuli'
+    pointer: 'job_accept'
+  'job_active':
+    text: 'Sie müssen sich hinter der Kirche hier im Fischerdorf in die Rosen stellen, nur dort gibt es die Lachse die ich brauche.'
+    condition: 'jobActive,!jobCatched'
+    pointer: 'job_accept'
+  'job_catch':
+    text: 'Haben sie genug Lachs gefangen?'
+    condition: 'jobActive,jobCatched'
+    pointer: 'catch_yes,catch_no'
+  'job_pay':
+    text: 'Vielen Dank, das sind insgesamt %point.payout.amount% Kilo!'
+  #smalltalk
+  'ok':
+    text: 'Kein Problem, tschüss!'
+
+player_options:
+  #start
+  'start_buy':
+    text: 'Oh ja! Wie viel kostet denn ein Fisch?'
+    conditions: '!noFish'
+    pointer: 'buy_price'
+  'start_help':
+    text: 'Indertat, aber ich bin auf der Suche nach Arbeit, kann ich ihnen meine Dienste anbieten?'
+    pointer: 'job,job_cooldown'
+  'start_help_2':
+    text: 'Kann ich Ihnen dabei helfen?'
+    pointer: 'job,job_cooldown'
+  'start_no':
+    text: 'Ich hasse Fisch'
+    pointer: 'block_quest'
+    event: 'blockQuest'
+  #blocked
+  'blocked_sorry':
+    text: 'Es tut mir leid, das war nicht so gemeint!'
+    pointer: 'block_egal'
+    condition: '!saidSorry'
+    event: 'sorry'
+  'blocked_hate':
+    text: 'Sie blödes Arschloch!'
+    event: 'blockQuest'
+    pointer: 'block_quest'
+  #buy
+  'buy_yes':
+    text: 'Das ist fair, ich nehme einen.'
+    condition: 'hasMoney'
+    pointer: 'buy_done,money_scam'
+    event: 'buyFish'
+  'buy_no':
+    text: 'Das ist mir leider zu teuer.'
+    pointer: 'buy_no_done'
+  #job
+  'job_yes':
+    text: 'Na klar, ich habe sogar eine eigene Angel!'
+    pointer: 'job_start'
+    event: 'startJob'
+  'job_no':
+    text: 'Ich habe noch nie geangelt, ich glaube das überlasse ich lieber dem Profi'
+    pointer: 'ok'
+  #catch
+  'catch_yes':
+    text: 'Ja, hier bitte, ihre 3 Lachse.'
+    condition: 'jobCatched,hasAllFish'
+    pointer: 'job_pay'
+    event: 'payout,payoutMessage,utilities-statistics.daily_fisher'
+  'catch_no':
+    text: 'Nein, leider erst %item.big_salmon.amount%.'
+    pointer: 'job_active'
+    condition: 'jobCatched,!hasAllFish'
+  #smalltalk
+  'thanks':
+    text: 'Danke'
+  'job_accept':
+    text: 'Ich mache mich sofort auf den Weg!'
+  'ok':
+    text: 'Ok'

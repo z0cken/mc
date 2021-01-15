@@ -1,0 +1,5 @@
+join_listener: 'location $teleporter_location$ $teleporter_radius$ persistent global events:message_entry,message_deathquest,message_pvp,message_waiting,message_elytra,message_arena_full,message_teleporter_full,join,no_spam,tag_add_spam'
+disconnect_listener: 'logout events:remove_listeners,reconnect_listener,utilities-statistics.util_pvp_lost'
+death_listener: 'die cancel respawn:$respawn_location$ events:remove_listeners,on_death,utilities-statistics.util_pvp_lost'
+winner_listener: 'location $arena_location$ $arena_radius$ events:win,teleport_end,remove_listeners,utilities-statistics.util_pvp_won conditions:!not_alone_in_arena'
+reconnect_listener: 'location $arena_location$ $arena_radius$ events:teleport_after_disconnect,message_after_disconnect,tag_del_spam'

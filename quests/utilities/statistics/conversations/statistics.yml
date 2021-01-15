@@ -1,0 +1,13 @@
+quester: 'Mr Statistic'
+first: 'start'
+stop: ''
+
+NPC_options:
+  'start':
+    text: 'Hier könnte später mal deine Statistik stehen!'
+    pointe: 'ok'
+
+#########################################################################
+player_options:
+  'ok':
+    text: 'Ok, cool.'

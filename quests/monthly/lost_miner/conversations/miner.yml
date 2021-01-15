@@ -1,0 +1,86 @@
+quester: 'Helmuth'
+first: 'start_cooldown,start_angry1,start_angry2,start_cooldown_short,start_pickaxe,start,start_blocked,start_active'
+stop: ''
+
+NPC_options:
+  'start_cooldown_short':
+    text: 'Ich werde es selber schaffen müssen, meinen Kumpel zu bergen...'
+    conditions: 'cooldown_short'
+  'start_cooldown':
+    text: 'Du hattest Rüdiger das Leben gerettet. Ich bin dir auf ewig Dankbar.'
+    conditions: 'cooldown'
+  'start':
+    text: 'Hey Fremder! Warte kurz, ich brauche deine Hilfe.'
+    conditions: '!blocked,!quest_active,!cooldown'
+    pointer: 'start_ask,start_bye'
+  'start_blocked':
+    text: 'Hey, stör nicht, ich arbeite hier.'
+    conditions: 'blocked,!quest_active'
+    pointer: 'blocked_bye'
+  'bye_angry':
+    text: 'Bitte?! Verschwinde aus unserer Stadt du Lump! Leute wie dich können wir hier nicht gut leiden!'
+  'ask_tell':
+    text: 'In einem der Minenschächte hier gab es einen Tunneleinsturz. Einer meiner Kumpel ist eingeschlossen. Er hat leichtsinnigerweise zu tief gegraben. Ich sagte ihm sogar noch: „Grab nicht so tief, Rüdiger“ aber er wollte nicht hören.. Jetzt gehen ihm bald die Luft, das Wasser und die Kippen aus. Leider rutschen unsere normalen Spitzhacken bei jedem Schlag vom Geröll ab, weil das meiste davon purer Speckstein ist. Wir brauchen eine Hacke aus Anorexium um da durchzukommen. Kannst du uns eine besorgen? Glaub mir, es wird sich für dich lohnen.'
+    pointer: 'tell_yes,tell_no'
+  'no_angry':
+    text: 'Alter Mann?! Nur damit du es weißt: Ich identifiziere mich als ein buddhistisches veganes Markklöschen! So intollerante Säcke wie dich können wir hier nicht gut leiden! Mach dich vom Acker!'
+    events: 'angry1'
+  'yes_accept':
+    text: 'Rebron ist ein talentierter Schmied im Fischerdorf. Von Ihm bekommen wir all unser Werkzeug. Wenn einer eine Anorexium Spitzhacke herstellen kann, dann er. Beeile dich bitte, es geht um Leben und Tod!'
+    events: 'tag_add_minerquest,journal_add_goto_rebron'
+    pointer: 'accept_bye'
+  'start_angry1':
+    text: 'Verschwinde!'
+    conditions: 'angry1'
+  'start_active':
+    text: 'Schon wieder da? Das ist ja phantastisch!'
+    conditions: 'quest_active'
+    pointer: 'active_break,active_cancel'
+  'break_go':
+    text: 'Ich scheine mich missverständlich ausgedrückt zu haben: Hier sterben Leute! Auf auf, zack, zack!'
+  'cancel_angry':
+    text: 'Ist das dein ernst? Ich hätte es ahnen müssen! Du kamst mir gleich so schwächlich und unterernährt vor. „Keine Wampe, kein Charakter“ hat meine Oma immer gesagt. Und sie hatte recht! Sieh zu, dass du Land gewinnst!'
+    events: 'cancel,angry2'
+  'start_angry2':
+    text: 'Verschwinde du Strich in der Landschaft!'
+    conditions: 'angry2'
+  'start_pickaxe':
+    text: 'Wahnsinn, du hast es wirklich geschafft! Vielen Dank, du hast meinem Kumpel Rüdiger das Leben gerettet.'
+    conditions: 'has_pickaxe'
+    events: 'journal_del_walk'
+    pointer: 'pickaxe_talk'
+  'pickaxe_take':
+    text: 'Das sieht man. So, jetzt ist aber keine Zeit mehr um sich zu unterhalten. Ich muss los! Hier, ich habe dir Bezahlung versprochen und was ich verspreche halte ich auch.'
+    conditions: 'has_pickaxe'
+    events: 'utilities-statistics.monthly_lost_miner,take_pickaxe,final_payout,start_cooldown,tag_del_minerquest,tags_del_smith'
+  'pickaxe_fake':
+    text: 'Ich finde die Spitzhacke nicht in deinem Inventar. [BUG - BITTE MELDEN]'
+    conditions: '!has_pickaxe'
+
+#########################################################################
+player_options:
+  'blocked_bye':
+    text: 'Alles klar, tschüss.'
+  'start_ask':
+    text: 'Was ist los?'
+    pointer: 'ask_tell'
+  'start_bye':
+    text: 'So wie du aussiehst, kommt jede Hilfe zu spät.'
+    pointer: 'bye_angry'
+  'tell_yes':
+    text: 'Klingt absolut glaubwürdig, ich bin dabei! Wo bekommt man sowas?'
+    pointer: 'yes_accept'
+  'tell_no':
+    text: 'Ha, jeder weiß, dass der Drachenlord vor tausend Jahren schon den letzten Rest Anorexium zerstört hat, da es das einzige war was ihn hätte vernichten können. Erzähl einem anderen deine Märchen alter Mann.'
+    pointer: 'no_angry'
+  'accept_bye':
+    text: 'Alles klar! Ich eile, ich fliege!'
+  'active_break':
+    text: 'Nein tut mir leid, ich muss mich nur von der anstrengenden Suche erholen.'
+    pointer: 'break_go'
+  'active_cancel':
+    text: 'Ich habe beschlossen, bevor ich die Spitzhacke finde muss ich erst mal mich selbst finden. Ich nehme ein Gap Year. Viel Erfolg mit dem Minenschacht.'
+    pointer: 'cancel_angry'
+  'pickaxe_talk':
+    text: 'Keine Ursache. Rebron lässt grüßen. Er hat wirklich all seine Erfahrung in diese Spitzhacke einfließen lassen.'
+    pointer: 'pickaxe_take,pickaxe_fake'

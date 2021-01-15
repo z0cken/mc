@@ -1,0 +1,10 @@
+blocked: 'delay 600'
+cooldown: 'delay 1200'
+bought_iron: 'delay 600'
+bought_gold: 'delay 600'
+bought_coal: 'delay 600'
+
+#Minerquest
+special_wood: 'block $woodtype$ -1 persistent events:break_log conditions:!has_wood'
+wither_coal: 'mobkill WITHER_SKELETON 1 persistent events:killed_skeleton,test_finished'
+coal_waiting: 'delay $coal_delay$ events:journal_add_get_pick,tag_add_pick_done'

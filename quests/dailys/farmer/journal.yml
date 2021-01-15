@@ -1,0 +1,8 @@
+job1: 'Ernte $amount1$ Weizen'
+job_done: 'Gehe zurück zu Manfred.'
+job2: 'Ernte $amount2$ Karotten'
+job3: 'Züchte $amount3$ Babykühe'
+job4: 'Ernte $amount4$ Melonen'
+job5: 'Schere $amount5$ Schafe'
+job6: 'Ernte $amount6$ Kartoffeln'
+job7: 'Töte $amount7$ Hähnchen'

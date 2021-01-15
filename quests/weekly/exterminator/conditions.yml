@@ -1,0 +1,14 @@
+in_canals: 'or zone1,zone2,zone3'
+zone1: 'location $zone1$ $zone1radius$'
+zone2: 'location $zone2$ $zone2radius$'
+zone3: 'location $zone3$ $zone3radius$'
+tag_search: 'tag search'
+tag_active: 'tag active'
+objective_kill: 'objective kill'
+not_finished: 'or tag_search,objective_kill'
+
+is_active: 'or is_friday,is_saturday'
+is_friday: 'dayofweek friday'
+is_saturday: 'dayofweek saturday'
+
+cooldown: 'tag cooldown'

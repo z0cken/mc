@@ -1,0 +1,35 @@
+#====================#
+#======Trackers======#
+#====================#
+
+# Daily
+daily_alchemist: 'run ^point daily_alchemist 1 ^globalpoint daily_alchemist 1'
+daily_farmer: 'run ^point daily_farmer 1 ^globalpoint daily_farmer 1'
+daily_fisher: 'run ^point daily_fisher 1 ^globalpoint daily_fisher 1'
+daily_fisher_boat: 'run ^point daily_fisher_boat 1 ^globalpoint daily_fisher_boat 1' #TODO
+daily_smith: 'run ^point daily_smith 1 ^globalpoint daily_smith 1'
+daily_trash: 'run ^point daily_trash 1 ^globalpoint daily_trash 1'
+daily_fishmeal: 'run ^point daily_fishmeal 1 ^globalpoint daily_fishmeal 1'
+daily_build_the_wall: 'run ^point daily_build_the_wall 1 ^globalpoint daily_build_the_wall 1'
+daily_build_the_wall_sidequest: 'run ^point daily_build_the_wall_sidequest 1 ^globalpoint daily_build_the_wall_sidequest 1'
+
+# Weekly
+weekly_holywater: 'run ^point weekly_holywater 1 ^globalpoint weekly_holywater 1'
+weekly_blessing: 'run ^point weekly_blessing 1 ^globalpoint weekly_blessing 1' #No Quest
+weekly_exterminator: 'run ^point weekly_exterminator 1 ^globalpoint weekly_exterminator 1'
+weekly_claim_1: 'run ^point weekly_claim_1 1 ^globalpoint weekly_claim_1 1'
+weekly_claim_2: 'run ^point weekly_claim_2 1 ^globalpoint weekly_claim_2 1'
+weekly_claim_3: 'run ^point weekly_claim_3 1 ^globalpoint weekly_claim_3 1'
+
+# Monthly
+monthly_lost_miner: 'run ^point monthly_lost_miner 1 ^globalpoint monthly_lost_miner 1'
+
+# Util
+util_disc: 'run ^point util_disc 1 ^globalpoint util_disc 1' #No Quest
+util_deathloc_loc: 'run ^point util_deathloc_loc 1 ^globalpoint util_deathloc_loc 1'
+util_deathloc_skip: 'run ^point util_deathloc_skip 1 ^globalpoint util_deathloc_skip 1'
+util_watered_plants: 'run ^point util_watered_plants 1 ^globalpoint util_watered_plants 1' #No Quest
+util_farmwelt: 'run ^point util_farmwelt 1 ^globalpoint util_farmwelt 1' #No Quest
+util_panzer_of_the_lake: 'run ^point util_panzer_of_the_lake 1 ^globalpoint util_panzer_of_the_lake 1' #No Quest
+util_pvp_won: 'run ^point util_pvp_won 1 ^globalpoint util_pvp_won 1' #No Quest
+util_pvp_lost: 'run ^point util_pvp_lost 1 ^globalpoint util_pvp_lost 1' #No Quest

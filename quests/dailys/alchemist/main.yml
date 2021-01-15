@@ -1,0 +1,53 @@
+variables:
+  brewing_pot_location: 0;64;37;world
+  ingredient_1: ingredient_redstone:5
+  ingredient_2: ingredient_phantom_membrane:2
+  ingredient_3: ingredient_glowstone_dust:6
+  ingredient_4: ingredient_blaze_powder:3
+  ingredient_5: ingredient_firework_rocket:2
+  ingredient_6: ingredient_pufferfish:5
+  ingredient_7: ingredient_poppy:3
+  ingredient_8: ingredient_kelp:4
+  ingredient_9: ingredient_sugar:10
+  ingredient_10: ingredient_nether_wart:10
+  #Same ingredients, other numbers
+  ingredient_11: ingredient_redstone:3
+  ingredient_12: ingredient_phantom_membrane:1
+  ingredient_13: ingredient_glowstone_dust:7
+  ingredient_14: ingredient_blaze_powder:2
+  ingredient_15: ingredient_firework_rocket:1
+  ingredient_16: ingredient_pufferfish:2
+  ingredient_17: ingredient_poppy:7
+  ingredient_18: ingredient_kelp:5
+  ingredient_19: ingredient_sugar:15
+  ingredient_20: ingredient_nether_wart:6
+
+  #All NOT used in conversation! Hardcode artefact
+  cooldown1: 720 #minutes 0.5 Tag
+  cooldown2: 1440 #minutes 1 Tag
+  brewing_1: 15 #minutes
+  brewing_2: 5 #minutes
+  listening: 10 #minutes Edmund will listen after talking to oswald
+
+npcs:
+  '350': alchemist
+  'Edmund': alchemist
+  '351': alchemisthelper
+  'Oswald': alchemisthelper
+cancel:
+  #TODO
+  alchemist:
+    name: 'Alchemist'
+    conditions: 'get_ingredients'
+    objectives:
+    tags:
+    journal:
+journal_main_page:
+  get_ingredients:
+    priority: 10
+    text: 'Zutaten für Oswald'
+    conditions: 'ingredients_left,!second_ingredients'
+  get_ingredients_2:
+    priority: 9
+    text: 'Zutaten für van Dickinson'
+    conditions: 'ingredients_left,second_ingredients'

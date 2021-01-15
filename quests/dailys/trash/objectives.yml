@@ -1,0 +1,22 @@
+trash_bin1: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin1$ events:done_bin1
+trash_bin2: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin2$ events:done_bin2
+trash_bin3: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin3$ events:done_bin3
+trash_bin4: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin4$ events:done_bin4
+trash_bin5: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin5$ events:done_bin5
+trash_bin6: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin6$ events:done_bin6
+trash_bin7: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin7$ events:done_bin7
+trash_bin8: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin8$ events:done_bin8
+trash_bin9: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin9$ events:done_bin9
+trash_bin10: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin10$ events:done_bin10
+trash_bin11: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin11$ events:done_bin11
+trash_bin12: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin12$ events:done_bin12
+trash_bin13: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin13$ events:done_bin13
+trash_bin14: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin14$ events:done_bin14
+trash_bin15: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin15$ events:done_bin15
+trash_bin16: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin16$ events:done_bin16
+trash_bin17: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin17$ events:done_bin17
+trash_bin18: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin18$ events:done_bin18
+trash_bin19: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin19$ events:done_bin19
+trash_bin20: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin20$ events:done_bin20
+trash_bin21: action right CAULDRON conditions:trash_active,!trash_done loc:$trash_bin21$ events:done_bin21
+cooldown: delay 1200 events:trash_reset

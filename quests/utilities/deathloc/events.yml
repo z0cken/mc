@@ -1,0 +1,34 @@
+sound_laugh: 'playsound minecraft:entity.ravager.celebrate category:AMBIENT pitch:2'
+
+death_loc_buy: 'run ^take diamond:10 ^objective start death_loc_listener ^objective start location'
+death_skip_buy: 'run ^take emerald:10 ^objective start death_skip_listener'
+del_location: 'objective delete location'
+
+get_loc: 'variable location location %location%'
+
+add_got_location: 'tag add got_location'
+del_got_location: 'tag del got_location '
+skip_death: 'message §4Thanatos: §c§oGrüße aus dem Reich der Toten.'
+
+start_cooldown: 'objective start cooldown'
+
+#Minerquest
+tag_add_get_egg: 'tag add get_egg'
+tag_del_get_egg: 'tag del get_egg'
+
+obj_add_egg: 'objective add egg'
+obj_del_egg: 'objective remove egg'
+journal_add_get_egg: 'journal add get_egg'
+journal_del_get_egg: 'journal del get_egg'
+journal_add_go_back: 'journal add go_back conditions:!has_journal_go_back'
+journal_del_go_back: 'journal del go_back'
+journal_add_go_rebron: 'journal add go_rebron'
+journal_del_go_rebron: 'journal del go_rebron'
+message_egg: 'message §7§oSkelettpferdei erhalten. Geh zurück zu Thanatos.'
+
+#kill_horse: 'give horse_egg:1'
+kill_horse: 'command minecraft:give %player% skeleton_horse_spawn_egg{display:{Lore:["[{\"text\":\"Quest Item\",\"italic\":false,\"color\":\"dark_green\"}]"]},EntityTag:{id:"minecraft:skeleton_horse",DeathLootTable:empty,Tags:["&aQuest_Item"]}}'
+teleport_nether: 'teleport $mq_nether_location$'
+take_egg: 'take horse_egg:1'
+give_bone: 'give horse_bone:1'
+take_bone: 'take horse_bone'

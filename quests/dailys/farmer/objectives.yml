@@ -1,0 +1,10 @@
+job1: 'block wheat[age=7] -$amount1$ events:job1_done,notify_job1'
+job2: 'block carrots[age=7] -$amount2$ events:job2_done,notify_job2'
+job3: 'breed COW $amount3$ events:job3_done,notify_job3'
+job4: 'block melon -$amount4$ events:job4_done,notify_job4'
+job5: 'shear $amount5$ events:job5_done,notify_job5'
+job6: 'block potatoes[age=7] -$amount6$ events:job6_done,notify_job6'
+job7: 'mobkill CHICKEN $amount7$ events:job7_done,notify_job7'
+
+timer: 'delay $timer$ events:cancel_quest,add_failed'
+cooldown: 'delay $cooldown$'

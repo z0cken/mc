@@ -1,0 +1,126 @@
+quester: 'Lydia'
+first: 'NA_tut_start,NA_def_start'
+stop: 'false'
+
+# PA = "Player Answer"
+# NA = "NPC Answer"
+
+NPC_options:
+  # === NPC Tutorial Conversation === #
+  'NA_tut_start':
+    text: 'Willkommen im Hotel, wie kann ich behilflich sein?'
+    conditions: 'isInTutorial,isMinerFinished,!isHotelFinished'
+    events: 'tt_del_gotoHotel'
+    pointer: 'PA_tut_hotelInfo'
+
+  'NA_tut_rentRoom_discount':
+    text:
+      'Natürlich.. lassen Sie mich eben einmal nachgucken. Perfekt, Sie haben Glück.\n
+      Sie erhalten ein kleines Geschenk für ihr erstes Zimmer.\n
+      Gehen Sie hinter der Rezeption links oder rechts die Treppen hoch. Dort werden Sie Räume vorfinden auf den Etagen 1-4. Im Keller gibt es auch noch Räume,'
+    conditions: '!discountGiven'
+    events: 'addTag_hotel_discountGiven,givePlayer_hotel_discount'
+    pointer: 'PA_rentInfo,PA_buildtInfo,PA_itemsInfo,PA_priceInfo,PA_tut_thanks' #Fixed: Allow Questions after Present
+
+  'NA_tut_rentRoom_noDiscount':
+    text:
+      'Natürlich.. lassen Sie mich eben einmal nachgucken. Ich sehe, das Geschenk für Ihren ersten Besuch haben sie bereits erhalten.\n
+      Gehen Sie hinter der Rezeption links oder rechts die Treppen hoch. Dort werden Sie Räume vorfinden auf den Etagen 1-4'
+    conditions: 'discountGiven'
+    pointer: 'PA_rentInfo,PA_buildtInfo,PA_itemsInfo,PA_priceInfo,PA_tut_thanks' #Fixed: Allow Questions after Present
+
+  'NA_tut_end':
+    text: 'Bis bald... Moment, eine Sache noch: Besuchen Sie bitte als nächstes Vladimir vor der Metro. Über die Metro sollten Sie umbedingt etwas erfahren.'
+    events: 'addProgress_hotel,tt_add_gotoMetro'
+    pointer: 'PA_tut_gotIt'
+
+  'NA_tut_thanks':
+    text: 'Ich danke Ihnen. Ich wünsche einen angenehmen Aufenthalt.\n
+      Bevor ich es vergesse: Besuchen Sie bitte als nächstes Vladimir vor der Metro. Über die Metro sollten Sie umbedingt etwas erfahren.'
+    events: 'addProgress_hotel,tt_add_gotoMetro'
+
+  # === NPC Default Conversation === #
+  'NA_def_start':
+    text: 'Willkommen im Hotel, wie kann ich Ihnen helfen?'
+    pointer: 'PA_hotelInfo,PA_rentInfo,PA_buildtInfo,PA_itemsInfo,PA_priceInfo,PA_end'
+
+  'NA_hotelInfo':
+    text: 'Hier können Sie sich ein Hotelzimmer mit diversem Mobiliar mieten.\n
+      Neben den Zimmern hier im Hotel gibt es außerhalb auch kleine Häuser zum einmieten.\n
+      Ideal für Spieler, die noch kein Grundstück oder Claim besitzen.'
+    pointer: 'PA_tut_rentRoom,PA_rentInfo,PA_buildtInfo,PA_itemsInfo,PA_priceInfo,PA_tut_end,PA_end'
+
+  'NA_rentInfo':
+    text:
+      'Mit einem Rechtsklick auf ein Schild vor einem Zimmer mieten Sie dieses.\n
+      Auf dem Schild sehen Sie dann, dass dieses Zimmer Ihnen gehört und bis wann Sie es gemietet haben. Durch weitere Klicks auf das Schild verlängern Sie ihre Mietzeit.'
+    pointer: 'PA_tut_rentRoom,PA_hotelInfo,PA_buildtInfo,PA_itemsInfo,PA_priceInfo,PA_tut_end,PA_end'
+
+  'NA_buildtInfo':
+    text: 'In gemieteten Bereichen können sie auf Kisten, Öfen, etc zugreifen. Es ist ihnen jedoch nicht gestattet ein Zimmer oder Haus umzubauen.'
+    pointer: 'PA_tut_rentRoom,PA_hotelInfo,PA_rentInfo,PA_itemsInfo,PA_priceInfo,PA_tut_end,PA_end'
+
+  'NA_itemsInfo':
+    text:
+      'Items sind ein wichtiger Punkt. Sie haben Zugriff auf alle Inventare in dem Raum, solange Sie eingemietet sind. Endet die Miete, so wird der Raum von unserem Personal in den Ursprungszustand versetzt.\n
+      Sie sollten also darauf achten, dass sie all ihr Hab und Gut rechtzeitig mitnehmen.'
+    pointer: 'PA_tut_rentRoom,PA_hotelInfo,PA_rentInfo,PA_buildtInfo,PA_priceInfo,PA_tut_end,PA_end'
+
+  'NA_priceInfo':
+    text:
+      'Die Zimmer sind alle kostenlos. Aber bitte nutzen sie das Angebot nicht aus \n
+      Wir bieten Zimmer unterschiedlicher Größe und Einrichtung an.\n
+      Schauen Sie sich die Zimmer gerne an, bevor Sie einziehen.'
+    pointer: 'PA_tut_rentRoom,PA_hotelInfo,PA_rentInfo,PA_buildtInfo,PA_itemsInfo,PA_tut_end,PA_end'
+
+  'NA_end':
+    text: 'Beehren Sie uns bald wieder.'
+
+player_options:
+  # === Player Tutorial Conversation === #
+  'PA_tut_hotelInfo':
+    text: 'Erzähl mir bitte etwas über das Hotel.'
+    pointer: 'NA_hotelInfo'
+
+  'PA_tut_rentRoom':
+    text: 'Ich würde gerne ein Zimmer mieten.'
+    conditions: 'isInTutorial, isMinerFinished'
+    pointer: 'NA_tut_rentRoom_discount,NA_tut_rentRoom_noDiscount'
+
+  'PA_tut_thanks':
+    text: 'Vielen dank. Einen schönen Tag noch. (Weiter im Tutorial)'
+    pointer: 'NA_tut_thanks'
+
+  'PA_tut_end':
+    text: 'Schönen Tag noch. (Weiter im Tutorial)'
+    conditions: 'isInTutorial'
+    pointer: 'NA_tut_end'
+
+  'PA_tut_gotIt':
+    text: 'Okay, werde ich tun. Danke.'
+
+  # === Player Default Conversation === #
+  'PA_hotelInfo':
+    text: 'Was kann ich hier machen?'
+    pointer: 'NA_hotelInfo'
+
+  'PA_rentInfo':
+    text: 'Wie kann ich hier ein Zimmer mieten?'
+    pointer: 'NA_rentInfo'
+
+  'PA_buildtInfo':
+    text: 'Was kann ich in meinem gemieteten Bereich machen?'
+    pointer: 'NA_buildtInfo'
+
+  'PA_itemsInfo':
+    text: 'Was passiert mit meinem Zeug, wenn die Miete abläuft?'
+    pointer: 'NA_itemsInfo'
+
+  'PA_priceInfo':
+    text: 'Wie sind die Preise pro Nacht?'
+    pointer: 'NA_priceInfo'
+
+  'PA_end':
+    text: 'Auf Wiedersehen.'
+    conditions: '!isInTutorial'
+    pointer: 'NA_end'

@@ -1,0 +1,3 @@
+job_start: 'Ich muss für Tjark 3 besonders große Lachse fangen. Irgendwo hinter einer Kirche oder so...'
+location_found: 'Ich habe %item.big_salmon.amount% von 3 großen Lachsen für Tjark gefangen.'
+job_done: 'Ich sollte die Lachse bei Tjark abgeben!'

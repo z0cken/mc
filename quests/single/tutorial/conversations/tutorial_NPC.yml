@@ -1,0 +1,175 @@
+quester: 'Tutorial'
+first: 'NA_tut_start,NA_def_start,NA_tut_inTutorial'
+stop: 'false'
+
+# PA = "Player Answer"
+# NA = "NPC Answer"
+
+NPC_options:
+  # === NPC Tutorial Conversation === #
+
+  # Tutorial begin
+  'NA_tut_start':
+    text:
+      'Willkommen auf dem Pr0gramm Minecraft Server - ein pr0jekt von z0cken.com.\n
+      Ich würde dir gerne Hilfe anbieten, damit du dich auf dem Server besser zurecht findest.
+      Möchtest du ein Tutorial? (Dauer: ~20 Minuten)\n
+      \n
+      [Klicke auf eine Antwort um sie auszuwählen!] \n'
+    conditions: '!isTutorialFinished,!isInTutorial'
+    pointer: 'PA_tut_accept,PA_tut_deny'
+
+  'NA_tut_inTutorial':
+    text: 'Hallo %player%, du befindest dich noch im Tutorial. Benötigst du Hilfe dabei?'
+    conditions: 'isInTutorial,!isTutorialFinished'
+    pointer: 'PA_tut_abort,PA_tut_help,PA_tut_noHelp'
+
+  # Tutorial conversation
+  'NA_tut_explain':
+    text:
+      'Die Stadt in der du dich gerade befindest ist Gambberg, die Hauptstadt des Servers.\n
+      Hier findest du das Rathaus, welches sich hinter dir befindet.\n
+      Zu deiner Rechten liegt das Portalhaus, von dem aus man weitere Städte und die Farmwelt bereisen kann.'
+    pointer: 'PA_tut_cityHall_caseA,PA_tut_otherCities_caseA'
+
+  'NA_tut_cityHallAnswer_caseA':
+    text: 'Im Rathaus findest du den Bürgermeister, das Portal zum End, ein Netherportal. Weiteres wird dir der Bürgermeister erklären.'
+    pointer: 'PA_tut_otherCities_caseB'
+
+  'NA_tut_cityHallAnswer_caseB':
+    text: 'Im Rathaus findest du den Bürgermeister, das Portal zum End, ein Netherportal. Weiteres wird dir der Bürgermeister erklären.'
+    pointer: 'PA_tut_continue'
+
+  'NA_tut_otherCitiesAnswer_caseA':
+    text: 'Es gibt hier auf dem Server verschiedene Städte in denen du Grundstücke erwerben kannst: Gambberg, Darmstadt, Lokus und Erbgut.'
+    pointer: 'PA_tut_cityHall_caseB'
+
+  'NA_tut_otherCitiesAnswer_caseB':
+    text: 'Es gibt hier auf dem Server verschiedene Städte in denen du Grundstücke erwerben kannst: Gambberg, Darmstadt, Lokus und Erbgut.'
+    pointer: 'PA_tut_continue'
+
+  # Tutorial Running
+  'NA_tut_abort':
+    text: 'Alles klar, dein Fortschritt wurde zurückgesetzt. Sprich mich wieder an, solltest du das Tutorial wieder starten wollen.'
+    events: 'restart_tutorial'
+    pointer: ''
+
+  'NA_tut_help1':
+    text: 'Du musst im Moment zum Bürgermeister gehen. Er befindet sich im Rathaus (hinter dir). Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isTutorialNPCFinished,!isMayorFinished'
+    pointer: ''
+
+  'NA_tut_help2':
+    text: 'Du musst im Moment zu Oliver gehen. Er befindet sich beim Baggersee. Wähle den Ort am besten im Kompass aus. Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isMayorFinished,!isDiggerFinished'
+    pointer: ''
+
+  'NA_tut_help3':
+    text: 'Du musst im Moment zu Gernod gehen. Er befindet sich am Steinbruch. Wähle den Ort am besten im Kompass aus. Du siehst außerdem in deinem Journal (/j), was du tun musst. Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isDiggerFinished,!isMinerFinished'
+    pointer: ''
+
+  'NA_tut_help4':
+    text: 'Du musst im Moment zum Hotel gehen und mit der Rezeption sprechen. Wähle den Ort am besten im Kompass aus. Du siehst außerdem in deinem Journal (/j), was du tun musst. Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isMinerFinished,!isHotelFinished'
+    pointer: ''
+
+  'NA_tut_help5':
+    text: 'Du musst im Moment zu Vladimir gehen. Er befindet sich vor der Metro in Gambberg. Wähle den Ort am besten im Kompass aus. Du siehst außerdem in deinem Journal (/j), was du tun musst. Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isHotelFinished,!isMetroFinished'
+    pointer: ''
+
+  'NA_tut_help6':
+    text: 'Du musst im Moment zurück zum Bürgermeister gehen. Er befindet sich im Rathaus. Ich hoffe, ich konnte dir weiterhelfen.'
+    conditions: 'isMetroFinished,!isTutorialFinished'
+    pointer: ''
+
+  # Endings
+  'NA_tut_denyResponse':
+    text: 'Alles klar, dann wünsche ich dir viel Spaß auf dem Server.\n
+      Solltest du doch mal Hilfe benötigen, stehe ich dir hier gerne zur Verfügung.'
+    pointer: ''
+
+  'NA_tut_continueAnswer':
+    text: 'Natürlich. Bitte geh in das Rathaus und sprich mit dem Bürgermeister.'
+    events: 'addProgress_tutorialNPC,tt_add_gotoCityHall'
+    pointer: ''
+
+  # === NPC Default Conversation === #
+
+  'NA_def_start':
+    text: 'Hallo %player%, kann ich etwas für dich tun?'
+    conditions: '!isInTutorial,isTutorialFinished'
+    pointer: 'PA_def_cityHall,PA_def_otherCities,PA_def_end'
+
+  'NA_def_end':
+    text: 'Ich wünsche dir noch viel spaß auf dem Server.'
+    pointer: ''
+
+  'NA_def_cityHall':
+    text: 'Im Rathaus findest du den Bürgermeister, das Portal zum End und ein Netherportal. Außerdem findest du dort eine Karte von Gamberg, Statistiken und du kannst Claimblöcke erwerben.'
+    pointer: 'PA_def_otherCities,PA_def_end'
+
+  'NA_def_otherCities':
+    text: 'Im Portalhaus findest du Portale zu den anderen Serverstädten.'
+    pointer: 'PA_def_cityHall,PA_def_end'
+
+player_options:
+  # === Player Tutorial Conversation === #
+
+  # Tutorial accept/deny
+  'PA_tut_accept':
+    text: 'Gerne, ich denke etwas Hilfe könnte nicht schaden.'
+    events: 'start_tutorial'
+    pointer: 'NA_tut_explain'
+
+  'PA_tut_deny':
+    text: 'Nein danke, ich finde mich schon zurecht.'
+    pointer: 'NA_tut_denyResponse'
+
+  # Tutorial Conversation
+  'PA_tut_cityHall_caseA':
+    text: 'Was ist im Rathaus?'
+    pointer: 'NA_tut_cityHallAnswer_caseA'
+
+  'PA_tut_cityHall_caseB':
+    text: 'Was ist im Rathaus?'
+    pointer: 'NA_tut_cityHallAnswer_caseB'
+
+  'PA_tut_otherCities_caseA':
+    text: 'Welche anderen Städte?'
+    pointer: 'NA_tut_otherCitiesAnswer_caseA'
+
+  'PA_tut_otherCities_caseB':
+    text: 'Welche anderen Städte?'
+    pointer: 'NA_tut_otherCitiesAnswer_caseB'
+
+  'PA_tut_continue':
+    text: 'Gibt es noch etwas, das ich wissen sollte?'
+    pointer: 'NA_tut_continueAnswer'
+
+  # Tutorial Running
+  'PA_tut_abort':
+    text: 'Ich würde das Tutorial gerne abbrechen / neu starten.'
+    pointer: 'NA_tut_abort'
+
+  'PA_tut_help':
+    text: 'Ich weiß nicht mehr, wo im Tutorial ich mich befinde.'
+    pointer: 'NA_tut_help1,NA_tut_help2,NA_tut_help3,NA_tut_help4,NA_tut_help5,NA_tut_help6'
+
+  'PA_tut_noHelp':
+    text: 'Nein, alles gut.'
+    pointer: ''
+
+  # === Player Default Conversation === #
+  'PA_def_cityHall':
+    text: 'Was ist im Rathaus?'
+    pointer: 'NA_def_cityHall'
+
+  'PA_def_otherCities':
+    text: 'Wie komme ich zu den anderen Städten?'
+    pointer: 'NA_def_otherCities'
+
+  'PA_def_end':
+    text: 'Auf Wiedersehen.'
+    pointer: 'NA_def_end'

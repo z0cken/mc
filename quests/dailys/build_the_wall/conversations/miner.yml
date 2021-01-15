@@ -1,0 +1,34 @@
+quester: 'Gunther Tage'
+first: 'start'
+stop: ''
+
+NPC_options:
+  'start':
+    text: 'Howdy! Was führt dich zu mir?'
+    pointer: 'start_nothing,start_ask,start_search'
+  'bye':
+    text: 'Alles klar, dann viel Spaß Kamerad!'
+  'ask_no':
+    text: 'Nein, aber pack dir einfach eine Spitzhacke und los gehts. So klappt das hier.'
+  'search_tell':
+    text: 'So einen habe ich schon mal gesehen. Das ist ein Herrgottmarin, ein sehr seltenes Mineral. Man benutzt es ausschließlich zur Vervollständigung von Mineraliensammlungen. Ich kenne einen Händler am Hafen von Lachsbuttern der sich auf Erze und ähnliches spezialisiert hat. Der zahlt dir sicher einen guten Preis dafür.'
+    events: 'tag_add_knows_special,journal_del_search,journal_add_find_trader,replace_stone'
+    pointer: 'tell_bye'
+
+#########################################################################
+player_options:
+  'start_nothing':
+    text: 'Ach nichts, bin nur auf der Durchreise.'
+    pointer: 'bye'
+  'start_ask':
+    text: 'Ich bin auf der Suche nach arbeit. Hast du was zu tun für mich?'
+    conditions: '!has_unknown'
+    pointer: 'ask_no'
+  #No quest answers ^
+
+  'start_search':
+    text: 'Ich habe einen Stein gefunden und würde gerne wissen was es ist.'
+    conditions: 'has_unknown'
+    pointer: 'search_tell'
+  'tell_bye':
+    text: 'Danke! Du hast mir sehr geholfen.'

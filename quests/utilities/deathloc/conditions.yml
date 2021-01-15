@@ -1,0 +1,16 @@
+death_loc: 'objective death_loc_listener'
+death_skip: 'objective death_skip_listener'
+has_loc_money: 'item diamond:10'
+has_skip_money: 'item emerald:10'
+got_location: 'tag got_location'
+active: 'or death_loc,death_skip'
+cooldown: 'objective cooldown'
+
+#Minerquest
+minerquest_active: 'tag monthly-lost_miner.minerquest'
+get_egg: 'tag get_egg'
+objective_egg: 'objective egg'
+has_egg: 'item horse_egg'
+has_bone: 'item horse_bone'
+get_anorexium: 'tag dailys-smith.get_anorexium'
+has_journal_go_back: 'journal go_back'

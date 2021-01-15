@@ -1,0 +1,3 @@
+findLocation: 'Fahre mit dem Boot aufs Meer zu dem Schwarm, der sich ca 30 Blöcke links vom Leuchtturm befinden soll.'
+getFish: 'Angel $salmon_amount$ Lachse aus dem Schwarm.'
+returnFish: 'Bringe die Lachse zu Lasse.'

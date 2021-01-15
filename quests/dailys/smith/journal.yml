@@ -1,0 +1,9 @@
+get_ores: 'Besorge 3 Eisen und 6 Kohle für Rebron am Marktplatz von Stefan.'
+
+#Minerquest
+get_wood: 'Baue Akazien ab, bis du Fehlerloses Kernholz bekommst. (Ohne Baumfäller!)'
+talk_rebron: 'Gib Rebron das Kernholz.'
+get_coal: 'Töte genug Witherskelette, um 10 Witherskelettkopfkohle zu bekommen.'
+talk_coal: 'Bringe die Witherskelettkopfkohle zu Rebron.'
+get_pick: 'Hole die Anorexium Spitzhacke bei Rebron ab.'
+go_back: 'Bringe die Spitzhacke zu Helmuth im Minerdorf.'

@@ -1,0 +1,23 @@
+variables:
+  angry_time1: '60' #Minutes = 1h - pre quest angry
+  angry_time2: '60' #Minutes = 1h - active
+  cooldown: '40000' #Minutes = 27.7 Tage - Cooldown after complete Quest
+  cooldown_short: '1200' #Mintes = 20h - Cooldown after canceling the Quest
+
+npcs:
+  '370': miner
+  'Helmuth': miner
+
+cancel:
+  lost_miner:
+    name: 'Kumpel Rüdiger'
+    conditions: 'quest_active'
+    objectives: 'dailys-smith.special_wood,dailys-smith.wither_coal,dailys-smith.coal_waiting,utilities-deathloc.egg'
+    tags: 'minerquest,dailys-smith.get_wood,dailys-smith.get_anorexium,dailys-smith.wither_coal,dailys-smith.get_pick'
+    journal: 'goto_rebron,dailys-smith.get_wood,dailys-smith.talk_rebron,dailys-smith.get_coal,dailys-smith.talk_coal,dailys-smith.get_pick,dailys-smith.go_back,utilities-deathloc.get_egg,utilities-deathloc.go_back'
+    events: 'cooldown_short,take_all_items'
+journal_main_page:
+  lost_miner:
+    priority: 1
+    text: 'Kumpel Rüdiger'
+    conditions: 'quest_active'

@@ -1,0 +1,154 @@
+quester: 'Albert'
+first: 'start_get_payout,start_active,start_done,start'
+stop: 'false'
+# 2. Quest
+
+
+
+NPC_options:
+  #start quest active
+  'start_active':
+    text: 'Sehr schön, ihr seid wieder da. Ist es euch gelungen Materialien um die ich euch gebeten habe zu besorgen?'
+    conditions: 'material_quest,has_selection'
+    pointer: 'start_blessing,start_materials_yes,start_materials_no'
+  'start_get_payout':
+    text: 'Ihr habt eure Belohnung vergessen!'
+    conditions: 'material_quest,!has_selection'
+    pointer: 'materials_finished_2'
+
+  #Quest done (conversation finished)
+  'start_done':
+    text: 'Dank Ihnen erstahlt diese Kirche schon bald in neuem Glanz! Kann ich mich bei Ihnen erkenntlich zeigen?'
+    conditions: 'cooldown_materials' 
+    pointer: 'start_nothing,start_blessing,start_ask_holywater'
+  'start':
+    text: 'Grüß Gott, wie kann ich Ihnen helfen?'
+    pointer: 'start_blessing,start_nothing,start_mission,start_old'
+    
+  #Blessing Conversation
+  'blessing_money':
+    text: 'Ein Jeder von uns sucht den Schutz im Glaube an den Herrn. Für eine kleine Mitgift von $blessing_price$ Gold, für die Kirche versteht sich, würde ich euch diesen Segen gerne entgegenbringen.'
+    condition: '!cooldown_blessing2,!cooldown_asked_blessing2'
+    pointer: 'money_accept'
+  'accept_has_money':
+    text: 'Ich danke Euch vielmals. Möge der Herr diese edle Spende nicht ungesehen lassen.'
+    conditions: 'has_money_blessing'
+    events: 'utilities-statistics.weekly_blessing,do_blessing,cooldown_blessing2,pay_blessing'
+  'accept_no_money':
+    text: 'Es scheint als währet ihr nicht im Stande diese Spende zu leisten.'
+    conditions: '!has_money_blessing'
+    events: 'cooldown_asked_blessing2'
+  'blessing_no':
+    text: 'Verzeiht, ihr habt euren Segen heute schon erhalten.'
+    conditions: 'cooldown_blessing2,!cooldown_asked_blessing2'
+  'decline_bye':
+    text: 'Ich hoffe der Herr möge all eure Wege leiten'
+  'asked_cooldown':
+    text: 'Eure Finanzen reichten das letzte mal  nicht aus. Sprecht mich bitte später erneut an.'
+    conditions: 'cooldown_asked_blessing2,!cooldown_blessing2'
+    
+  'old_text1':
+    text: 'Berdauerlicherweise haben Sie Recht. Seit vielen Jahren haben wir kaum Materialien und Rohstoffe um diese Kirche instand zu halten.'
+    pointer: 'old_text2'
+  'quest': 
+    text: 'Ja, doch, ich denke Sie könnten mir behilflich sein. Für die Renovierung der Kirche fehlen uns im Moment die oben genannten Materialien.'
+    events: 'write_items'
+    pointer: 'quest_accept,quest_decline'
+  'mission_text1':
+    text: 'Pfarrer Karl aus dem Fischerdorf? Ich habe ewig nichts mehr von ihm gehört. Ich hoffe es geht ihm gut. Nun... bedauerlicherweise kann ich dieser bitte nicht entgegenkommen. Wir haben selbst auch so schon genug Probleme. Unser Weihwasser ist das einzig vernünftige was uns bleibt.'
+    pointer: 'mission_text2'
+
+
+  'give_materials':
+    text: 'Vielen Dank!'
+    pointer: 'materials_finished,not_all_materials'
+  
+  'materials_without_quest':
+    text: 'Natürlich! Vielen vielen Dank, Ihr seid so gütig. Selbstverständlich werde ich Euch für diese gute Tat entlohnt. Nehmt diese $materials_payout$ Gold als Zeichen meiner Dankbarkeit und im Namen des Herrn.'
+    conditions: '!get_holywater,!has_selection'
+    events: 'give_money_materials,del_material_quest,cooldown_materials,journal_reload'
+  'materials_with_quest':
+    text: 'Natürlich! Ich stehe nun zu tiefst in Ihrer Schuld. Kann ich was für Sie tun? Ohh ja, natürlich. Ihr wolltet für Pfarrer Karl das Weihwasser besorgen. Sicher, sicher. Nehmt soviel Ihr wollt. Das Weihwasser finden sie am anderen Ende der Kirche. Bitte richtet Pfarrer Karl meine besten Grüße und viel Erfolg bei der Messe aus.'
+    conditions: 'get_holywater,!has_selection'
+    events: 'del_material_quest,cooldown_materials,journal_reload,start_get_holywater' 
+
+
+  'holywater_allow':
+    text: 'Das ist doch mal ein Wort! Wie du mir, so ich dir, wie es so schön heißt. Gerne helfe ich Ihnen. Das Weihwasser finden sie am anderen Ende der Kirche. Einen schönen Tag noch.'
+    events: 'start_get_holywater' 
+    
+    #smalltalk
+  'bye':
+    text: 'Auf wiedersehen.'
+  'decline_bye':
+    text: 'Schade. Ich wünsche Ihnen dennoch einen schönen Tag.'
+  'materials_no_bye':
+    text: 'Ich würde mich auf ein baldiges Wiedersehen freuen.'
+    
+    
+#########################################################################
+player_options:
+  #blessing conversation
+  'start_blessing':
+    text: 'Ich ersuche einen Segen'
+    pointer: 'blessing_money,blessing_no,asked_cooldown'
+  'money_accept':
+    text: 'Gerne nehme ich dieses Angebot an.'
+    pointer: 'accept_has_money,accept_no_money'
+  'money_decline':
+    text: 'Verzeiht mir, aber ich möchte so viel Geld bezahlen.'
+    pointer: 'decline_bye'
+    
+
+  'start_ask_holywater': 
+    text: 'Sie könnten sich in der Tat erkenntlich zeigen. Pfarrer Karl vom Fischerdorf hat mich entsandt um Weihwasser für ihn zu besorgen. Er benötigt es um die anstehende Messe durchführen zu können.'
+    conditions: 'get_holywater,!has_holywater'
+    pointer: 'holywater_allow'
+  'start_mission':
+    text: 'Guten Tag, Pfarrer Karl schickt mich. Er sagt, er bräuchte dringend Weihwasser für die anstehende Messe.'
+    conditions: 'get_holywater'
+    pointer: 'mission_text1'
+  'start_old':
+    text: 'Verzeihen Sie mir diese Anmerkung, aber diese Kirche wirkt ziemlich Marode.'
+    conditions: '!get_holywater'
+    pointer: 'old_text1'
+  'old_text2':
+    text: 'Könnte ich Ihnen bei der Renovierung behilflich sein?'
+    events: 'select_items'
+    pointer: 'quest'
+  'mission_text2':
+    text: 'Gäbe es nicht eine Möglichkeit, wie ich Ihnen- und Sie mir helfen können?'
+    events: 'select_items'
+    pointer: 'quest'
+  'quest_accept':
+    text: 'Das scheint machbar zu sein. Ich werde versuchen diese Materialien für Sie zu besorgen.'
+    events: 'add_material_quest,journal_materials' #START QUEST
+  'quest_decline':
+    text: 'Es tut mir leid, aber dafür habe ich leider keine Zeit.'
+    pointer: 'decline_bye'
+  'start_materials_yes':
+    text: 'Ich habe welche besorgt, ja'
+    conditions: 'has_material' 
+    events: 'take_material_1,take_material_2,take_material_3,take_material_4,take_material_5,take_material_6,take_material_7,take_material_8,take_material_9,take_material_10'
+    pointer: 'give_materials'
+  'start_materials_no':
+    text: 'In kürze werde ich alles zusammen haben.'
+    conditions: '!has_material,has_selection' 
+    pointer: 'materials_no_bye'
+
+  'materials_finished': 
+    text: 'Bekomme ich nun meine Forderung erfüllt?'
+    pointer: 'materials_without_quest,materials_with_quest'
+    conditions: 'material_quest,!has_selection'
+  'materials_finished_2': 
+    text: 'Oh, stimmt. Bekomme ich nun meine Forderung erfüllt?'
+    pointer: 'materials_without_quest,materials_with_quest'
+
+  'not_all_materials':
+    text: 'Ich werde die fehlenden Materialien noch besorgen.'
+    condition: 'has_selection'
+    
+  #smalltalk
+  'start_nothing':
+    text: 'Ich bin nur auf der Durchreise.'
+    pointer: 'bye'

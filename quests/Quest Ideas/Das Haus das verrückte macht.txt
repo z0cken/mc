@@ -1,0 +1,23 @@
+
+Questname:  Das Haus das verrückte Macht
+Quester:    BewohnerXY
+Questtyp:   Weekly/Monthly
+Location:   Darmstadt
+
+Background Story:
+    BewohnerXY hat seine Schlüsselkarte für das Hotelzimmer A38 verloren.
+    Das Haus unstrukturiert, voll mit Büros und Bürokratie - darum ist es schwierig die Informationen und Auflagen für einen Ersatz zu bekommen.
+    Beim versuch eine Ersatzkarte zu bekommen ist BewohnerXY verrückt geworden und redet auch so verwirrt.
+
+Aufgabe:
+    Besorge die Schlüsselkarte A38
+
+Belohnung:
+    ???
+
+Quest aufbau:
+    Der Spieler wird immer wieder von Büro zu Büro geschickt, muss mehrere andere unterlagen erst vorlegen um immer wieder etwas weiter (und zum nächsten Büro) zu kommen.
+    Er muss immer wieder mehrere Etagen durchqueren und in der Quest beschriebene Büros finden, bei denen er entweder weiterkommt oder einfach weitergeleitet wird.
+    Am ende öffnet ein NPC im Erdgeschoss die Tür zu den Reserveschlüsselkarten, weil er kein bock mehr hat.
+    Dort muss der Spieler dann die richtige aus der Kiste nehmen und zu BewohnerXY bringen.
+

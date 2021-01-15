@@ -1,0 +1,17 @@
+dirt: DIRT
+sand: SAND
+gravel: GRAVEL
+
+stone: STONE
+diorite: DIORITE
+
+iron_ingot: IRON_INGOT
+iron_helmet: IRON_HELMET
+iron_pants: IRON_LEGGINGS
+iron_chestplate: IRON_CHESTPLATE
+iron_boots: IRON_BOOTS
+iron_pickaxe: IRON_PICKAXE
+iron_sword: IRON_SWORD
+cookie: COOKIE
+bucket: BUCKET
+diamond: DIAMOND

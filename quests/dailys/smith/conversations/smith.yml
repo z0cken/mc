@@ -1,0 +1,232 @@
+quester: 'Rebron'
+first: 'mq_start_done,mq_start_get_pick,mq_start_waiting,mq_start_wither_done,mq_start_wither,mq_start_bone,mq_start_anorexium,start_minerquest_done,start_minerquest_active,start_minerquest,start_cooldown,start_items,start_blocked,start_get_ores,start'
+stop: 'false'
+NPC_options:
+  #start
+  'start_cooldown':
+    text: 'Hey %player%! Dank dir kann ich wieder arbeiten!'
+    conditions: 'cooldown'
+    pointer: 'cooldown_help'
+  'start_blocked':
+    text: 'Verdammtes Arschloch, verzieh dich!'
+    conditions: 'blocked'
+    pointer: 'blocked_bye'
+  'start_get_ores':
+    text: 'Und.. habt ihr das zeug? Hat Gibmir al Deingeld Probleme bereitet?'
+    conditions: 'get_ores'
+    pointer: 'ores_yes,ores_self,ores_no'
+  'start':
+    text: 'Hey du! .. EY, HIER DRÜBEN!!.. Ja, genau. DU bist genau der Mann den ich gerade brauche!'
+    pointer: 'start_ask,start_no'
+
+  'ask_text':
+    text: 'Ich wollte mich eben auf den Weg in die Mine machen, als ich sah dass diese beschissene Spitzhacke einen Riss hat! Meine nächste Warenlieferung kommt erst morgen an. Wenn ich heute keine Erze fördern kann bin ich am Arsch! Helft ihr mir, damit ich eine neue Stahl Spitzhacke schmieden kann? Ihr bekommt dafür eine kleine Entlohnung oder dieses Schrottteil! Holt Eisen vom Erzhändler Gibmir al Deingeld am Dock. Sag ihm ich habe euch geschickt... Achja und bring Kohle mit!'
+    pointer: 'text_yes,text_no'
+  'no_block':
+    text: 'Verdammtes sollst du sein! Wegen dir kann ich den laden dicht machen! VERSCHWINDE ODER DU ERLEBST WAS!'
+    events: 'blocked'
+  'yes_answer':
+    text: 'Vielen Dank!'
+    events: 'add_get_ores,add_journal_ores'
+
+  'yes_reply':
+    text: 'Haha, recht hat er. Endlich sieht dieser Idiot auch mal was ein. Nungut, gib her das Zeug. \n \n Nungut, ihr habt mir einen gefallen getan. Nun muss ich wohl meinen Teil der abmachung auch einhalten. Wie möchtet ihr entlohnt werden? Diamanten oder meine alte, schrottige Spitzhacke?'
+    conditions: 'has_items'
+    events: 'take_items'
+    pointer: 'get_pickaxe,get_money'
+  'self_reply':
+    text: 'WAS?! Diesen Bastard werde ich nachher aufmischen. Ich habe ihm schon so oft etwas geschmiedet! Aber nun zurück zur Sache. Gebt mir die Resourcen. \n \n Nungut, ihr habt mir einen gefallen getan. Nun muss ich wohl meinen Teil der abmachung auch einhalten. Wie möchtet ihr entlohnt werden? Diamanten oder meine alte, schrottige Spitzhacke?'
+    conditions: 'has_items'
+    events: 'take_items'
+    pointer: 'get_pickaxe,get_money,scam'
+
+  'start_items':
+    text: 'Wie möchtet ihr entlohnt werden? Diamanten oder meine alte, schrottige Spitzhacke?'
+    conditions: 'gave_items'
+    pointer: 'get_pickaxe,get_money,scam'
+
+  'no_items':
+    text: 'Ähm? Wo sind die Items?'
+    conditions: '!has_items'
+
+  'no':
+    text: 'Ich wüsste nicht wie, aber danke!' #New Idle QUEST?
+  'no_reply':
+    text: 'Ich habe nicht den ganzen tag zeit!'
+
+  'money_reply':
+    text: 'Das war mir irgendwie klar... Diamanten. IMMER DIESE DIAMANTEN. Nungut, hier habt ihr zwei.'
+    events: 'utilities-statistics.daily_smith,give_money,cooldown,del_deal_done,del_gave_items,update_journal'
+  'pickaxe_reply':
+    text: 'Dieses Stück Schrott? Nagut, wie du willst...'
+    events: 'utilities-statistics.daily_smith,give_pickaxe,cooldown,del_deal_done,del_gave_items,update_journal'
+
+  #Minerquest
+  'start_minerquest':
+    text: 'Sei gegrüßt, was kann ich für dich tun?'
+    conditions: 'minerquest_active'
+    events: 'journal_del_goto_rebron'
+    pointer: 'minerquest_text'
+  'text_reply':
+    text: 'Sag bloß, die Trottel haben eine Specksteinader getroffen. Musste früher oder später ja passieren. Jetzt liegt es an mir meinen Kundenstamm zu erhalten. Ja, ich kann helfen, aber ich habe keinerlei Materialien für so eine spezielle Hacke. Als erstes brauche ich ein Stück Akazienkernholz für den Stiel. Nur dieses Holz kann den entstehenden Vibrationen der Spitzhacke standhalten. Das findest du in Akazienbäumen. Achte aber darauf, dass es mindestens einen Meter lang ist und keine Verwachsungen hat, sonst bricht alles beim ersten Schlag auseinander.'
+    pointer: 'reply_go'
+  'go_bye':
+    text: 'Viel Erfolg!'
+    events: 'start_special_wood,journal_add_get_wood'
+  'start_minerquest_active':
+    text: 'Ich sehe kein Holz. Was willst du schon hier?'
+    conditions: '!has_wood,minerquest_active,!get_anorexium,wood_active'
+    pointer: 'mq_active_ask,mq_active_no'
+  'mq_no_cancel':
+    text: 'Was? Das ist ja unglaublich. Lass dich hier nie wieder blicken! Und ich muss einen neuen Abenteurer finden, der das Holz sucht.'
+    events: 'monthly-lost_miner.cancel'
+  'ask_reply':
+    text: 'Akazienkernholz, findet man in Eich…ääh Akazien! Du bringst mich ganz aus dem Konzept mit deiner Fragerei. Mach dich lieber auf den Weg.'
+  'start_minerquest_done':
+    text: 'Hast du das Holz für den Stiel?'
+    conditions: 'minerquest_active,has_wood,get_wood'
+    pointer: 'done_take'
+  'take_next':
+    text: 'Ah, ja, das ist wirklich einwandfrei! Jetzt fehlt noch drei Stücke Anorexium. Die meißten glauben das letzte bisschen auf der Welt wäre vom Drachenlord vor 1000 Jahren vernichtet worden aber ich kenne jemanden für den gelten die Regeln unserer Welt nicht. Ja, ich spreche von Thanatos höchstpersönlich! Du findest ihn in den Ruinen am Rand unseres Dorfes.'
+    conditions: 'has_wood'
+    events: 'tag_add_get_anorexium,mq_progress,take_wood,remove_wood_objective,tag_del_get_wood'
+  'take_fake':
+    text: 'Ähm wo? Ich kann es nicht finden'
+    conditions: '!has_wood'
+  'mq_start_anorexium':
+    text: 'Du musst nur über die Brücke gehen, du schaffst das. Ich würde es ja selbst machen aber ich habe keine Lust.'
+    conditions: 'get_anorexium,minerquest_active'
+    pointer: 'mq_anorexium_yes,mq_anorexium_no'
+  'anorexium_no_cancel':
+    text: 'Und wieder einmal hat mir meine Ehrlichkeit das Genick gebrochen. Verdammt sei mein Hang zur Wahrheit!'
+    events: 'monthly-lost_miner.cancel'
+
+  #Minerquets after bone / Withercoal
+  'mq_start_bone':
+    text: 'Und?'
+    conditions: 'minerquest_active,has_bone'
+    pointer: 'mq_give_bone'
+  'mq_bone_take':
+    text: 'So wie das aussieht sind das doch Skelettpferdknochen oder? Verdammt, ich dachte wir kommen an pures Anorexium. Mit diesem Zeug hier kann ich nicht arbeiten. Zuerst muss man das Metall aus dem Knochen herausholen. Das kostet mich eine Menge Zeit.  Solange ich mich darum kümmere besorge du bitte noch Kohle aus den Köpfen von Wither Skeletten. Nur die brennt heiß genug um Anorexium zu schmelzen. $coal_head_amount$ Kilo dürften ausreichen.'
+    conditions: 'has_bone'
+    events: 'utilities-deathloc.take_bone,wither_quest,tag_add_wither_coal,journal_add_get_coal,tag_del_get_wood,utilities-deathloc.journal_del_go_rebron'
+    pointer: 'take_next'
+  'mq_bone_fake':
+    text: 'Ähm wo? Ich finde ihn nicht in deinem Inventar! [BUG - BITTE MELDEN]'
+    conditions: '!has_bone'
+  'mq_start_wither':
+    text: 'Zur Hölle mit dir! Haha, kleiner Scherz, aber ich denke du weißt was ich meine.'
+    conditions: 'minerquest_active,wither_coal,!has_wither_coal'
+    pointer: 'mq_wither_continue,mq_wither_cancel'
+  'mq_wither_canceled':
+    text: 'Dann verzieh dich!'
+  'mq_start_wither_done':
+    text: 'Du kommst genau richtig, ich bin gerade damit fertig geworden die letzten Knochenreste zu entfernen.'
+    conditions: 'minerquest_active,has_wither_coal,wither_coal'
+    pointer: 'mq_give_coal'
+  'mq_coal_take':
+    text: 'Ich weiß, deswegen hast auch du sie besorgt und nicht ich. Warte eine Viertelstunde. Du kannst solange ja dieses Buch hier lesen.'
+    conditions: 'has_wither_coal'
+    events: 'take_wither_coal,coal_payout,start_coal_waiting,journal_del_talk_coal'
+  'mq_coal_fake':
+    text: 'Ich kann die Kohle nicht in deinem Inventar finden. [BUG - BITTE MELDEN]'
+    conditions: '!has_wither_coal'
+  'mq_start_waiting':
+    text: 'Hör auf mich zu hetzen. Denk an Regel 18. Das dauert mindestens $coal_delay$ Minuten.'
+    conditions: 'minerquest_active,coal_waiting'
+    pointer: 'blocked_bye'
+  'mq_start_get_pick':
+    text: 'Hallo! Schau her, da ist das gute Stück. Eine Anorexium Spitzhacke, wie bestellt. Sei vorsichtig, das ist potentes Zeug! Ich habe nur durch den Kontakt beim Schmieden eines meiner Doppelkinns eingebüßt.'
+    conditions: 'minerquest_active,get_pick'
+    events: 'journal_del_get_pick,give_pick,journal_add_go_back'
+    pointer: 'mq_got_pick'
+  'mq_pick_bye':
+    text: 'Viel Erfolg! Und grüß mir Helmuth. '
+  'mq_start_done':
+    text: 'Was möchtest du noch hier? Du hast doch deine Spitzhacke bekommen.'
+    conditions: 'minerquest_active,has_pick'
+
+#################################################################
+player_options:
+  #start
+  'blocked_bye':
+    text: 'Ok ok...'
+  'start_ask':
+    text: 'Was ist denn passiert?'
+    pointer: 'ask_text'
+  'start_no':
+    text: 'Ich habe keine Zeit für euch.'
+    pointer: 'no_block'
+  'text_yes':
+    text: 'Ich werde die benötigten Materialien besorgen.'
+    pointer: 'yes_answer'
+  'text_no':
+    text: 'Für so einen wie dich habe ich sicherlich keine Zeit.'
+    pointer: 'no_block'
+  'yes':
+    text: 'Ich beeile mich!'
+
+  'ores_yes':
+    text: 'Ja, ich habe alles bekommen. Gibmir al Deingeld meinte, er würde euch eh noch etwas schulden.'
+    conditions: 'deal_done,has_items'
+    pointer: 'yes_reply'
+  'ores_self':
+    text: 'Ich habe es selber besorgt. Dieser Gibmir ist ein ziemlicher geizkragen.'
+    conditions: 'has_items'
+    pointer: 'self_reply'
+  'ores_no':
+    text: 'Noch nicht, ich werde mich drum kümmern'
+    pointer: 'no_reply'
+
+  'get_pickaxe':
+    text: 'Ich möchte eure alte Spitzhacke'
+    pointer: 'pickaxe_reply'
+  'get_money':
+    text: 'Ich nehme die Diamanten'
+    pointer: 'money_reply'
+  'scam':
+    text: 'Sie haben die Spitzhacke nicht bekommen.'
+    conditions: '!gave_items'
+  'cooldown_help':
+    text: 'Kann ich dir sonst behilflich sein?'
+    pointer: 'no'
+
+  #Minerquest
+  'minerquest_text':
+    text: 'Kumpel Helmuth schickt mich. Die er braucht dringend eine Anorexium Spitzhacke um einen eingestürzten Tunnel freizubekommen. Mir wurde gesagt, du kannst da was machen.'
+    pointer: 'text_reply'
+  'reply_go':
+    text: 'Geht klar, ich bin unterwegs.'
+    events: 'tag_add_get_wood'
+    pointer: 'go_bye'
+  'mq_active_ask':
+    text: 'Ich hab das richtige noch nicht gefunden. Wie heißt das Holz nochmal?'
+    pointer: 'ask_reply'
+  'mq_active_no':
+    text: 'Was? Dann habe ich auch keine Lust mehr! Sieh zu an wen du in Zukunft deine Werkzeuge verkaufst wenn du deine Kundschaft einfach im Berg verschüttet zurücklässt!'
+    pointer: 'mq_no_cancel'
+  'done_take':
+    text: 'Ja klar, was denkst du wieso ich wieder hier bin?'
+    pointer: 'take_next,take_fake'
+  'mq_anorexium_yes':
+    text: 'Ja ich bin dabei.'
+  'mq_anorexium_no':
+    text: 'Was? Dann habe ich auch keine Lust mehr! Sieh zu an wen du in Zukunft deine Werkzeuge verkaufst wenn du deine Kundschaft einfach im Berg verschüttet zurücklässt!'
+    pointer: 'anorexium_no_cancel'
+  'mq_give_bone':
+    text: 'Hier, in diesen Knochen befindet sich genug Anorexium für eine Hacke. Du kannst sofort loslegen.'
+    pointer: 'mq_bone_take,mq_bone_fake'
+  'take_next':
+    text: 'Ich bezweifle langsam, dass es eine gute Idee war meine Hilfe in der ganzen Sache anzubieten… Na gut! Witherskelettkopfkohle! Ich bin dran.'
+  'mq_wither_continue':
+    text: 'Ja, natürlich, ich bin unterwegs! '
+  'mq_wither_cancel':
+    text: 'So lasse ich nicht mit mir reden! Mach deinen Kram doch alleine. Ich geh angeln. Hab gehört die Tropenfische beißen zur Zeit besonders schlecht.'
+    events: 'monthly-lost_miner.cancel'
+    pointer: 'mq_wither_canceled'
+  'mq_give_coal':
+    text: 'Gut! Hier ist die Kohle. War nicht einfach sie zu beschaffen.'
+    pointer: 'mq_coal_take,mq_coal_fake'
+  'mq_got_pick':
+    text: 'Du kamst mir gleich so hager vor. Ich werde aufpassen. Vielen Dank dir! Ich mache mich sofort auf den Weg.'
+    pointer: 'mq_pick_bye'

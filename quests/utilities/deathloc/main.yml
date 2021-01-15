@@ -1,0 +1,19 @@
+variables:
+  respawn_location: 5106.5;78;-493.5;world
+  cooldown: '240' #Online cooldown = 4h
+  mq_nether_location: '0;0;0;world_nether;0;0'
+npcs:
+  '358': death
+  'Thanatos': death
+cancel:
+  trash:
+    name: 'Deal mit dem Tod'
+    conditions: active
+    objectives: death_skip_listener,death_loc_listener,location
+    tags: got_location,jobActive
+    journal: ''
+journal_main_page:
+  greeting:
+    priority: 0
+    text: 'Deal mit dem Tod'
+    conditions: 'active'

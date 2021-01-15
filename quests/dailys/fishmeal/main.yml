@@ -1,0 +1,31 @@
+variables:
+  cod1: 25
+  cod2: 30
+  cod3: 35
+  salmon1: 15
+  salmon2: 18
+  salmon3: 20
+  puffer1: 8
+  puffer2: 9
+  puffer3: 10
+  tropical1: 1
+  tropical2: 2
+  tropical3: 3
+  cooldown: 1200 #minutes = 20h
+  timeout: 60 #minutes
+  payout: 32 #Lapislazulli + 1 Emerald
+npcs:
+  '355': villager
+  'Bernd': villager
+cancel:
+  fishmeal:
+    name: 'Fischige Tafelrunde'
+    conditions: 'obj_active'
+    objectives: 'obj_cod1,obj_cod2,obj_cod3,obj_salmon1,obj_salmon2,obj_salmon3,obj_puffer1,obj_puffer2,obj_puffer3,obj_tropical1,obj_tropical2,obj_tropical3'
+    tags: 'running'
+    journal: 'timeout,done_fishing,cod1,cod2,cod3,salmon1,salmon2,salmon3,puffer1,puffer2,puffer3,tropical1,tropical2,tropical3'
+journal_main_page:
+  villager:
+    priority: 2
+    text: 'Fischige Tafelrunde'
+    conditions: 'running'

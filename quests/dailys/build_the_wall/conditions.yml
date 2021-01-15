@@ -1,0 +1,16 @@
+active: 'tag active'
+special: 'tag special'
+knows_special: 'tag knows_special'
+holds_pickaxe: 'hand standard_pickaxe'
+at_steinbruch: 'location $steinbruch$ $steinbruch_radius$'
+mined_stack: 'point mined 64'
+has_stack: 'item cobblestone:64'
+has_blocks: 'item cobblestone:%math.calc:point.mined.amount*0.95%' #Contains tolerance of 5%
+cooldown: 'objective cooldown'
+
+#Rare Item Part
+has_unknown: 'item unknown_stone'
+has_special: 'item special_stone'
+
+#Random
+random: 'random 1-10'

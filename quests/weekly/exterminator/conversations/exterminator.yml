@@ -1,0 +1,97 @@
+quester: 'Egon Spengler'
+first: 'start_cooldown,start_done,start_kill,start_search,start,start_inactive'
+stop: ''
+
+NPC_options:
+  'start':
+    text: 'Moin.'
+    conditions: 'is_active'
+    pointer: 'start_hi,start_bye,start_ask'
+  'hi_annoyed':
+    text: 'Was gibts?'
+    pointer: 'annoyed_nothing,start_ask'
+  'ask_telljob':
+    text: 'Ich beseitige die Ratten hier.'
+    pointer: 'telljob_help,telljob_disgusting,ask_loot'
+  'nothing_bye':
+    text: 'Dann mach dich weg.'
+  'disgusting_tell':
+    text: 'Jo. Ich muss hier jede Woche saubermachen.'
+    pointer: 'disg_tell_bye,telljob_help,ask_loot'
+  'help_accept':
+    text: 'Klar. Geh einfach in die Kanalisation und töte möglichst viele Ratten.'
+    pointer: 'accept_yes,accept_where'
+    events: 'objective_start_location,journal_add_goto,tag_add_active,tag_add_search'
+  'where_tell':
+    text: 'Die Eingänge der Kanalisation sind alle hier am Spawn. Ein paar sind im Wasser, andere meistens hinter den Häusern hier versteckt.'
+  'start_search':
+    text: 'Die Eingänge der Kanalisation sind alle hier am Spawn. Ein paar sind im Wasser, andere meistens hinter den Häusern hier versteckt.'
+    conditions: 'tag_active,tag_search'
+    pointer: 'search_ok'
+  'start_kill':
+    text: 'Töte noch %objective.kill.left% Ratten um die Plage zu stoppen.'
+    conditions: 'tag_active,objective_kill'
+    pointer: 'kill_ok'
+  'start_done':
+    text: 'Ich habe die Ratten quieken hören. Gute Arbeit, hier deine Belohnung.'
+    conditions: 'tag_active,!tag_search,!objective_kill'
+    events: 'utilities-statistics.weekly_exterminator,journal_del_done,tag_del_active,tag_add_cooldown,cooldown_timer,payout_value,payout_random_armor'
+    pointer: 'done_thanks'
+  'time':
+    text: 'Jo. Bin immer Freitag und Samstag hier aktiv.'
+    pointer: 'kill_ok'
+  'start_inactive':
+    text: 'Moin. Was gibts?'
+    conditions: '!is_active'
+    pointer: 'annoyed_nothing,inactive_ask'
+  'no_thanks':
+    text: 'Ne du, ich arbeite hier nur Freitag und Samstag. Jetzt will ich einkaufen gehen. Tschüss.'
+  'start_cooldown':
+    text: 'Man sieht sich nächste Woche.'
+    pointer: 'kill_ok'
+    conditions: 'cooldown'
+  'loot_tell':
+    text: 'Natürlich etwas Gold und ein Stück Kettenrüstung, das ich letztens gefunden habe, kann ich bieten.'
+    pointer: 'telljob_help,start_bye'
+
+#########################################################################
+player_options:
+  'start_hi':
+    text: 'Moin.'
+    pointer: 'hi_annoyed'
+  'start_bye':
+    text: 'Tschüss.'
+  'start_ask':
+    text: 'Was machen sie hier?'
+    pointer: 'ask_telljob'
+  'annoyed_nothing':
+    text: 'Nichts.'
+    pointer: 'nothing_bye'
+  'telljob_help':
+    text: 'Kann ich ihnen dabei helfen? Ich suche Arbeit.'
+    pointer: 'help_accept'
+  'telljob_disgusting':
+    text: 'Ist ja ekelhaft. Hier gibts eine Rattenplage?'
+    pointer: 'disgusting_tell'
+  'accept_where':
+    text: 'Wie komme ich in die Kanalisation?'
+    pointer: 'where_tell'
+  'accept_yes':
+    text: 'Ich melde mich, wenn ich fertig bin.'
+  'search_ok':
+    text: 'Ah. Ok'
+  'kill_ok':
+    text: 'Alles klar.'
+  'done_thanks':
+    text: 'Vielen Dank. Tschüss'
+  'done_time':
+    text: 'Man sieht sich!'
+    pointer: 'time'
+  'inactive_ask':
+    text: 'Kann ich ihnen behilflich sein?'
+    pointer: 'no_thanks'
+  'disg_tell_bye':
+    text: 'Das wäre kein Job für mich, da will ich sie gar nicht aufhalten.'
+  'ask_loot':
+    text: 'Und was bekomme ich wenn ich ihnen helfe?'
+    pointer: 'loot_tell'

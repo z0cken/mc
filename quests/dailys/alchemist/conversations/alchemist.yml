@@ -1,0 +1,213 @@
+quester: 'Edmund van Dickinson'
+first: 'start_cooldown1,start_cooldown2,blocking,hello_realize,start_ingredients,start_brewing,start_first_half,start_half_ingredients,start_brewing_waiting,start_get_potion'
+stop: 'false'
+
+##############
+#
+#   (Blubbersound)
+#   0 Blocking | Stören sie nicht! Ich arbeite!  (Password für Konversationsstart IMMER)
+#   1 Konverstaion | Mürrischer verzwickter Verlauf zum Trank überzeugen
+#   2 Liefern | Brauche x Zutaten (Random Pot)
+#   3 Konversation | Hat Zutaten vergessen (Kann man erfragen warum Fisch -> Witz )
+#   4 Liefern | Neue Zutaten (incl. Fisch) (Falscher Fisch -> Will ich nicht!)
+#   6 Warten | (Trank wird gebraut)
+#   7 Abholen | (Trank fertig)
+#   8 Cooldown | Restart Queste
+NPC_options:
+  # 0 Blocking [START]
+  'blocking':
+    text: 'SsSSHhhtTt! Sie stööören!'
+    conditions: '!is_listening,!get_ingredients,!got_ingredients,!potion_half,!has_potion'
+    events: 'add_talked_alchemist'
+    pointer: 'blocking_ask,blocking_go,hello_password'
+  'blocking_send':
+    text: 'WEG da! OSKAR, meeehr Spinnenaugen!'
+    conditions: '!is_listening'
+    events: 'reply_oswald'
+
+  # 1 Konversation über Trank
+  'hello_realize':
+    text: 'JA? Was? Wer sind sie? Was wollen sie?'
+    conditions: 'is_listening,!get_ingredients,!active_ingredients,!got_ingredients,!potion_half,!has_potion'
+    pointer: 'hello_help'
+  'help_complicated':
+    text: 'Einen Trank? Welchen? Wissen sie wie kompliziert so etwas ist!'
+    pointer: 'complicated_yes,complicated_no,complicated_potion'
+  'ask_potion':
+    text: 'Das dachte ich mir. Welchen Trank benötigen Sie denn?'
+    pointer: 'complicated_potion'
+  'potion':
+    text: 'Fliegen? FLIEGEN! Sind sie bescheuert, das ist nahezu unmöglich!'
+    pointer: 'potion_please, potion_pay, potion_death'
+  'please_ok':
+    text: 'Bitte Bitte Bitte. Ich kann es nicht mehr hören. Bringen sie mir die Zutaten von Oskar.'
+    pointer: 'ok_yes,ok_no'
+  'pay_ok':
+    text: 'Zauberei ist nicht käuflich. Sie können sich aber bei der Besorgung der Zutaten behilflich machen. Fragen sie Oswald was uns fehlt.'
+    pointer: 'ok_yes,ok_no'
+  'death_ok':
+    text: 'Wenn es so ist, will ich es versuchen. Aber dazu wird Oswald ihre Hilfe bei der Beschaffung der Zutaten benötigen!'
+    pointer: 'ok_yes,ok_no'
+  'no_reply':
+    text: 'Haha. Viel Erfolg. Dann gehen sie mit aus dem Weg, ich habe wichtiges zu tun.'
+
+  # 2 Get ingredients
+  'start_ingredients':
+    text: 'Was? Ah Sie schon wieder. Haben sie schon alle Zutaten organisiert?'
+    conditions: 'get_ingredients,!got_ingredients'
+    pointer: 'ok_ingredients'
+
+  # Got ingredients
+  'start_brewing':
+    text: 'Ich habe ihren Trank schon begonnen.'
+    conditions: 'is_brewing,got_ingredients'
+    pointer: 'brewing_time'
+  'time_reply':
+    text: 'Puh, schauen sie in %objective.brewing_1.left% nochmal vorbei'
+    events: 'brewing_sound'
+
+  # Did first half of the potion
+  'start_first_half':
+    text: 'Dein Trank ist fast fertig, ich habe mir nur etwas bei der Menge der Zutaten vertan.'
+    conditions: 'potion_half,!second_ingredients,!second_brewing'
+    pointer: 'half_what,half_notime'
+  'half_start':
+    text: 'Die Zutaten schreibe ich in dein Tagebuch. Sonst noch einen großen gebratenen Lachs vom Dorfmarkt.'
+    conditions: 'potion_half'
+    pointer: 'salmon_what'
+    events: 'ingredient_fish,random_ingredients_2,add_second_ingredients'
+  'salmon_answer':
+    text: 'Auch ein Alchemist bekommt mal Hunger bei der ganzen Arbeit.'
+
+  #got second ingredient mission
+  'start_half_ingredients':
+    text: 'Haben sie alles?'
+    pointer: 'take_ingredients_2,no_ingredients'
+    conditions: 'second_ingredients,ingredients_left,!has_potion'
+  'ingredient_thanks':
+    text: 'Wundervoll.'
+    pointer: 'thanks_finished'
+    events: 'ingredients_finished_2'
+  'brewing_timing':
+    text: 'Ähm ja..., ich denke circa %objective.brewing_2.left%.'
+  'start_brewing_waiting':
+    text: 'Ich brauche noch mindestens %objective.brewing_2.left%.'
+    conditions: 'second_brewing'
+    events: 'brewing_sound'
+    pointer: 'ok'
+
+    #get potion from alchemist
+  'start_get_potion':
+    text: 'Ich habe es geschafft! Also Fast... '
+    conditions: 'has_potion'
+    pointer: 'potion_ask,potion_give'
+  'ask_reply':
+    text: 'Nunja, es gibt ein paar Nebenwirkungen. Übelkeit und Müdigkeit nur als Beispiel. Aber sie sollten ihn überleben! Hier bitte.'
+    events: 'give_potion,cooldown1,utilities-statistics.daily_alchemist'
+    pointer: 'thanks_ok'
+  'give_reply':
+    text: 'Ist ja gut... Bitteschön.'
+    events: 'give_potion,cooldown1,utilities-statistics.daily_alchemist'
+  'give_force':
+    text: 'Hey, ganz ruhig.... Nehmen sie und beehren sich mich nicht wieder'
+    events: 'give_potion,cooldown2,utilities-statistics.daily_alchemist'
+
+    #cooldowns
+  'start_cooldown1':
+    text: 'Ich bin beschäftigt'
+    conditions: 'cooldown1'
+    pointer: 'ok'
+  'start_cooldown2':
+    text: 'Ich habe keine Zeit für weitere ihrer Wünsche'
+    conditions: 'cooldown2'
+    pointer: 'ok'
+
+###################################################################
+player_options:
+  'hello_password':
+    text: 'HEY, EDMUND!'
+    conditions: 'know_password'
+    pointer: 'hello_realize'
+    events: 'start_listening'
+  # 0 blocking
+  'blocking_ask':
+    text: 'Ich benötige aber einen Trank von ihnen.'
+    pointer: 'blocking_send'
+  'blocking_go':
+    text: 'Oh Entschuldigung... Ich gehe ja schon.'
+
+  # 1 Konversation
+  'hello_help':
+    text: 'Entschuldigen sie die Störung, aber ich benötige ihre Hilfe für einen Trank.'
+    pointer: 'help_complicated'
+  'complicated_yes':
+    text: 'Ja, zu schwer für mich um es zu verstehen!'
+    pointer: 'ask_potion'
+  'complicated_no':
+    text: 'Nein, um ehrlich zu sein.'
+    pointer: 'ask_potion'
+  'complicated_potion':
+    text: 'Es wäre ein Trank mit dem ich kurzzeitig fliegen kann.'
+    pointer: 'potion'
+  'potion_please':
+    text: 'Bitte versuchen sie es!'
+    pointer: 'please_ok'
+  'potion_pay':
+    text: 'Ich werde ihnen auch alles Zahlen was nötig ist!'
+    pointer: 'pay_ok'
+  'potion_death':
+    text: 'Es geht um Leben und Tod!'
+    pointer: 'death_ok'
+  'ok_yes':
+    text: 'Jawohl, mache ich sofort!'
+    events: 'add_ask_ingredients,journal_add_ask_ingredients'
+  'ok_no':
+    text: 'Wenn das so ist, lassen Sie es besser sein. Ich schaffe das schon ohne ihre Hilfe.'
+    pointer: 'no_reply'
+  'brewing_time':
+    text: 'Wie lange dauert das noch?'
+    pointer: 'time_reply'
+
+  # 2 Get ingredients
+  'ok_ingredients':
+    text: 'Ich bin dabei!'
+
+  # 4 Next ingredients
+  'half_what':
+    text: 'Hauptsache ich bekomme den Trank. Was fehlt ihnen?'
+    conditions: 'potion_half'
+    pointer: 'half_start'
+  'half_notime':
+    text: 'Ich habe jetzt aber leider keine Zeit dafür.'
+  'salmon_what':
+    text: 'Wozu denn einen gebratenen Lachs?'
+    pointer: 'salmon_answer'
+  'ok':
+    text: 'Alles klar.'
+
+  # Take 2 Ingredients
+  'no_ingredients':
+    text: 'Leider nein, ich suche noch'
+    pointer: ''
+  'take_ingredients_2':
+    text: 'Ja, bitteschön.'
+    conditions: 'ingredient_inventory'
+    events: 'take_ingredient_1,take_ingredient_2,take_ingredient_3,take_ingredient_4,take_ingredient_5,take_ingredient_6,take_ingredient_7,take_ingredient_8,take_ingredient_9,take_ingredient_10,take_ingredient_11,take_ingredient_12,take_ingredient_13,take_ingredient_14,take_ingredient_15,take_ingredient_16,take_ingredient_17,take_ingredient_18,take_ingredient_19,take_ingredient_20,take_ingredient_fish'
+    pointer: 'ingredient_thanks'
+  'thanks_finished':
+    text: 'Wie lange benötigen sie jetzt noch?'
+    conditions: 'second_brewing'
+    pointer: 'brewing_timing'
+
+    # final
+  'potion_ask':
+    text: 'Inwiefern fast...?'
+    pointer: 'ask_reply'
+  'potion_give':
+    text: 'Mir egal, ich brauche den Trank jetzt bitte.'
+    pointer: 'give_reply'
+  'potion_force':
+    text: 'Gib jetzt her!'
+    pointer: 'give_force'
+  'thanks_ok':
+    text: 'Ähm ok. Dankeschön?!'

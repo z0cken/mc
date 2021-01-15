@@ -1,0 +1,128 @@
+quester: 'Oswald'
+first: 'start,start_busy,start_get_ingredients,start_during_ingredients,start_end_ingredients'
+stop: 'false'
+
+NPC_options:
+  # 0 Password start
+  'start':
+    text: 'Oh... H...Hallo, wie kann ich ihnen helfen?'
+    conditions: '!know_password,!get_ingredients,!got_ingredients'
+    pointer: 'start_time,start_rant,start_ask,start_nothing'
+  'time_never':
+    text: 'N..nie... er tüftelt immer an neuen Tränken. Jed...doch meist erfolglos.'
+    conditions: ''
+    pointer: 'start_rant,start_ask,leave'
+  'rant_always':
+    text: 'Edmund? Ääh ich m...meine Herr van Dickinson? Er ist nur sehr b...beschäftigt und verp...peilt.'
+    conditions: ''
+    pointer: 'start_time,start_ask,leave'
+  'ask_no':
+    text: 'Da k...kann ich ihnen leider nicht h...helfen. Die Kunst des Tränke brauens b...beherrscht nur Herr van D...dickinson.'
+    conditions: ''
+    pointer: 'leave,password_how,start_time'
+  'tell_password':
+    text: 'Sprechen sie ihn bei seinem V...vornamen an. Zumindest a...antwortet er mir dann m...meistens. Er hört z...zudem auch wirklich s...schlecht!'
+    pointer: 'thanks'
+    events: 'got_password'
+
+    #1 Konversation 1 - Password known
+  'start_busy':
+    text: 'W...Willkommen zurück %player%.! Das Lager ist so durcheinander...'
+    pointer: 'leave'
+    conditions: 'know_password,!get_ingredients,!got_ingredients'
+
+    #2 Get Ingredients
+    # (Pre Quest)
+  'start_get_ingredients':
+    text: 'L... Leider ist das Lager so gut wie l... leer. Edmund wird das nie v...verstehen'
+    pointer: 'ingredients_start,ingredients_conversation'
+    conditions: 'get_ingredients,!active_ingredients,!got_ingredients'
+  'ingredients_amount':
+    text: 'Die b...bessere Frage ist, was noch hier ist. Bis auf Schwarzp ...pulver haben wir nichts mehr auf Vorrat. Also mehr als 5 Zutaten fehlen sicherlich.'
+    pointer: 'get_gunpowder,ingredients_start'
+  'gunpowder_yes':
+    text: 'Ähm... ja, natürlich. Sob...bald sie die Zutaten haben.'
+    pointer: 'ingredients_start'
+  'ingredients_quest_start':
+    text:
+      'Ich habe dir eine Liste in dein Tagebuch geschrieben §7§o[/journal]'
+      # (During Quest)
+  'start_during_ingredients':
+    text: 'Das ging a...aber schnell, hast du Zut...taten für mich dabei?'
+    pointer: 'take_ingredients,no_ingredients'
+    conditions: 'active_ingredients,ingredients_left,!got_ingredients'
+  'ingredient_thanks':
+    text: 'Vielen D...Dank!'
+    pointer: 'thanks_finished'
+    events: 'ingredients_finished'
+  'finished_yes':
+    text: 'J...Ja, geh direkt zu Edmund, ähm... Herr van Dickinson!'
+  'start_end_ingredients':
+    text: 'Jetzt wo alle Zut...taten da sind, solltest du mir Herr van D...dickinson sprechen'
+    pointer: 'yes'
+    conditions: '!ingredients_left,got_ingredients'
+
+  'smalltalk':
+    text: 'M...mein Name i...ist Oswald. Auch w...wenn Herr van Dickinson mich immer Oskar n...nennt. I..ich kümmere mich hier nur um das L...lager.'
+    pointer: 'start_ask,leave'
+
+#################################################
+player_options:
+  #start
+  'start_time':
+    text: 'Wann ist der Alchemist denn fertig mit seiner Arbeit?'
+    conditions: 'talked_alchemist'
+    pointer: 'time_never'
+  'start_rant':
+    text: 'Ist ihr Meister immer so mürrisch?'
+    conditions: 'talked_alchemist'
+    pointer: 'rant_always'
+  'start_ask':
+    text: 'Ich benötige einen Trank.'
+    pointer: 'ask_no'
+  'start_nothing':
+    text: 'Hallo, ich bin %player%. Wer bist du und was machst du so?'
+    condition: '!talked_alchemist'
+    pointer: 'smalltalk'
+  #asked for Potion
+  'password_how':
+    text: 'Wie kann ich ihn dazu bringen, mit mir zu sprechen?'
+    condition: 'talked_alchemist'
+    pointer: 'tell_password'
+
+    # 2 get ingredients
+    # (pre Quest)
+  'ingredients_start':
+    text: 'Kein Problem, was muss ich besorgen?'
+    pointer: 'ingredients_quest_start'
+    events: 'add_active_ingredients,del_ask_ingredients,random_ingredients_1,journal_del_ask_ingredients'
+  'ingredients_conversation':
+    text: 'Das habe ich mir schon gedacht. Wie viele Zutaten fehlen denn?'
+    pointer: 'ingredients_amount'
+  'get_gunpowder':
+    text: 'Oh... Kann ich etwas von dem Schwarzpulver bekommen?'
+    pointer: 'gunpowder_yes'
+    conditions: '!gunpowder'
+    events:
+      'add_gunpowder'
+      # (during Quest)
+  'no_ingredients':
+    text: 'Leider nein, ich suche noch'
+    pointer: ''
+  'take_ingredients':
+    text: 'Ja, hier bitte.'
+    conditions: 'ingredient_inventory'
+    events: 'take_ingredient_1,take_ingredient_2,take_ingredient_3,take_ingredient_4,take_ingredient_5,take_ingredient_6,take_ingredient_7,take_ingredient_8,take_ingredient_9,take_ingredient_10,take_ingredient_11,take_ingredient_12,take_ingredient_13,take_ingredient_14,take_ingredient_15,take_ingredient_16,take_ingredient_17,take_ingredient_18,take_ingredient_19,take_ingredient_20'
+    pointer: 'ingredient_thanks'
+  'thanks_finished':
+    text: 'Das dürften dann alle Zutaten gewesen sein, oder?'
+    pointer: 'finished_yes'
+    conditions: 'active_ingredients,!ingredients_left'
+
+    #smalltalk
+  'yes':
+    text: 'Alles klar!'
+  'thanks':
+    text: 'Vielen Dank!'
+  'leave':
+    text: 'Dann will ich sie gar nicht weiter stören Oswald. Auf Wiedersehen!'

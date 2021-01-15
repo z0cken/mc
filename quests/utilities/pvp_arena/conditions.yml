@@ -1,0 +1,18 @@
+in_arena: 'location $arena_location$ $arena_radius$'
+in_teleporter: 'location $teleporter_location$ $teleporter_radius$'
+full_party: 'party %math.calc:2*$teleporter_radius$% has_entry,pvp_on every:in_teleporter,has_entry,pvp_on,!has_elytra,!death_quest count:2'
+player_in_arena: 'party $global_radius$ in_arena any:in_arena count:1'
+
+has_entry: 'item entry:$entry_amount$'
+pvp_on: 'variable %ph.pvptoggle_pvp_state% §cOn'
+not_alone_in_arena: 'party $global_radius$ in_arena every:in_arena count:2'
+too_many_in_teleporter: 'party %math.calc:2*$teleporter_radius$% in_teleporter every:in_teleporter count:3'
+has_elytra: 'item elytra'
+
+no_spam: 'tag no_spam'
+
+active_player: 'objective death_listener'
+
+death_quest: 'or has_deathloc,has_deathskip'
+has_deathloc: 'objective utilities-deathloc.death_loc_listener'
+has_deathskip: 'objective utilities-deathloc.death_skip_listener'

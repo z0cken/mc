@@ -1,0 +1,171 @@
+quester: 'Gibmir al Deingeld'
+first: 'special_start,start_empty,start'
+stop: 'false'
+NPC_options:
+  #start
+  'start_empty':
+    text: 'Ich habe heute nichts mehr zu verkaufen, aber wie kann ich ihnen behilflich sein?'
+    conditions: 'is_empty,!dailys-build_the_wall.has_special'
+    pointer: 'start_sent,start_force,nothing'
+  'start':
+    text: 'Ich habe viele Sorten von Erzen anzubieten - seht euch ruhig um! Gold ist heute vergünstigt!'
+    conditions: '!dailys-build_the_wall.has_special'
+    pointer: 'start_buy,start_sent,start_force'
+  'sent_ask':
+    text: 'Ähh.. okay.. wieviel sagte er denn, würde er benötigen?'
+    pointer: 'ask_truth,ask_lie,ask_fail'
+  'force_give':
+    text: 'Okay okay, bitte tut mir nicht weh!'
+    event: 'give_force,add_deal_done'
+  'truth_reply':
+    text: 'Natürlich.. ich denke, dass ich ihm das sicherlich eh noch schuldig bin.'
+    events: 'give_truth,add_deal_done'
+  'lie_reply':
+    text: 'Oh.. man dieser Kerl macht mich arm! Aber.. hier.. nimm es.'
+    events: 'give_lie,add_deal_done'
+  'fail_reply':
+    text: 'Diamanten? Für.. eine Stahl Spitzhacke.. ich ähh.. bezweifele das irgendwie. Was braucht er wirklich?'
+    pointer: 'ask_truth,ask_lie'
+
+    #Trading
+  'buy_offer1':
+    text: 'Wundervoll, ich biete ihnen \n - 10 Eisenerz für 2 Emeralds \n - 8 Kohle für 1 Emerald \n - 4 Gold für 1 Emerald, ein wirklich gutes Angebot!'
+    conditions: '!bought_iron,!bought_gold,!bought_coal'
+    pointer: 'buy_nothing,buy_iron,buy_coal,buy_gold'
+  'buy_offer2':
+    text: 'Wundervoll, ich biete ihnen \n - 8 Kohle für 1 Emerald \n - 4 Gold für 1 Emerald, ein wirklich gutes Angebot!'
+    conditions: 'bought_iron,!bought_gold,!bought_coal'
+    pointer: 'buy_nothing,buy_coal,buy_gold'
+  'buy_offer3':
+    text: 'Wundervoll, ich biete ihnen \n - 10 Eisenerz für 2 Emeralds \n - 8 Kohle für 1 Emerald.'
+    conditions: '!bought_iron,bought_gold,!bought_coal'
+    pointer: 'buy_nothing,buy_iron,buy_coal'
+  'buy_offer4':
+    text: 'Wundervoll, ich biete ihnen \n - 10 Eisenerz für 2 Emeralds \n - 4 Gold für 1 Emerald, ein wirklich gutes Angebot!'
+    conditions: '!bought_iron,!bought_gold,bought_coal'
+    pointer: 'buy_nothing,buy_iron,buy_iron'
+  'buy_offer5':
+    text: 'Wundervoll, ich biete ihnen 8 Kohle für 1 Emerald.'
+    conditions: 'bought_iron,bought_gold,!bought_coal'
+    pointer: 'buy_nothing,buy_coal'
+  'buy_offer6':
+    text: 'Wundervoll, ich biete ihnen 4 Gold für 1 Emerald.'
+    conditions: 'bought_iron,!bought_gold,bought_coal'
+    pointer: 'buy_nothing,buy_gold'
+  'buy_offer7':
+    text: 'Wundervoll, ich biete ihnen 10 Eisenerz für 2 Emeralds.'
+    conditions: '!bought_iron,bought_gold,bought_coal'
+    pointer: 'buy_nothing,buy_iron'
+
+  'bought_nothing':
+    text: 'Wie sie wünschen, was ist dann ihr Anliegen?'
+    pointer: 'start_sent,start_force'
+  'bought_sth':
+    text: 'Bitteschön. Wie kann ich ihnen sonst helfen?'
+    pointer: 'start_buy,start_sent,start_force,nothing'
+  'no_money_iron':
+    text: 'Sie haben dafür nicht genug Emeralds. Wie kann ich ihnen sonst helfen?'
+    conditions: '!no_money_iron'
+    pointer: 'start_buy,start_sent,start_force'
+  'no_money_coal':
+    text: 'Sie haben dafür nicht genug Emeralds. Wie kann ich ihnen sonst helfen?'
+    conditions: '!no_money_coal'
+    pointer: 'start_buy,start_sent,start_force'
+  'no_money_gold':
+    text: 'Sie haben dafür nicht genug Emeralds. Wie kann ich ihnen sonst helfen?'
+    conditions: '!no_money_gold'
+    pointer: 'start_buy,start_sent,start_force'
+
+  #Special Quest from build_the_wall
+  'special_start':
+    text: 'Grüße Effendi. Was kann ich euch heute aus meinem bescheidenen Sortiment anbieten?'
+    conditions: 'dailys-build_the_wall.has_special'
+    pointer: 'special_start_offer,special_start_direct'
+  'special_offer_reply':
+    text: 'Beim Barte des Propheten! Ein Kurat Allah. Ich glaube ihr kennt ihn als Herrgottmarin. Ich biete euch 20 Diamanten. Aus zweiter Hand aber kaum Gebrauchsspuren! Fühl mal, fühlst du die Qualität?'
+    pointer: 'special_offer1,special_offer2'
+  'special_direct_price':
+    text: '…sieht ganz nett aus. Wasletzdepreis?'
+    pointer: 'special_offer3,special_offer4'
+  'special_offer1_reply':
+    text: 'Abgemacht!'
+    events: 'utilities-statistics.daily_build_the_wall_sidequest,dailys-build_the_wall.offer1,dailys-build_the_wall.tag_del_special,dailys-build_the_wall.journal_del_find_trader,dailys-build_the_wall.journal_del_go_back,dailys-build_the_wall.journal_add_job,dailys-build_the_wall.start_cooldown'
+  'special_offer2_reply':
+    text: '22, mein letztes Angebot!'
+    conditions: '!dailys-build_the_wall.random'
+    events: 'utilities-statistics.daily_build_the_wall_sidequest,dailys-build_the_wall.offer2,dailys-build_the_wall.tag_del_special,dailys-build_the_wall.journal_del_find_trader,dailys-build_the_wall.journal_del_go_back,dailys-build_the_wall.journal_add_job,dailys-build_the_wall.start_cooldown'
+  'special_offer2_reply2':
+    text: 'Wucher! Sowas unterstütze ich nicht. 10 Diamanten und das Ding ist gut gezahlt!'
+    conditions: 'dailys-build_the_wall.random'
+    events: 'utilities-statistics.daily_build_the_wall_sidequest,dailys-build_the_wall.offer4,dailys-build_the_wall.tag_del_special,dailys-build_the_wall.journal_del_find_trader,dailys-build_the_wall.journal_del_go_back,dailys-build_the_wall.journal_add_job,dailys-build_the_wall.start_cooldown'
+  'special_offer3_reply':
+    text: 'Abgemacht!'
+    events: 'utilities-statistics.daily_build_the_wall_sidequest,dailys-build_the_wall.offer3,dailys-build_the_wall.tag_del_special,dailys-build_the_wall.journal_del_find_trader,dailys-build_the_wall.journal_del_go_back,dailys-build_the_wall.journal_add_job,dailys-build_the_wall.start_cooldown'
+  'special_offer4_reply':
+    text: 'Abgemacht!'
+    events: 'utilities-statistics.daily_build_the_wall_sidequest,dailys-build_the_wall.offer4,dailys-build_the_wall.tag_del_special,dailys-build_the_wall.journal_del_find_trader,dailys-build_the_wall.journal_del_go_back,dailys-build_the_wall.journal_add_job,dailys-build_the_wall.start_cooldown'
+#################################################################
+player_options:
+  #start
+  'start_buy':
+    text: 'Ich würde gerne etwas von euch kaufen.'
+    conditions: '!is_empty'
+    pointer: 'buy_offer1,buy_offer2,buy_offer3,buy_offer4,buy_offer5,buy_offer6,buy_offer7'
+  'start_sent':
+    text: 'Rebron schickt mich. Er sagte, benötige dringend Resourcen um eine neue Stahl Spitzhacke schmieden zu können.'
+    conditions: 'get_ores,!deal_done'
+    pointer: 'sent_ask'
+  'start_force':
+    text: 'Her mit Resourcen für Rebron!'
+    conditions: 'get_ores,!deal_done'
+    pointer: 'force_give'
+
+  'ask_truth':
+    text: 'Er braucht, 3 Eisenerz und 6 Stücke Kohle.'
+    pointer: 'truth_reply'
+  'ask_lie':
+    text: 'Er braucht 12 Eisenerz.'
+    pointer: 'lie_reply'
+  'ask_fail':
+    text: 'Er braucht 5 Diamanten.'
+    pointer: 'fail_reply'
+
+    # Trading
+  'buy_iron':
+    text: 'Ich möchte das Eisen für 2 Emeralds kaufen'
+    events: 'buy_iron'
+    pointer: 'no_money_iron,bought_sth'
+  'buy_coal':
+    text: 'Ich möchte die Kohle für 1 Emerald kaufen'
+    events: 'buy_coal'
+    pointer: 'no_money_coal,bought_sth'
+  'buy_gold':
+    text: 'Ich möchte das Gold für 1 Emerald kaufen'
+    events: 'buy_gold'
+    pointer: 'no_money_gold,bought_sth'
+  'buy_nothing':
+    text: 'Naja, eigentlich brauche ich doch nichts.'
+    conditions: ''
+    pointer: 'bought_nothing'
+  'nothing':
+    text: 'Ach, ich schaue nur ein bisschen.'
+
+  #Special Quest from build_the_wall
+  'special_start_offer':
+    text: 'Hallo, ich möchte nichts kaufen, im Gegenteil. Was kannst du mir für diesen Stein anbieten?'
+    pointer: 'special_offer_reply'
+  'special_start_direct':
+    text: 'Spar dir das Geschwafel. Willst du den Klunker hier?'
+    pointer: 'special_direct_price'
+  'special_offer1':
+    text: 'Jaja, ich fühle ja schon. Klingt nach einem guten Angebot. Hand drauf!'
+    pointer: 'special_offer1_reply'
+  'special_offer2':
+    text: '25 Diamanten.'
+    pointer: 'special_offer2_reply,special_offer2_reply2'
+  'special_offer3':
+    text: '40 Lapislazuli'
+    pointer: 'special_offer3_reply'
+  'special_offer4':
+    text: '10 Diamanten'
+    pointer: 'special_offer4_reply'

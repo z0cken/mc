@@ -1,0 +1,11 @@
+# ============================================================================================ #
+# === Tutorial === #
+
+# Digger Quest
+get_DQ_dirt: 'block dirt -$dirt_amount$ events:DQ_dirtFinished,DQ_finished conditions:DQ_isPlayerInPit'
+get_DQ_sand: 'block sand -$sand_amount$ events:DQ_sandFinished,DQ_finished conditions:DQ_isPlayerInPit'
+get_DQ_gravel: 'block gravel -$gravel_amount$ events:DQ_gravelFinished,DQ_finished conditions:DQ_isPlayerInPit'
+
+# Miner Quest
+get_MQ_stone: 'block stone -$stone_amount$ events:MQ_stoneFinished,MQ_finished conditions:MQ_isPlayerInQuarry'
+get_MQ_diorite: 'block diorite -$diorite_amount$ events:MQ_dioriteFinished,MQ_finished conditions:MQ_isPlayerInQuarry'

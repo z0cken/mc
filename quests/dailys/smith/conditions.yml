@@ -1,0 +1,29 @@
+blocked: 'objective blocked'
+cooldown: 'objective cooldown'
+get_ores: 'tag get_ores'
+deal_done: 'tag deal_done'
+gave_items: 'tag gave_items'
+
+bought_iron: 'objective bought_iron'
+bought_gold: 'objective bought_gold'
+bought_coal: 'objective bought_coal'
+is_empty: 'and bought_coal,bought_gold,bought_iron'
+
+no_money_iron: 'item emerald:2'
+no_money_coal: 'item emerald:1'
+no_money_gold: 'item emerald:1'
+
+has_items: 'item iron:3,coal:6'
+
+#minerquest
+minerquest_active: 'tag monthly-lost_miner.minerquest'
+wood_active: 'objective special_wood'
+has_wood: 'item corewood'
+get_wood: 'tag get_wood'
+get_anorexium: 'tag get_anorexium'
+has_bone: 'item utilities-deathloc.horse_bone'
+wither_coal: 'tag wither_coal'
+has_wither_coal: 'item wither_coal:$coal_head_amount$'
+coal_waiting: 'objective coal_waiting'
+get_pick: 'tag pick_done'
+has_pick: 'item anorexium_pickaxe'

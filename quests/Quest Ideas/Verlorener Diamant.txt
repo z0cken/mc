@@ -1,0 +1,45 @@
+
+Questname:  Velorener Diamant
+Quester:    William
+Questtyp:   Einmalig
+Location:   Fischerdorf?
+
+Background Story:
+    William ist ein Pirat, der von einer Kaperfahrt zurückkam.
+    Kurz vor dem Ufer kam er mit seinem Schiff in einen Strudel, den das Schiff auf den Meeresboden zog.
+    Er verlor einen Diamant, den er bei der Kaperfahrt erbeutet hatte.
+    Diesen Diamant wollte er an einen Ring schmieden lassen als Hochzeitsgeschenk für seine Frau.
+    Der Diamant befindet sich in seiner Schatzkiste in dem Schiffswrack.
+
+Aufgabe:
+    Berge den Diamant auf dem Wrack und bringe ihn zu William
+
+Belohnung:
+    Alle items, außer Williams Diamant, die in der Kiste sind
+
+Schatzkiste Inhalt:
+    1x  William's Diamant (Questitem)
+
+    3x  Diamond
+    11x Gold Bar
+    5x  Iron Block
+    8x  Lapis Lazuli
+    52x Oak Log
+    7x  Rum
+
+    Rum: (Custom Item)
+        Name:           Rum
+        Item (Texture): Potion of Strength
+        Hover text:     Starkes alkoholisches Getränk
+        Effekt:         Strength II, Regeneration I (2 minutes)
+        Nebeneffekt:    Neusea (1 Minute)
+
+        ODER:
+        Effekt:             Strength II, Regeneration I (3 minutes)
+        danach Nebeneffekt: Neusea (1 Minute)
+        danach Nebeneffekt: Weakness II (1 Minute)
+       
+
+
+
+
