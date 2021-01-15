@@ -2,13 +2,9 @@ package com.z0cken.mc.end.egg;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 
 public class MagicEggMining extends MagicEgg {
 

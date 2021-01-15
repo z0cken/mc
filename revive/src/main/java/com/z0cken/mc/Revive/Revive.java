@@ -25,7 +25,7 @@ public class Revive extends JavaPlugin {
         this.getCommand("respawn").setExecutor(new RespawnCommand());
 
         try {
-            this.nmsBridge = new NMSBridge("v1_13_R2");
+            this.nmsBridge = new NMSBridge("v1_16_R3");
         } catch (Exception e) {
             System.err.println("NMS version hat sich geändert. Plugin update?");
             nmsBridge = null;

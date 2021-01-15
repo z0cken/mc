@@ -2,7 +2,7 @@ package com.z0cken.mc.shout.gui.menu;
 
 import com.z0cken.mc.shout.PCS_Shout;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftInventoryCustom;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftInventoryCustom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

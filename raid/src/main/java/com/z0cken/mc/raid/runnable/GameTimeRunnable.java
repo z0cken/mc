@@ -2,7 +2,7 @@ package com.z0cken.mc.raid.runnable;
 
 import com.z0cken.mc.raid.GameState;
 import com.z0cken.mc.raid.PCS_Raid;
-import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

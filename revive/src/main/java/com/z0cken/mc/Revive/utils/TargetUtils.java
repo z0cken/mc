@@ -1,6 +1,6 @@
 package com.z0cken.mc.Revive.utils;
 
-import net.minecraft.server.v1_13_R2.IEntitySelector;
+import net.minecraft.server.v1_16_R3.IEntitySelector;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 public class TargetUtils {
 
-    public static final Predicate<net.minecraft.server.v1_13_R2.Entity> targetPredicate = IEntitySelector.f.and(IEntitySelector.a.and(net.minecraft.server.v1_13_R2.Entity::isInteractable));
+    public static final Predicate<net.minecraft.server.v1_16_R3.Entity> targetPredicate = IEntitySelector.f.and(IEntitySelector.a.and(net.minecraft.server.v1_16_R3.Entity::isInteractable));
 
     public static LivingEntity getTargetEntity(LivingEntity entity) {
        return getTargetEntity(entity, 5);
@@ -28,9 +28,9 @@ public class TargetUtils {
         while(rangeToGo > 0) {
             System.out.println(rangeToGo);
             //Search for stuff inside the hitbox
-            List<net.minecraft.server.v1_13_R2.Entity> list = ((CraftWorld)location.getWorld()).getHandle().getEntities(((CraftEntity)entity).getHandle(), axisAlignedBB.d(steps, steps, steps), targetPredicate);
+            List<net.minecraft.server.v1_16_R3.Entity> list = ((CraftWorld)location.getWorld()).getHandle().getEntities(((CraftEntity)entity).getHandle(), axisAlignedBB.d(steps, steps, steps), targetPredicate);
 
-            for(net.minecraft.server.v1_13_R2.Entity entity1 : list) {
+            for(net.minecraft.server.v1_16_R3.Entity entity1 : list) {
                 System.out.println(entity1);
                 if(entity1 instanceof EntityLiving) {
                     System.out.println("Found!: " + entity1);

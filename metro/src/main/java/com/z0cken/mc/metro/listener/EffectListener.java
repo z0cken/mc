@@ -21,7 +21,7 @@ public class EffectListener implements Listener {
     public void onBreak(BlockBreakEvent event) {
         if(event.getBlock().getType() == Material.NETHER_QUARTZ_ORE && Metro.getInstance().getAppropriateEffect().hasFlag("pigmen")) {
             final int range = MetroEffect.getPigmenRange();
-            event.getPlayer().getNearbyEntities(range, range, range).stream().filter(entity -> entity.getType() == EntityType.PIG_ZOMBIE).forEach(entity -> {
+            event.getPlayer().getNearbyEntities(range, range, range).stream().filter(entity -> entity.getType() == EntityType.ZOMBIFIED_PIGLIN).forEach(entity -> {
                 ((PigZombie)entity).setAngry(true);
                 ((PigZombie)entity).setTarget(event.getPlayer());
             });

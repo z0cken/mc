@@ -6,13 +6,12 @@ import com.z0cken.mc.end.PCS_End;
 import com.z0cken.mc.end.egg.MagicEggType;
 import com.z0cken.mc.progression.PCS_Progression;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.minecraft.server.v1_15_R1.EnderDragonBattle;
-import net.minecraft.server.v1_15_R1.WorldProviderTheEnd;
+import net.minecraft.server.v1_16_R3.EnderDragonBattle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,13 +42,13 @@ public class DragonPhase extends EndPhase implements Listener {
         clearDragons();
         getEnd().rollback();
 
-        WorldProviderTheEnd worldProviderTheEnd = (WorldProviderTheEnd) ((CraftWorld) getEnd().getWorld()).getHandle().worldProvider;
+        final EnderDragonBattle dragonBattle = ((CraftWorld) getEnd().getWorld()).getHandle().getDragonBattle();
 
         //Respawn dragon
         try {
             Method m = EnderDragonBattle.class.getDeclaredMethod("a", List.class);
             m.setAccessible(true);
-            m.invoke(worldProviderTheEnd.o(), Collections.emptyList());
+            m.invoke(dragonBattle, Collections.emptyList());
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }

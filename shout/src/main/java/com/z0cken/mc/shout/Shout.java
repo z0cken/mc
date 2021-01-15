@@ -1,10 +1,8 @@
 package com.z0cken.mc.shout;
 
-import com.z0cken.mc.shout.config.ConfigManager;
 import com.z0cken.mc.shout.config.ShoutManager;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class Shout {

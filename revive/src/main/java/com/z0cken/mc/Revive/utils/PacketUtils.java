@@ -1,10 +1,10 @@
 package com.z0cken.mc.Revive.utils;
 
-import net.minecraft.server.v1_13_R2.DataWatcher;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R3.DataWatcher;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
