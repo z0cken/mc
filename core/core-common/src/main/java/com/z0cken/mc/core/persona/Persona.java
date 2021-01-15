@@ -194,10 +194,11 @@ public final class Persona {
     public enum Badge {
         EARLY_SUPPORTER("Früher Vogel", ChatColor.DARK_AQUA),
         MINION("Unverbesserlich", ChatColor.YELLOW),
-        BEDWARS("Fiese Fliese", ChatColor.GRAY);
+        BEDWARS("Fiese Fliese", ChatColor.GRAY),
+        COVID("Pr0mart Preller", ChatColor.GOLD);
 
-        private String title;
-        private ChatColor color;
+        private final String title;
+        private final ChatColor color;
 
         Badge(String title, ChatColor color) {
             this.title = title;
