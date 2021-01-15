@@ -1,0 +1,35 @@
+world: world
+entry-check-interval: 10
+control-mobs: false
+disconnect:
+  timeout: 1
+  min-health: 4
+lapis:
+  amount: 8
+  interval-hours: 4
+experience:
+  per-lapis: 4
+  per-activation: 100
+messages:
+  prefix: '§f[§6Metro§f]'
+  error: "{PREFIX} §cEin Fehler ist aufgetreten!"
+  header: "§7-------< §6Metro - {TITLE} §7>-------"
+  experience: "{PREFIX} §7Du hast §f{AMOUNT} XP §7für {REASON} erhalten!"
+  leaderboard: "§7> {INDEX} - §f{PLAYER} §7§l/ {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  info:
+  - "§7------------< §6Metro §7>------------"
+  - "§7> Aktuelle Rate: §f{DAILYRATE} Lapis / Tag"
+  - "§7> Stationen: {#[STATIONS-ACTIVE][§aAktiv]#} §7§l/ {#[STATIONS-INACTIVE][§cInaktiv]#}"
+  - "§7> Statistik global: {#[TEXT|§6Erfahrungspunkte][§6{XP-G}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS-G}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS-G}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME-G}]#}"
+  - "§7> Statistik persönlich: {#[TEXT|§6Erfahrungspunkte][§6{XP}]#} §7§l/ {#[TEXT|§9Lapis Lazuli][§9{LAPIS}]#} §7§l/ {#[TEXT|§cGetötete Monster][§c{KILLS}]#} §7§l/ {#[TEXT|§fSpielzeit in h][§f{TIME}]#}"
+  - "§7> Siehe auch: {#[RUN|/metro list][§flist]#} §7§l/ {#[RUN|/metro top][§ftop]#} §7§l/ {#[RUN|/metro toggle][§ftoggle]#} §7§l/ {#[RUN|/metro map][§fmap]#}"
+  activation: "{PREFIX} §f{STATION} §7wurde von {#[PLAYERLIST][§f{PLAYERTEXT}]#} §7aktiviert!"
+  deactivation: '{PREFIX} §7Die Station §f{STATION} wurde mangels Lapis deaktiviert§7!'
+  xp-actionbar: "§7+ §a{AMOUNT} XP"
+  list: "{PREFIX} Es sind {VALUE} Spieler in der Metro! \n{LIST}"
+  teleport: "{PREFIX} Teleports sind in der Metro deaktiviert"
+  deathjoin: "{PREFIX} §cDu hast dich im Kampf ausgeloggt und wurdest getötet!"
+  deathquit: "{PREFIX} §c{PLAYER} hat sich mit < {VALUE} HP ausgeloggt und wurde getötet!"
+  money: "{PREFIX} Du hast {VALUE} Schekel durch die Metro erhalten!"
+  toggle: "{PREFIX} Du hast die positiven Effekte der Metro {VALUE}"
+  map: "{PREFIX} Du musst eine Karte in der Hand halten!"
