@@ -4,90 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.z0cken.mc.economy</groupId>
-    <artifactId>PCS_Economy</artifactId>
+    <parent>
+        <groupId>com.z0cken.mc</groupId>
+        <artifactId>mc</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>economy</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <distributionManagement>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
-        </repository>
-    </distributionManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <version>3.7.0</version>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                    <relocations>
-                        <relocation>
-                            <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>com.z0cken.mc.economy.acf</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <!--VAULT-REPO IST MOMENTAN OFFLINE, DAHER KURZER ERSATZ ZU ESSX-->
-        <!--<repository>
-            <id>vault-repo</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
-        </repository>-->
-        <repository>
-            <id>essx-repo</id>
-            <url>https://ci.ender.zone/plugin/repository/everything</url>
-        </repository>
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>gson</id>
-            <url>https://mvnrepository.com/artifact/com.google.code.gson/gson</url>
-        </repository>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://node2.z0cken.com:8081/artifactory/z0cken</url>
-        </repository>
-    </repositories>
 
     <dependencies>
     <dependency>
-        <groupId>org.spigotmc</groupId>
+        <groupId>com.z0cken.mc.thirdparty.executable</groupId>
         <artifactId>spigot</artifactId>
-        <version>1.13.2-R0.1-SNAPSHOT</version>
-        <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>org.json</groupId>
@@ -122,18 +51,14 @@
     <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>27.1-jre</version>
     </dependency>
     <dependency>
         <groupId>com.z0cken.mc.core</groupId>
-        <artifactId>PCS_Core-Bukkit</artifactId>
-        <version>LATEST</version>
-        <scope>provided</scope>
+        <artifactId>core-bukkit</artifactId>
     </dependency>
     <dependency>
         <groupId>co.aikar</groupId>
         <artifactId>acf-bukkit</artifactId>
-        <version>0.5.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
 </project>

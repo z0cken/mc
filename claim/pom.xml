@@ -4,45 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.z0cken.mc</groupId>
-    <artifactId>PCS_Claim</artifactId>
+    <parent>
+        <groupId>com.z0cken.mc</groupId>
+        <artifactId>mc</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>claim</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <maven.compiler.source>9</maven.compiler.source>
-        <maven.compiler.target>9</maven.compiler.target>
-    </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://78.31.67.201:8081/artifactory/z0cken</url>
-        </repository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://78.31.67.201:8081/artifactory/z0cken</url>
-        </repository>
-        <repository>
-            <id>sk89q-repo</id>
-            <url>http://maven.sk89q.com/repo/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.z0cken.mc.thirdparty.executable</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.14.4-SNAPSHOT</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.z0cken.mc.core</groupId>
-            <artifactId>PCS_Core-Bukkit</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <artifactId>core-bukkit</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>

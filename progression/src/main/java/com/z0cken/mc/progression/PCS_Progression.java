@@ -41,7 +41,7 @@ public class PCS_Progression extends JavaPlugin implements Listener {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        try { Class.forName("com.z0cken.mc.progression.DatabaseHelper");
+        try { Class.forName("com.z0cken.mc.PCS_Progression.DatabaseHelper");
         } catch (ClassNotFoundException e) { e.printStackTrace(); }
     }
 

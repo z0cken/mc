@@ -4,48 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.z0cken.mc</groupId>
-    <artifactId>PCS_Checkpoint</artifactId>
+    <parent>
+        <groupId>com.z0cken.mc</groupId>
+        <artifactId>mc</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>checkpoint</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <distributionManagement>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://78.31.67.201:8081/artifactory/z0cken</url>
-        </repository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>z0cken-repo</id>
-            <url>http://78.31.67.201:8081/artifactory/z0cken</url>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.12-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-api</artifactId>
-            <version>1.12-SNAPSHOT</version>
-            <type>javadoc</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.z0cken.mc.core</groupId>
-            <artifactId>PCS_Core-Bungee</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <artifactId>core-bungee</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -91,22 +66,6 @@
                 </includes>
             </resource>
         </resources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 </project>

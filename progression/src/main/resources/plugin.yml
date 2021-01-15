@@ -1,4 +1,4 @@
-name: PCS_Progression
+name: progression
 author: Flare
 version: ${project.version}
 main: com.z0cken.mc.progression.PCS_Progression
