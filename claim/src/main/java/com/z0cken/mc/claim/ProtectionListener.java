@@ -24,9 +24,33 @@ import java.util.*;
 
 class ProtectionListener implements Listener {
 
-    private static final Set<Material> INTERACTABLE_BLOCKS = Set.of(
-        Material.ANVIL, Material.DAMAGED_ANVIL, Material.CHIPPED_ANVIL, Material.CHEST, Material.TRAPPED_CHEST, Material.BARREL, Material.DISPENSER, Material.DROPPER, Material.NOTE_BLOCK, Material.CAULDRON, Material.BREWING_STAND,
-        Material.FURNACE, Material.ENCHANTING_TABLE, Material.JUKEBOX, Material.HOPPER, Material.COMPARATOR, Material.REPEATER, Material.TRIPWIRE, Material.BEACON, Material.FIRE, Material.LEVER, Material.CAKE,
+    private static final Set<Material> INTERACTABLE_BLOCKS = EnumSet.of(
+        //Various
+        Material.ANVIL,
+        Material.DAMAGED_ANVIL,
+        Material.CHIPPED_ANVIL,
+        Material.CHEST,
+        Material.TRAPPED_CHEST,
+        Material.BARREL,
+        Material.DISPENSER,
+        Material.DROPPER,
+        Material.NOTE_BLOCK,
+        Material.CAULDRON,
+        Material.BREWING_STAND,
+        Material.FURNACE,
+        Material.ENCHANTING_TABLE,
+        Material.JUKEBOX,
+        Material.HOPPER,
+        Material.COMPARATOR,
+        Material.REPEATER,
+        Material.TRIPWIRE,
+        Material.BEACON,
+        Material.FIRE,
+        Material.LEVER,
+        Material.CAKE,
+        Material.SMOKER,
+        Material.BLAST_FURNACE,
+        Material.LECTERN,
 
         //Buttons
         Material.ACACIA_BUTTON,
@@ -124,7 +148,7 @@ class ProtectionListener implements Listener {
         Material.FLINT_AND_STEEL,
         Material.BONE_MEAL,
         Material.FIRE_CHARGE,
-        
+
         Material.WOODEN_HOE,
         Material.STONE_HOE,
         Material.GOLDEN_HOE,
