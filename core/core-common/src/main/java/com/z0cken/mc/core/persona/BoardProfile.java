@@ -129,24 +129,28 @@ public class BoardProfile {
 
     /** @noinspection SpellCheckingInspection*/
     public enum Mark {
-        SCHWUCHTEL("Schwuchtel", '●', ChatColor.WHITE, 2, 5),
-        NEUSCHWUCHTEL("Neuschwuchtel", '●', ChatColor.LIGHT_PURPLE, 1, 2),
-        ALTSCHWUCHTEL("Altschwuchtel", '●', ChatColor.DARK_GREEN, 3, 10),
-        ADMIN("Admin", '●', ChatColor.GOLD, 1337, Integer.MAX_VALUE),
-        GEBANNT("Gebannt", 'X', ChatColor.GRAY, 0, 0),
-        MODERATOR("Moderator", '●', ChatColor.DARK_BLUE, 3, 10),
-        FLIESENTISCH("Fliesentischbesitzer", '●', ChatColor.GRAY, 0, 1),
-        LEGENDE("Lebende Legende", '✫', ChatColor.DARK_AQUA, 3, 10),
-        WICHTEL("Wichtel", '✉', ChatColor.RED, 3, 10),
-        SPENDER("Edler Spender", '⦿', ChatColor.DARK_AQUA, 3, 10),
-        MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.GREEN, 3, 10),
-        ALTMOD("Alt-Moderator", '●', ChatColor.BLUE, 3, 10),
-        COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.DARK_RED, 3, 10);
+        SCHWUCHTEL("Schwuchtel", '●', ChatColor.WHITE, 3, 5),
+        NEUSCHWUCHTEL("Neuschwuchtel", '●', ChatColor.of("#e108e9"), 2, 2),
+        ALTSCHWUCHTEL("Altschwuchtel", '●', ChatColor.of("#5bb91c"), 5, 10),
+        ADMIN("Admin", '●', ChatColor.of("#ff9900"), 1337, Integer.MAX_VALUE),
+        GEBANNT("Gebannt", '●', ChatColor.of("#444444"), 0, 0),
+        MODERATOR("Moderator", '●', ChatColor.of("#008fff"), 5, 10),
+        FLIESENTISCH("Fliesentischbesitzer", '●', ChatColor.of("#6c432b"), 1, 1),
+        LEGENDE("Lebende Legende", '✫', ChatColor.of("#1cb992"), 3, 10),
+        WICHTEL("Wichtel", '✉', ChatColor.of("#c52b2f"), 3, 10),
+        SPENDER("Edler Spender", '⦿', ChatColor.of("#1cb992"), 3, 10),
+        MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.of("#addc8d"), 4, 10),
+        ALTMOD("Alt-Moderator", '●', ChatColor.of("#7fc7ff"), 5, 10),
+        NUTZERBOT("Nutzer-Bot", '●', ChatColor.of("#10366f"), 3, 10),
+        SYSTEMBOT("System-Bot", '●', ChatColor.of("#ffc166"), 3, 10),
+        ALTHELFER("Alt-Helfer", '●', ChatColor.of("#ea9fa1"), 5, 10),
+        COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.of("#c52b2f"), 5, 10);
 
-        private String title;
-        private char symbol;
-        private ChatColor color;
-        private int startInvites, maxInvites;
+        private final String title;
+        private final char   symbol;
+        private final ChatColor color;
+        private final int       startInvites;
+        private final int maxInvites;
 
         Mark(String title, char symbol, ChatColor color, int startInvites, int maxInvites) {
             this.title = title;
@@ -182,9 +186,9 @@ public class BoardProfile {
     }
 
     public enum Team {
-        BLUE(ChatColor.BLUE), RED(ChatColor.RED);
+        BLUE(ChatColor.of("#337fd2")), RED(ChatColor.of("#c52b2f"));
 
-        private ChatColor color;
+        private final ChatColor color;
 
         Team(ChatColor color) {
             this.color = color;

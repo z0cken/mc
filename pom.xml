@@ -80,9 +80,8 @@
             </dependency>
             <dependency>
                 <groupId>net.md-5</groupId>
-                <artifactId>bungeecord-chat</artifactId>
-                <version>1.12-SNAPSHOT</version>
-                <type>jar</type>
+                <artifactId>bungeecord-api</artifactId>
+                <version>1.16-R0.4</version>
                 <scope>provided</scope>
             </dependency>
 
