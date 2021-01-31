@@ -177,6 +177,8 @@ class ProtectionListener implements Listener {
         Material.TNT_MINECART
     );
 
+    private static final PCS_Claim PLUGIN = PCS_Claim.getInstance();
+
     private static boolean instantiated;
     private static final Map<Player, Integer> mutedFor = Collections.synchronizedMap(new HashMap<>());
     private static final Map<TNTPrimed, Player> explosives = new HashMap<>();
@@ -191,11 +193,11 @@ class ProtectionListener implements Listener {
                 mutedFor.replaceAll((player, integer) -> integer--);
                 mutedFor.values().removeAll(Collections.singleton(0));
             }
-        }.runTaskTimerAsynchronously(PCS_Claim.getInstance(), 100, 20);
+        }.runTaskTimerAsynchronously(PLUGIN, 100, 20);
     }
 
     private void sendProtected(Player recipient, Claim.Owner owner) {
-        recipient.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", owner.getName()).build(PCS_Claim.getInstance().getConfig().getString("messages.protected")));
+        recipient.spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", owner.getName()).build(PLUGIN.getConfig().getString("messages.protected")));
         mutedFor.remove(recipient);
     }
 
@@ -208,7 +210,7 @@ class ProtectionListener implements Listener {
     }
 
     private void muteFor(Player player) {
-        mutedFor.put(player, PCS_Claim.getInstance().getConfig().getInt("mute-duration"));
+        mutedFor.put(player, PLUGIN.getConfig().getInt("mute-duration"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -223,7 +225,7 @@ class ProtectionListener implements Listener {
         if(claim.canBuild(player)) {
             if(newClaim) {
                 event.setCancelled(true);
-                if(player.equals(claim.getOwner())) player.spigot().sendMessage(MessageBuilder.DEFAULT.build(PCS_Claim.getInstance().getConfig().getString("messages.denied-self")));
+                if(player.equals(claim.getOwner())) player.spigot().sendMessage(MessageBuilder.DEFAULT.build(PLUGIN.getConfig().getString("messages.denied-self")));
                 else sendProtected(player, claim.getOwner());
             }
         } else {
@@ -258,7 +260,7 @@ class ProtectionListener implements Listener {
                         final Optional<Entity> entity = block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2).stream().filter(e -> e instanceof TNTPrimed).findAny();
                         entity.ifPresent(e -> explosives.put((TNTPrimed) e, player));
                     }
-                }.runTaskLater(PCS_Claim.getInstance(), 1);
+                }.runTaskLater(PLUGIN, 1);
             }
         }
         else if(event.getAction() == Action.PHYSICAL) muteFor(player);
@@ -439,9 +441,19 @@ class ProtectionListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
-        if(event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL || event.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
+        final PlayerTeleportEvent.TeleportCause cause = event.getCause();
+        if(cause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+                || cause == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT
+                || cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+
             final Claim claim = PCS_Claim.getClaim(event.getTo().getChunk());
-            if(claim != null && !claim.canBuild(event.getPlayer())) event.setCancelled(true);
+
+            if(claim != null && !claim.canBuild(event.getPlayer())) {
+                event.setCancelled(true);
+                if(cause == PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+                    event.getPlayer().spigot().sendMessage(MessageBuilder.DEFAULT.define("NAME", claim.getOwner().getName()).build(PLUGIN.getConfig().getString("messages.portal-claimed")));
+                }
+            }
         }
     }
 
