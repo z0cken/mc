@@ -282,15 +282,11 @@ public final class Metro {
         return excludedPlayers.contains(player);
     }
 
-    public boolean setExcluded(Player player, boolean value) {
+    public void setExcluded(Player player, boolean value) {
         if(value) {
             final Set<PotionEffect> potionEffects = Metro.getInstance().getAppropriateEffect().getPotionEffects();
-            if(potionEffects.stream().map(PotionEffect::getType).noneMatch(POSITIVE_EFFECTS::contains)) return false;
-            potionEffects.forEach(effect -> player.removePotionEffect(effect.getType()));
+            potionEffects.stream().map(PotionEffect::getType).filter(POSITIVE_EFFECTS::contains).forEach(player::removePotionEffect);
             excludedPlayers.add(player);
-            return true;
-        }
-        else excludedPlayers.remove(player);
-        return true;
+        } else excludedPlayers.remove(player);
     }
 }

@@ -71,8 +71,6 @@ public class MetroEffect implements Listener {
     public void activate() {
         metro.getWorld().setDifficulty(difficulty);
 
-        Bukkit.getOnlinePlayers().forEach(p -> Metro.getInstance().setExcluded(p, false));
-
         if (!potionEffects.isEmpty()) {
             tasks.add(new BukkitRunnable() {
                 @Override
@@ -80,7 +78,7 @@ public class MetroEffect implements Listener {
                     Bukkit.getOnlinePlayers().forEach(p -> {
                         potionEffects.forEach(potionEffect -> {
                             //Return if excluded or effect is negative while player has bypass
-                            if(Metro.getInstance().isExcluded(p) || !Metro.POSITIVE_EFFECTS.contains(potionEffect) && !p.hasPermission("pcs.metro.bypass")) return;
+                            if(Metro.getInstance().isExcluded(p) || !Metro.POSITIVE_EFFECTS.contains(potionEffect.getType()) && p.hasPermission("pcs.metro.bypass")) return;
 
                             if(!p.hasPotionEffect(potionEffect.getType())) p.addPotionEffect(potionEffect);
                         });
