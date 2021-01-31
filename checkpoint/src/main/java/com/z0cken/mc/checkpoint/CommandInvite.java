@@ -123,6 +123,8 @@ class CommandInvite extends Command {
                                     if (guest != null) {
                                         guest.sendMessage(MessageBuilder.DEFAULT.define("NAME", player.getName()).build(PCS_Checkpoint.getConfig().getString("messages.invite.confirmed-guest")));
                                     }
+
+                                    PCS_Checkpoint.getInstance().checkPlayer(player.getUniqueId());
                                 } else {
                                     for (String s : cfg.getStringList("prompt")) {
                                         player.sendMessage(builder.build(s));

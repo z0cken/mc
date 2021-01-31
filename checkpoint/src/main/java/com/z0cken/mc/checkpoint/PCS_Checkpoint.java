@@ -145,14 +145,15 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     }
 
     void checkPlayer(UUID uuid) {
-        ProxiedPlayer player = getProxy().getPlayer(uuid);
-        if(player == null) return;
+        final ProxiedPlayer player = getProxy().getPlayer(uuid);
 
+        PersonaAPI.invalidate(uuid);
         final Persona persona = PersonaAPI.getPersona(uuid);
+
         if(persona.isVerified()) {
             persona.getBoardProfile().thenAcceptAsync(profile -> {
 
-                if(profile.isBanned() && !player.hasPermission("pcs.checkpoint.bypass")) {
+                if(player != null && profile.isBanned() && !player.hasPermission("pcs.checkpoint.bypass")) {
                     LocalDateTime bannedUntil = profile.getBannedUntil();
 
                     String msg;
@@ -169,7 +170,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
                     return;
                 }
 
-                BoardProfile.Mark mark = profile.getMark();
+                final BoardProfile.Mark mark = profile.getMark();
 
                 luckPermsApi.getUserManager().loadUser(uuid).thenAcceptAsync(user -> {
                     String add = null, remove = null;
