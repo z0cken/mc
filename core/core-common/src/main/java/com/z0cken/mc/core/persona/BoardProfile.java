@@ -127,7 +127,7 @@ public class BoardProfile {
         return benis < 0 ? "-" + result : result;
     }
 
-    /** @noinspection SpellCheckingInspection*/
+    @SuppressWarnings("SpellCheckingInspection")
     public enum Mark {
         SCHWUCHTEL("Schwuchtel", '●', ChatColor.WHITE, 3, 5),
         NEUSCHWUCHTEL("Neuschwuchtel", '●', ChatColor.of("#e108e9"), 2, 2),
@@ -141,10 +141,10 @@ public class BoardProfile {
         SPENDER("Edler Spender", '⦿', ChatColor.of("#1cb992"), 3, 10),
         MITTELALTSCHWUCHTEL("Mittelaltschwuchtel", '●', ChatColor.of("#addc8d"), 4, 10),
         ALTMOD("Alt-Moderator", '●', ChatColor.of("#7fc7ff"), 5, 10),
+        COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.of("#c52b2f"), 5, 10),
         NUTZERBOT("Nutzer-Bot", '●', ChatColor.of("#10366f"), 3, 10),
         SYSTEMBOT("System-Bot", '●', ChatColor.of("#ffc166"), 3, 10),
-        ALTHELFER("Alt-Helfer", '●', ChatColor.of("#ea9fa1"), 5, 10),
-        COMMUNITYHELFER("Communityhelfer", '❤', ChatColor.of("#c52b2f"), 5, 10);
+        ALTHELFER("Alt-Helfer", '●', ChatColor.of("#ea9fa1"), 5, 10);
 
         private final String title;
         private final char   symbol;
@@ -165,11 +165,11 @@ public class BoardProfile {
         }
 
         public String getTitle() {
-            return color + title;
+            return title;
         }
 
-        public String getSymbol() {
-            return color.toString() + symbol;
+        public char getSymbol() {
+            return symbol;
         }
 
         public ChatColor getColor() {

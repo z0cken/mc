@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 import javax.annotation.Nonnull;
 import java.sql.SQLException;
@@ -86,13 +87,17 @@ public final class Persona {
                 e.printStackTrace();
                 return NOT_AVAILABLE;
             }
+            if(profile == null) return NOT_AVAILABLE;
 
-            return profile == null ? NOT_AVAILABLE : new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT
+            final TextComponent mark = new TextComponent(profile.getMark().getTitle());
+            mark.setColor(profile.getMark().getColor());
+
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageBuilder.DEFAULT
                     .define("NAME", anonymized ? ChatColor.MAGIC + "XXXXXXXX" : boardName)
                     .define("BENIS", (profile.getBenis() < 0 ? ChatColor.RED : "") + profile.getBenisFormatted())
-                    .define("MARK", profile.getMark().getColor() + profile.getMark().getTitle())
+                    .define("MARK", mark)
                     .define("BADGES", badgeText.toString())
-                    .build(memberBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString()))));
+                    .build(memberBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString())))));
         } else if(isGuest()) {
 
             String hostName = null;
@@ -100,11 +105,11 @@ public final class Persona {
             } catch (SQLException e) { e.printStackTrace(); }
             if(hostName == null) hostName = ChatColor.RED + "- Nicht verfügbar -";
 
-            return  new HoverEvent(HoverEvent.Action.SHOW_TEXT, MessageBuilder.DEFAULT
+            return  new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(MessageBuilder.DEFAULT
                     .define("NAME", hostName)
                     .define("DATE", new SimpleDateFormat("dd.MM.yy").format(new java.util.Date(invited)))
                     .define("BADGES", badgeText.toString())
-                    .build(guestBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString()))));
+                    .build(guestBubble.stream().collect(Collectors.joining(ChatColor.RESET.toString())))));
         } else return NOT_VERIFIED;
     }
 
@@ -140,7 +145,10 @@ public final class Persona {
                     final BoardProfile profile = getBoardProfile().getNow(null);
                     if(profile != null) {
                         if(CoreBridge.getPlugin().getConfigBridge(ConfigurationType.CORE).getBoolean("display-team") && profile.getTeam() != null) component.setColor(profile.getTeam().getColor());
-                        component.addExtra(" " + profile.getMark().getSymbol());
+
+                        final TextComponent suffix = new TextComponent(" " + profile.getMark().getSymbol());
+                        suffix.setColor(profile.getMark().getColor());
+                        component.addExtra(suffix);
                     }
                 }
 

@@ -4,6 +4,7 @@ import com.z0cken.mc.core.Database;
 import com.z0cken.mc.core.persona.PersonaAPI;
 import com.z0cken.mc.core.util.MessageBuilder;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.*;
@@ -72,10 +73,13 @@ class DatabaseHelper {
         PersonaAPI.invalidate(uuid);
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
-            PersonaAPI.getPersona(uuid).getBoardProfile().thenAcceptAsync(boardProfile -> {
+            PersonaAPI.getPersona(uuid).getBoardProfile().thenAcceptAsync(profile -> {
                 if(player != null) {
-                    MessageBuilder builder = MessageBuilder.DEFAULT.define("MARK", boardProfile.getMark().getTitle())
-                            .define("AMOUNT", Integer.toString(boardProfile.getMark().getStartInvites())).define("NAME", boardProfile.getName());
+                    final TextComponent mark = new TextComponent(profile.getMark().getTitle());
+                    mark.setColor(profile.getMark().getColor());
+
+                    MessageBuilder builder = MessageBuilder.DEFAULT.define("MARK", mark)
+                            .define("AMOUNT", Integer.toString(profile.getMark().getStartInvites())).define("NAME", profile.getName());
 
                     for(String s : PCS_Checkpoint.getConfig().getStringList("messages.verify.success")) {
                         player.sendMessage(builder.build(s));
@@ -83,10 +87,10 @@ class DatabaseHelper {
                 }
 
                 try {
-                    giveInvites(uuid, boardProfile.getMark().getStartInvites());
+                    giveInvites(uuid, profile.getMark().getStartInvites());
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    log.severe(String.format("Failed to give %d invites to %s", boardProfile.getMark().getStartInvites(), uuid));
+                    log.severe(String.format("Failed to give %d invites to %s", profile.getMark().getStartInvites(), uuid));
                 }
             });
 

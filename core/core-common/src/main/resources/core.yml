@@ -10,5 +10,6 @@ hover-event:
   member:
   - '{NAME}'
   - 'Benis: {BENIS}'
-  - '{MARK}'
+  - "\n{#[MARK]#}"
+  - '{BADGES}'
 display-team: false

@@ -53,7 +53,7 @@ messages:
       - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]
       - §8[ - §fDein Account {NAME} wurde soeben bestätigt
       - §8[ - §7Nutze {#[RUN|/anon][§f/anon]#} §7um dich zu anonymisieren!
-      - §8[ - §7Als {MARK} §7erhältst du zu Beginn §b{AMOUNT} §7Invites!
+      - §8[ - §7Als {#[MARK]#} §7erhältst du zu Beginn §b{AMOUNT} §7Invites!
       - §8[ ------------------------------------------- ]
     info:
       - §8[ ------------------ §c§l[ §f§l>_ §c§l] §8------------------ ]

@@ -73,6 +73,7 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
     @Override
     public void onEnable() {
         load();
+        DatabaseHelper.setupTables();
         luckPermsApi = LuckPerms.getApi();
 
         getProxy().getPluginManager().registerCommand(this, new CommandCheckpoint());
@@ -82,7 +83,6 @@ public final class PCS_Checkpoint extends Plugin implements Listener {
         getProxy().getPluginManager().registerCommand(this, new CommandTerms());
         getProxy().getPluginManager().registerListener(this,this);
 
-        DatabaseHelper.setupTables();
     }
 
     @Override

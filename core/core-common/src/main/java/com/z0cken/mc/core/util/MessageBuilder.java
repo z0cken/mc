@@ -56,7 +56,7 @@ public class MessageBuilder implements Cloneable {
             } while(matcher.find());
 
             //Final segment
-            String substring = message.substring(Math.min(index + 2, message.length()), message.length());
+            String substring = message.substring(Math.min(index + 2, message.length()));
             builder.append(substring).retain(ComponentBuilder.FormatRetention.NONE);
 
             return builder.create();
