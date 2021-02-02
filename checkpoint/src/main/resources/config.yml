@@ -39,7 +39,7 @@ messages:
       - '§8[ - §7Aktuell verfügbare Invites: §b{INVITES}'
       - §8[ - §7Für Verstöße deiner Invites wirst Du mitbestraft
       - '§8[ - §7Syntax: §b/invite [Minecraft Username]'
-      - '§8[ - §7{#[RUN|/invite list][§bKlicke hier]#} um deine Bürgschaften einzusehen'
+      - '§8[ - §7{#[RUN|/invite list][§bKlicke hier]#} §7um deine Bürgschaften einzusehen'
       - §8[ ------------------------------------------- ]
     no-guests: "§c§l>_§7 Du hast keine Bürgschaften!"
     list-header: "§7------------< §fBürgschaften §7>------------"
