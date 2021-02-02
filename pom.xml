@@ -32,7 +32,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-
     <repositories>
         <repository>
             <id>spigot-repo</id>
@@ -120,17 +119,12 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- mc libs/plugins -->
+            <!-- plugins -->
             <dependency>
                 <groupId>com.comphenix.protocol</groupId>
                 <artifactId>ProtocolLib-API</artifactId>
                 <version>4.4.0</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>co.aikar</groupId>
-                <artifactId>acf-bukkit</artifactId>
-                <version>0.5.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.sk89q.worldguard</groupId>
@@ -177,6 +171,11 @@
                 <groupId>com.mashape.unirest</groupId>
                 <artifactId>unirest-java</artifactId>
                 <version>1.4.9</version>
+            </dependency>
+            <dependency>
+                <groupId>co.aikar</groupId>
+                <artifactId>acf-bukkit</artifactId>
+                <version>0.5.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
