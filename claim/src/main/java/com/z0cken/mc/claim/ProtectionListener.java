@@ -60,6 +60,9 @@ class ProtectionListener implements Listener {
         Material.OAK_BUTTON,
         Material.SPRUCE_BUTTON,
         Material.STONE_BUTTON,
+        Material.CRIMSON_BUTTON,
+        Material.POLISHED_BLACKSTONE_BUTTON,
+        Material.WARPED_BUTTON,
 
         //Doors
         Material.ACACIA_DOOR,
@@ -69,6 +72,8 @@ class ProtectionListener implements Listener {
         Material.OAK_DOOR,
         Material.IRON_DOOR,
         Material.SPRUCE_DOOR,
+        Material.CRIMSON_DOOR,
+        Material.WARPED_DOOR,
 
         //Fence Gates
         Material.ACACIA_FENCE_GATE,
@@ -88,6 +93,9 @@ class ProtectionListener implements Listener {
         Material.OAK_PRESSURE_PLATE,
         Material.SPRUCE_PRESSURE_PLATE,
         Material.STONE_PRESSURE_PLATE,
+        Material.CRIMSON_PRESSURE_PLATE,
+        Material.POLISHED_BLACKSTONE_PRESSURE_PLATE,
+        Material.WARPED_PRESSURE_PLATE,
 
         //Trapdoors
         Material.ACACIA_TRAPDOOR,
@@ -97,6 +105,8 @@ class ProtectionListener implements Listener {
         Material.OAK_TRAPDOOR,
         Material.IRON_TRAPDOOR,
         Material.SPRUCE_TRAPDOOR,
+        Material.CRIMSON_TRAPDOOR,
+        Material.WARPED_TRAPDOOR,
 
         //Shulker Boxes
         Material.SHULKER_BOX,
