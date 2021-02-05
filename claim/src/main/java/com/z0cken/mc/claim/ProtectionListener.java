@@ -434,10 +434,13 @@ class ProtectionListener implements Listener {
         final Claim origin = PCS_Claim.getClaim(event.getLocation().getChunk());
         event.getBlocks().removeIf(blockState -> {
             final Claim claim = PCS_Claim.getClaim(blockState.getChunk());
+
             if(claim == null) return false;
             if(claim.getBaseLocation().equals(blockState.getLocation())) return true;
-            if(origin == null) return true;
-            return origin.getOwner().equals(claim.getOwner());
+
+            if(event.getPlayer() != null) return claim.canBuild(event.getPlayer());
+            else if(origin != null) return !claim.canBuild(origin.getOwner().getOfflinePlayer());
+            else return true;
         } );
     }
 
