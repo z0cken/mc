@@ -2,6 +2,7 @@ package com.z0cken.mc.claim;
 
 import com.z0cken.mc.core.util.MessageBuilder;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -14,11 +15,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BoundingBox;
 
 import java.util.*;
 
@@ -249,6 +253,53 @@ class ProtectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         handleManipulation(event, event.getBlock().getChunk(), event.getPlayer(), false);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onHangingBreakByEntity(HangingBreakByEntityEvent event) {
+        final Entity remover = event.getRemover();
+
+        Player player = null;
+        if(remover instanceof Player) {
+            player = (Player) remover;
+        } else if(remover instanceof Projectile) {
+            ProjectileSource source = ((Projectile) remover).getShooter();
+            if(source instanceof Player) player = (Player) source;
+        }
+
+        if(player == null) return;
+
+        final BoundingBox bb = event.getEntity().getBoundingBox();
+
+
+        //Prohibit if both chunks are protected from remover
+        final Location min = new Location(event.getEntity().getWorld(), bb.getMinX(), bb.getMinY(), bb.getMinZ());
+        final Claim minClaim = PCS_Claim.getClaim(min.getChunk());
+        if(minClaim == null) return;
+
+        final Location max = new Location(event.getEntity().getWorld(), bb.getMaxX(), bb.getMaxY(), bb.getMaxZ());
+        final Claim maxClaim = PCS_Claim.getClaim(max.getChunk());
+        if(maxClaim == null) return;
+
+        if(!minClaim.canBuild(player) && !maxClaim.canBuild(player)) {
+            event.setCancelled(true);
+            sendProtected(player, minClaim.getOwner());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onHangingBreak(HangingBreakEvent event) {
+        if(event.getCause() != HangingBreakEvent.RemoveCause.EXPLOSION) return;
+        final BoundingBox bb = event.getEntity().getBoundingBox();
+
+        //Prohibit if either chunk is protected
+        final Location min = new Location(event.getEntity().getWorld(), bb.getMinX(), bb.getMinY(), bb.getMinZ());
+        final Claim minClaim = PCS_Claim.getClaim(min.getChunk());
+
+        final Location max = new Location(event.getEntity().getWorld(), bb.getMaxX(), bb.getMaxY(), bb.getMaxZ());
+        final Claim maxClaim = PCS_Claim.getClaim(max.getChunk());
+
+        if(minClaim != null || maxClaim != null) event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
