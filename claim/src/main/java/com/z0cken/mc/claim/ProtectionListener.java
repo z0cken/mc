@@ -197,7 +197,7 @@ class ProtectionListener implements Listener {
 
     private static boolean instantiated;
     private static final Map<Player, Integer> mutedFor = Collections.synchronizedMap(new HashMap<>());
-    private static final Map<TNTPrimed, Player> explosives = new HashMap<>();
+    private static final Map<TNTPrimed, Chunk> explosives = new HashMap<>();  //Entries from unloaded primed TNTs will leak
 
     ProtectionListener() {
         if(instantiated) throw new IllegalStateException(getClass().getName() + " already instantiated!");
@@ -207,7 +207,7 @@ class ProtectionListener implements Listener {
             @Override
             public void run() {
                 mutedFor.replaceAll((player, integer) -> integer--);
-                mutedFor.values().removeAll(Collections.singleton(0));
+                mutedFor.values().removeIf(i -> i.equals(0));
             }
         }.runTaskTimerAsynchronously(PLUGIN, 100, 20);
     }
@@ -314,19 +314,7 @@ class ProtectionListener implements Listener {
         boolean legal = handleManipulation(event, event.getClickedBlock().getChunk(), player, mutedFor.containsKey(player))
                         && handleManipulation(event, event.getClickedBlock().getRelative(event.getBlockFace()).getChunk(), player, mutedFor.containsKey(player));
 
-        //Whitelist TNT
-        if(legal) {
-            if(event.getAction() == Action.RIGHT_CLICK_BLOCK && block.getType() == Material.TNT && (event.getItem().getType() == Material.FLINT_AND_STEEL || event.getItem().getType() == Material.FIRE_CHARGE)) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        final Optional<Entity> entity = block.getWorld().getNearbyEntities(block.getLocation(), 2, 2, 2).stream().filter(e -> e instanceof TNTPrimed).findAny();
-                        entity.ifPresent(e -> explosives.put((TNTPrimed) e, player));
-                    }
-                }.runTaskLater(PLUGIN, 1);
-            }
-        }
-        else if(event.getAction() == Action.PHYSICAL) muteFor(player);
+        if(!legal && event.getAction() == Action.PHYSICAL) muteFor(player);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -523,29 +511,52 @@ class ProtectionListener implements Listener {
         }
     }
 
-    private static Map<EntityExplodeEvent, List<Block>> explosionBlocks = new HashMap<>();
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onExplosionLow(EntityExplodeEvent event) {
-        if(event.getEntityType() != EntityType.PRIMED_TNT) return;
-        Player owner = explosives.getOrDefault(event.getEntity(), null);
-        if(owner != null) {
-            Iterator<Block> iterator = event.blockList().iterator();
-            while (iterator.hasNext()) {
-                Claim claim = PCS_Claim.getClaim(iterator.next().getChunk());
-                if(claim == null || !claim.canBuild(owner)) iterator.remove();
-            }
-            explosionBlocks.put(event, new ArrayList<>(event.blockList()));
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onExplosiveSpawn(EntitySpawnEvent event) {
+        if(event.getEntityType() == EntityType.PRIMED_TNT) {
+            explosives.put((TNTPrimed) event.getEntity(), event.getLocation().getChunk());
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onExplosionHigh(EntityExplodeEvent event) {
-        List<Block> blockList = explosionBlocks.getOrDefault(event, null);
-        if(blockList != null) {
-            explosionBlocks.remove(event);
-            event.blockList().clear();
-            event.blockList().addAll(blockList);
+    public void onExplosion(EntityExplodeEvent event) {
+        OfflinePlayer player = null;
+        if(event.getEntity() instanceof TNTPrimed) {
+            final TNTPrimed tnt = (TNTPrimed) event.getEntity();
+            final Chunk tntOrigin = explosives.remove(tnt);
+
+            if(event.isCancelled()) return; //Return only after we removed the entry from explosives
+
+            final Entity source = tnt.getSource();
+            if(source instanceof OfflinePlayer) {
+                player = (OfflinePlayer) source;
+            } else {
+                //Set player as owner of the TNT's originating chunk
+                if(tntOrigin != null) {
+                    final Claim originClaim = PCS_Claim.getClaim(tntOrigin);
+                    if(originClaim != null) player = originClaim.getOwner().getOfflinePlayer();
+                }
+            }
+        }
+
+        final Iterator<Block> iterator = event.blockList().iterator();
+
+        final Set<Claim> affectedClaims = new HashSet<>();
+        while (iterator.hasNext()) {
+            final Claim claim = PCS_Claim.getClaim(iterator.next().getChunk());
+            if(claim != null && (player == null || !claim.canBuild(player))) {
+                iterator.remove();
+                affectedClaims.add(claim);
+            }
+        }
+
+        if(player != null) {
+            final Player p = player.getPlayer();
+            if(p == null) return;
+
+            for (Claim affectedClaim : affectedClaims) {
+                sendProtected(p, affectedClaim.getOwner());
+            }
         }
     }
 }
