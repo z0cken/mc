@@ -50,6 +50,10 @@
             <url>http://maven.playpro.com</url>
         </repository>
         <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/nexus/content/repositories/</url>
+        </repository>
+        <repository>
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
