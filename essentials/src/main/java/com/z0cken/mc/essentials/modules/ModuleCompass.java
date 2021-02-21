@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -75,6 +76,8 @@ public class ModuleCompass extends Module implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         if(event.getMaterial() == Material.COMPASS && player.getWorld().getEnvironment() == World.Environment.NORMAL) {
+            final CompassMeta compassMeta = (CompassMeta) event.getItem().getItemMeta();
+            if(compassMeta.isLodestoneTracked()) return;
 
             if(event.getAction().name().startsWith("L")) {
                 MessageBuilder builder = new MessageBuilder().define("DISTANCE", Integer.toString((int) player.getCompassTarget().distance(player.getLocation())));
