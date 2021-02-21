@@ -41,11 +41,11 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     }
 
     public static final StateFlag CLAIM_FLAG = new StateFlag("claimable", true);
-    private static final ConcurrentHashMap<ChunkCoordinate, Claim> claimedChunks = new ConcurrentHashMap<>();
-    private static final Set<ChunkCoordinate> lockedChunks = Collections.synchronizedSet(new HashSet<>());
+    private static final ConcurrentHashMap<ChunkPosition, Claim> claimedChunks = new ConcurrentHashMap<>();
+    private static final Set<ChunkPosition> lockedChunks = Collections.synchronizedSet(new HashSet<>());
     private static final Set<Player> overriding = new HashSet<>();
     private static final Map<EntityType, String> trackedEntities = new HashMap<>();
-    private static World mainWorld;
+    private static final List<World> worlds                      = new ArrayList<>();
 
     public PCS_Claim() {
         if(instance != null) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
@@ -64,45 +64,27 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
-        mainWorld = Bukkit.getWorld(getConfig().getString("main-world"));
-        /* TODO Make optional?
-        try {
-            DatabaseHelper.populate(claimedChunks, Bukkit.getWorld(getConfig().getString("main-world")));
-        } catch (SQLException e) {
-            Bukkit.getServer().shutdown();
+
+        for (String worldName : getConfig().getStringList("worlds")) {
+            worlds.add(Bukkit.getWorld(worldName));
         }
-        */
 
         //TODO Whitelist?
         //Lock all chunks until their status has been retrieved asynchronously
-        final HashSet<ChunkCoordinate> coordinates = Arrays.stream(mainWorld.getLoadedChunks())
-                                                                .map(ChunkCoordinate::new).collect(Collectors.toCollection(HashSet::new));
-        lockedChunks.addAll(coordinates);
+        final Set<ChunkPosition> chunkPositions = worlds
+                .stream()
+                .flatMap(world -> Arrays.stream(world.getLoadedChunks()))
+                .map(ChunkPosition::new)
+                .collect(Collectors.toSet());
 
-        /*new BukkitRunnable() {
-            @Override
-            public void run() {
-                long time = System.nanoTime();
-
-                for (Chunk chunk : chunks) {
-                    Claim claim = DatabaseHelper.getClaim(chunk);
-                    if(claim != null) {
-                        final ChunkCoordinate coordinate = new ChunkCoordinate(chunk);
-                        claimedChunks.put(coordinate, claim);
-                        lockedChunks.remove(coordinate);
-                    }
-                }
-
-                System.out.println("1: " + (System.nanoTime() - time) / 1000000D + " ms");
-            }
-        }.runTaskAsynchronously(this);*/
+        lockedChunks.addAll(chunkPositions);
 
         new BukkitRunnable() {
             @Override
             public void run() {
                 //long time = System.nanoTime();
-                claimedChunks.putAll(DatabaseHelper.getClaims(Bukkit.getWorld("world"), coordinates));
-                lockedChunks.removeAll(coordinates);
+                claimedChunks.putAll(DatabaseHelper.getClaims(chunkPositions));
+                lockedChunks.removeAll(chunkPositions);
                 //System.out.println("2: " + (System.nanoTime() - time) / 1000000D + " ms");
             }
         }.runTaskAsynchronously(this);
@@ -131,7 +113,8 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
                 if (args.length == 0) {
                     Claim claim = getClaim(player.getLocation().getChunk());
                     if(claim != null && claim.canBuild(player)) {
-                        String blockString = "[" + claim.getBaseBlock().getX() + "|" + claim.getBaseBlock().getY() + "|" + claim.getBaseBlock().getZ() + "]";
+                        Block baseBlock = claim.getBaseBlock();
+                        String blockString = "[" + baseBlock.getX() + "|" + baseBlock.getY() + "|" + baseBlock.getZ() + "]";
                         MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("CLAIM", claim.getName()).define("BLOCK", blockString);
                         getConfig().getStringList("messages.info").forEach(s -> player.spigot().sendMessage(messageBuilder.build(s)));
 
@@ -199,8 +182,9 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
                         Set<Claim> claims = DatabaseHelper.getAllClaims(player.getWorld());
                         claims.stream().filter(claim -> claim.getBaseBlock().getRelative(BlockFace.UP).getType() != Material.END_PORTAL_FRAME).forEach(claim -> player.sendMessage(claim.getBaseLocation().toString()));
                     } else if(args[0].equals("block") && sender.hasPermission("pcs.claim.block")) {
-                        Block block = player.getTargetBlock(null, 10);
-                        if(block != null && block.getType() == Material.END_PORTAL_FRAME) {
+                        final Block block = player.getTargetBlock(null, 10);
+
+                        if(block.getType() == Material.END_PORTAL_FRAME) {
                             Claim claim = PCS_Claim.getClaim(player.getLocation().getChunk());
                             if(claim != null) {
                                 claim.setBaseLocation(block.getRelative(BlockFace.DOWN).getLocation());
@@ -219,20 +203,20 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
-        if(!chunk.getWorld().equals(Bukkit.getWorld(getConfig().getString("main-world")))) return;
-        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(chunk);
+        if(!worlds.contains(chunk.getWorld())) return;
+        final ChunkPosition chunkPosition = new ChunkPosition(chunk);
 
-        if (!claimedChunks.containsKey(chunkCoordinate)) {
-            lockedChunks.add(chunkCoordinate);
+        if (!claimedChunks.containsKey(chunkPosition)) {
+            lockedChunks.add(chunkPosition);
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     Claim claim = DatabaseHelper.getClaim(chunk);
                     if(claim != null) {
-                        claimedChunks.put(chunkCoordinate, claim);
+                        claimedChunks.put(chunkPosition, claim);
                         claim.updateBaseMaterial();
                     }
-                    lockedChunks.remove(chunkCoordinate);
+                    lockedChunks.remove(chunkPosition);
                 }
             }.runTaskAsynchronously(this);
         }
@@ -240,9 +224,9 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
-        if(!event.getWorld().equals(Bukkit.getWorld(getConfig().getString("main-world")))) return;
-        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(event.getChunk());
-        claimedChunks.remove(chunkCoordinate);
+        if(!worlds.contains(event.getWorld())) return;
+        final ChunkPosition chunkPosition = new ChunkPosition(event.getChunk());
+        claimedChunks.remove(chunkPosition);
     }
 
     @EventHandler
@@ -254,9 +238,9 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         Claim claim = new Claim(player == null ? null : player.getUniqueId(), baseBlock);
         DatabaseHelper.commit(claim);
 
-        final ChunkCoordinate chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
-        if(player == null) claimedChunks.remove(chunkCoordinate);
-        else claimedChunks.put(chunkCoordinate, claim);
+        final ChunkPosition chunkPosition = new ChunkPosition(baseBlock.getChunk());
+        if(player == null) claimedChunks.remove(chunkPosition);
+        else claimedChunks.put(chunkPosition, claim);
 
         return claim;
     }
@@ -267,12 +251,12 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     }
 
     public static Claim getClaim(@Nonnull Chunk chunk) {
-        if(!chunk.getWorld().equals(mainWorld)) return null;
+        if(!worlds.contains(chunk.getWorld())) return null;
 
         Claim claim;
-        final ChunkCoordinate coordinate = new ChunkCoordinate(chunk);
-        if(lockedChunks.contains(coordinate)) claim = DatabaseHelper.getClaim(chunk);
-        else claim = claimedChunks.getOrDefault(coordinate, null);
+        final ChunkPosition chunkPosition = new ChunkPosition(chunk);
+        if(lockedChunks.contains(chunkPosition)) claim = DatabaseHelper.getClaim(chunk);
+        else claim = claimedChunks.getOrDefault(chunkPosition, null);
 
         return claim;
     }
@@ -281,8 +265,8 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return overriding.contains(player);
     }
 
-    public static World getMainWorld() {
-        return mainWorld;
+    public static List<World> getWorlds() {
+        return Collections.unmodifiableList(worlds);
     }
 
     public static class Unsafe {

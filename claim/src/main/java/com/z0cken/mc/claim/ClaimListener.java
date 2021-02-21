@@ -32,7 +32,7 @@ class ClaimListener implements Listener {
 
     static {
         new BukkitRunnable() {
-            MessageBuilder builder = new MessageBuilder();
+            final MessageBuilder builder = new MessageBuilder();
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -90,7 +90,7 @@ class ClaimListener implements Listener {
     }
 
     private static boolean isClaimable(Chunk chunk) {
-        if(!PCS_Claim.getMainWorld().equals(chunk.getWorld())) return false;
+        if(!PCS_Claim.getWorlds().contains(chunk.getWorld())) return false;
 
         RegionManager regionManager = WorldGuard.getInstance().getPlatform().getRegionContainer().get(new BukkitWorld(chunk.getWorld()));
         if(regionManager == null) return false;

@@ -1,5 +1,7 @@
 push-interval: 20
-main-world: world
+worlds:
+  - world
+  - world_nether
 eye-timer: 10
 animal-limit: 20
 messages:

@@ -14,20 +14,20 @@ public class Claim {
     private final Owner owner;
     private Location baseLocation;
     private Material baseMaterial;
-    private ChunkCoordinate chunkCoordinate;
+    private ChunkPosition chunkPosition;
 
     Claim(@Nullable UUID uuid, @Nonnull Block baseBlock) {
         this.baseLocation = baseBlock.getLocation();
         this.owner = uuid == null ? null : new Owner(uuid);
         this.baseMaterial = baseBlock.getType();
-        this.chunkCoordinate = new ChunkCoordinate(baseBlock.getChunk());
+        this.chunkPosition = new ChunkPosition(baseBlock.getChunk());
     }
 
     Claim(@Nonnull UUID uuid, @Nonnull Location baseLocation, @Nonnull Material baseMaterial) {
         this.owner = new Owner(uuid);
         this.baseLocation = baseLocation;
         this.baseMaterial = baseMaterial;
-        this.chunkCoordinate = new ChunkCoordinate((int) baseLocation.getX() >> 4, (int) baseLocation.getZ() >> 4);
+        this.chunkPosition = new ChunkPosition(baseLocation.getWorld(), (int) baseLocation.getX() >> 4, (int) baseLocation.getZ() >> 4);
     }
 
     public Owner getOwner() { return owner; }
@@ -53,8 +53,8 @@ public class Claim {
         return baseMaterial;
     }
 
-    public ChunkCoordinate getChunkCoordinate() {
-        return chunkCoordinate;
+    public ChunkPosition getChunkPosition() {
+        return chunkPosition;
     }
 
     public World getWorld() {
@@ -62,7 +62,7 @@ public class Claim {
     }
 
     public String getName() {
-        return "[" + chunkCoordinate.getX() + "|" + chunkCoordinate.getZ() + "]";
+        return String.format("[%s | %d | %d]", chunkPosition.getWorld().getEnvironment().name().toLowerCase(), chunkPosition.getX(), chunkPosition.getZ());
     }
 
     public void updateBaseMaterial() {
@@ -85,20 +85,20 @@ public class Claim {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null || !(obj instanceof Claim)) {
+        if (!(obj instanceof Claim)) {
             return false;
         }
-        Claim claim = (Claim) obj;
-        return chunkCoordinate.equals(claim.getChunkCoordinate()) && (owner == null ? claim.getOwner() == null : owner.equals(claim.getOwner()));
+        final Claim claim = (Claim) obj;
+        return chunkPosition.equals(claim.getChunkPosition()) && (owner == null ? claim.getOwner() == null : owner.equals(claim.getOwner()));
     }
 
     @Override
     public int hashCode() {
-        return owner.getUniqueId().hashCode() * chunkCoordinate.getX() * chunkCoordinate.getZ();
+        return owner.getUniqueId().hashCode() * chunkPosition.getX() * chunkPosition.getZ();
     }
 
     protected static class Owner {
-        private UUID uuid;
+        private final UUID uuid;
 
         private Owner(UUID uuid) {
             this.uuid = uuid;
@@ -122,7 +122,7 @@ public class Claim {
 
         @Override
         public boolean equals(final Object obj) {
-            if (obj == null || !(obj instanceof Owner)) {
+            if (!(obj instanceof Owner)) {
                 return false;
             }
             final Owner other = (Owner)obj;

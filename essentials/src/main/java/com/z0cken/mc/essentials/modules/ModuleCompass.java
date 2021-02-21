@@ -204,7 +204,7 @@ public class ModuleCompass extends Module implements Listener {
             }, base.isSolid() ? base : Material.END_PORTAL_FRAME);
 
             ItemMeta itemMeta = chunkButton.getItemMeta();
-            itemMeta.setDisplayName(claim.getChunkCoordinate().getX()+"|"+claim.getChunkCoordinate().getZ());
+            itemMeta.setDisplayName(claim.getChunkPosition().getX() + "|" + claim.getChunkPosition().getZ());
             //TODO Add claim date to lore
             chunkButton.setItemMeta(itemMeta);
 
