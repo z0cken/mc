@@ -11,8 +11,6 @@ commands:
     permission: pcs.essentials.admin
   award:
     permission: pcs.essentials.award
-  erosion:
-    permission: pcs.essentials.erosion
   wild:
     permission: pcs.essentials.wild
   help:
@@ -28,7 +26,6 @@ permissions:
     children:
       pcs.essentials.snowball: true
       pcs.essentials.award: true
-      pcs.essentials.erosion: true
       pcs.essentials.wild: true
       pcs.essentials.admin: true
       pcs.essentials.entity: true

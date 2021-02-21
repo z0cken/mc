@@ -13,7 +13,6 @@ public class ModuleManager {
             .put("chat", ModuleChat.class)
             .put("snowball", ModuleSnowball.class)
             .put("compass", ModuleCompass.class)
-            .put("erosion", ModuleErosion.class)
             .put("discover", ModuleDiscover.class)
             .put("award", ModuleAward.class)
             .put("help", ModuleHelp.class)
