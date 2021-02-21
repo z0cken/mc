@@ -1,38 +1,36 @@
-targets:
-#  4:
-#    material: "COMPASS"
-#    price: 10
-#    title: "Spawn"
-#    lore:
-#    location:
-#        ==: org.bukkit.Location
-#        world: world
-#        x: 42
-#        y: 42
-#        z: 42
-#        yaw: 42
-#        pitch: 42
-#  6:
-#    preset: 1
-#    material: "END_PORTAL_FRAME"
-#    title: "Claims"
-#    lore:
-#      - "Wo wohne ich nochmal?"
-#  2:
-#    preset: 0
-#    material: "PLAYER_HEAD"
-#    title: "Freunde"
-#    lore:
-#      - "Seht her ich habe Freunde"
-claim-price: 20
-friend-price: 20
+#world:
+#  rows: 2
+#  targets:
+#    4:
+#      material: "COMPASS"
+#      price: 10
+#      title: "Spawn"
+#      lore:
+#      location:
+#          ==: org.bukkit.Location
+#          world: world
+#          x: 42
+#          y: 42
+#          z: 42
+#          yaw: 42
+#          pitch: 42
+#    6:
+#      preset: 1
+#      material: "END_PORTAL_FRAME"
+#      title: "Claims"
+#      lore:
+#        - "Wo wohne ich nochmal?"
+#    2:
+#      preset: 0
+#      material: "PLAYER_HEAD"
+#      title: "Freunde"
+#      lore:
+#        - "Seht her ich habe Freunde"
 keep-on-death: true
 titles:
   compass: "Kompass"
   friends: "Freunde"
   claims: "Claims"
-menu:
-  rows: 1
 messages:
   left-click: "§f§l>_§7 Dein aktuelles Ziel ist {DISTANCE} Meter entfernt!"
   selected: "§a§l>_§7 Dein Kompass zeigt jetzt auf '{TARGET}'"

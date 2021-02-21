@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class ModuleCompass extends Module implements Listener {
 
     private Set<Player> deadPlayers;
-    private static final HashMap<Player, CompassTarget> targets = new HashMap<>();
+    private static final Map<Player, CompassTarget> targets = new HashMap<>();
 
     private boolean keepOnDeath;
 
@@ -69,7 +69,7 @@ public class ModuleCompass extends Module implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        setTarget(event.getPlayer(), event.getPlayer().getWorld().getSpawnLocation());
+        targets.remove(event.getPlayer());
     }
 
     @EventHandler
@@ -84,7 +84,11 @@ public class ModuleCompass extends Module implements Listener {
                 player.spigot().sendMessage(builder.build(getConfig().getString("messages.left-click")));
 
             } else {
-                player.openInventory(new CompassMenu(player));
+                ConfigurationSection worldSection = getConfig().getConfigurationSection(player.getWorld().getName());
+                if(worldSection == null) return;
+
+                final CompassMenu menu = new CompassMenu(worldSection);
+                if(Arrays.stream(menu.getContents()).anyMatch(Objects::nonNull)) player.openInventory(menu);
             }
         }
     }
@@ -136,7 +140,6 @@ public class ModuleCompass extends Module implements Listener {
 
         if(friends.size() == 0) return;
 
-        final int price = getConfig().getInt("friend-price");
         final int rows = calculateTotalRows(friends.size());
         final boolean multiPage = rows > 6;
         final int contentSlots = (multiPage ? 5 : rows) * 9;
@@ -148,7 +151,7 @@ public class ModuleCompass extends Module implements Listener {
             final int page = i / contentSlots;
             final int slot = (i % contentSlots);
 
-            Menu.PricedButton friendButton = new Menu.PricedButton((m, b, p, e) -> {
+            Menu.Button friendButton = new Menu.Button((m, b, p, e) -> {
                 final MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("TARGET", friend.getName());
 
                 if(p.getWorld().equals(friend.getWorld())){
@@ -156,15 +159,11 @@ public class ModuleCompass extends Module implements Listener {
                     p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.selected")));
                 } else p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.other-world")));
 
-            }, price, Material.PLAYER_HEAD);
+            }, Material.PLAYER_HEAD);
 
             SkullMeta itemMeta = (SkullMeta) friendButton.getItemMeta();
             itemMeta.setDisplayName(ChatColor.RESET + friend.getName());
             itemMeta.setOwningPlayer(friend);
-            if(!friend.getWorld().equals(player.getWorld())) {
-                String s = friend.getWorld().getEnvironment() == World.Environment.NETHER ? "Nether" : "Ende";
-                itemMeta.setLore(List.of(ChatColor.RED + "Befindet sich im " + s));
-            }
             friendButton.setItemMeta(itemMeta);
 
             friendMenu.setItem(page, slot, friendButton);
@@ -174,7 +173,6 @@ public class ModuleCompass extends Module implements Listener {
         if(multiPage) addNavigation(friendMenu);
 
         player.openInventory(friendMenu);
-
     };
 
     private final Menu.Button.ClickEvent CLAIMS_EVENT = (menu, button, player, event) -> {
@@ -183,7 +181,6 @@ public class ModuleCompass extends Module implements Listener {
         final Set<Claim> claims = PCS_Claim.Unsafe.getClaims(player.getWorld(), player);
         if(claims.size() == 0) return;
 
-        final int price = getConfig().getInt("claim-price");
         final int rows = calculateTotalRows(claims.size());
         final boolean multiPage = rows > 6;
         final int contentSlots = (multiPage ? 5 : rows) * 9;
@@ -197,14 +194,14 @@ public class ModuleCompass extends Module implements Listener {
 
             Material base = claim.getBaseMaterial();
 
-            Menu.Button chunkButton = new Menu.PricedButton((m, b, p, e) -> {
+            Menu.Button chunkButton = new Menu.Button((m, b, p, e) -> {
                 final MessageBuilder messageBuilder = MessageBuilder.DEFAULT.define("TARGET", claim.getName());
 
                 if(p.getWorld().equals(claim.getWorld())) {
                     setTarget(p, new Location(claim.getWorld(), claim.getBaseLocation().getX(), claim.getBaseLocation().getY(), claim.getBaseLocation().getBlockZ()));
                     player.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.selected")));
                 } else p.spigot().sendMessage(messageBuilder.build(getConfig().getString("messages.other-world")));
-            }, price, base.isSolid() ? base : Material.END_PORTAL_FRAME);
+            }, base.isSolid() ? base : Material.END_PORTAL_FRAME);
 
             ItemMeta itemMeta = chunkButton.getItemMeta();
             itemMeta.setDisplayName(claim.getChunkCoordinate().getX()+"|"+claim.getChunkCoordinate().getZ());
@@ -250,17 +247,14 @@ public class ModuleCompass extends Module implements Listener {
 
     class CompassMenu extends Menu {
 
-        Player player;
+        public CompassMenu(ConfigurationSection section) {
+            super(PCS_Essentials.getInstance(), section.getInt("rows"), getConfig().getString("titles.claims"));
 
-        public CompassMenu(Player player) {
-            super(PCS_Essentials.getInstance(), getConfig().getInt("menu.rows"), getConfig().getString("titles.compass"));
-            this.player = player;
-
-            populate();
+            populate(section);
         }
 
-        private void populate() {
-            ConfigurationSection section = getConfig().getConfigurationSection("targets");;
+        private void populate(ConfigurationSection section) {
+            section = section.getConfigurationSection("targets");
 
             for(String s : section.getKeys(false)) {
                 Button button;
@@ -282,7 +276,7 @@ public class ModuleCompass extends Module implements Listener {
                         player.spigot().sendMessage((new MessageBuilder()).define("TARGET", button1.getItemMeta().getDisplayName()).build(getConfig().getString("messages.selected")));
                     };
 
-                    button = new PricedButton(clickEvent, section.getInt(s + ".price"), material);
+                    button = new Button(clickEvent, material);
 
                 } else {
                     return;
