@@ -40,12 +40,11 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
         return instance;
     }
 
-    public static final StateFlag CLAIM_FLAG = new StateFlag("claimable", true);
+    public static final StateFlag CLAIM_FLAG = new StateFlag("claimable", false);
     private static final ConcurrentHashMap<ChunkPosition, Claim> claimedChunks = new ConcurrentHashMap<>();
     private static final Set<ChunkPosition> lockedChunks = Collections.synchronizedSet(new HashSet<>());
     private static final Set<Player> overriding = new HashSet<>();
     private static final Map<EntityType, String> trackedEntities = new HashMap<>();
-    private static final List<World> worlds                      = new ArrayList<>();
 
     public PCS_Claim() {
         if(instance != null) throw new IllegalStateException(this.getClass().getName() + " cannot be instantiated twice!");
@@ -65,13 +64,9 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
 
-        for (String worldName : getConfig().getStringList("worlds")) {
-            worlds.add(Bukkit.getWorld(worldName));
-        }
-
         //TODO Whitelist?
         //Lock all chunks until their status has been retrieved asynchronously
-        final Set<ChunkPosition> chunkPositions = worlds
+        final Set<ChunkPosition> chunkPositions = Bukkit.getWorlds()
                 .stream()
                 .flatMap(world -> Arrays.stream(world.getLoadedChunks()))
                 .map(ChunkPosition::new)
@@ -203,7 +198,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent event) {
         final Chunk chunk = event.getChunk();
-        if(!worlds.contains(chunk.getWorld())) return;
         final ChunkPosition chunkPosition = new ChunkPosition(chunk);
 
         if (!claimedChunks.containsKey(chunkPosition)) {
@@ -224,7 +218,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
-        if(!worlds.contains(event.getWorld())) return;
         final ChunkPosition chunkPosition = new ChunkPosition(event.getChunk());
         claimedChunks.remove(chunkPosition);
     }
@@ -251,8 +244,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
     }
 
     public static Claim getClaim(@Nonnull Chunk chunk) {
-        if(!worlds.contains(chunk.getWorld())) return null;
-
         Claim claim;
         final ChunkPosition chunkPosition = new ChunkPosition(chunk);
         if(lockedChunks.contains(chunkPosition)) claim = DatabaseHelper.getClaim(chunk);
@@ -263,10 +254,6 @@ public final class PCS_Claim extends JavaPlugin implements Listener {
 
     public static boolean isOverriding(@Nonnull Player player) {
         return overriding.contains(player);
-    }
-
-    public static List<World> getWorlds() {
-        return Collections.unmodifiableList(worlds);
     }
 
     public static class Unsafe {
