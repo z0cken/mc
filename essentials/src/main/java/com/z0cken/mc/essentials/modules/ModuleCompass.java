@@ -10,7 +10,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -75,7 +74,7 @@ public class ModuleCompass extends Module implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
-        if(event.getMaterial() == Material.COMPASS && player.getWorld().getEnvironment() == World.Environment.NORMAL) {
+        if(event.getMaterial() == Material.COMPASS) {
             final CompassMeta compassMeta = (CompassMeta) event.getItem().getItemMeta();
             if(compassMeta.isLodestoneTracked()) return;
 
