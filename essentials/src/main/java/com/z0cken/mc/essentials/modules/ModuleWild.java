@@ -188,7 +188,7 @@ public class ModuleWild extends Module implements CommandExecutor {
                     }
 
                     final Block block = location.getBlock();
-                    if(NORMAL_MATERIALS.contains(block.getType()) && !block.getRelative(0, 2, 0).getType().isSolid()) return location.add(0, 1, 0);
+                    if(NORMAL_MATERIALS.contains(block.getType()) && !block.getRelative(0, 2, 0).getType().isSolid()) return location.add(0.5, 1, 0.5);
                     break;
                 }
                 case NETHER: {
@@ -207,7 +207,7 @@ public class ModuleWild extends Module implements CommandExecutor {
                         } else if(ground && IGNORED_MATERIALS.contains(currentType)) {
                             if(feet) {
                                 //Head clear
-                                return location.add(0, -1, 0);
+                                return location.add(0.5, -1, 0.5);
                             } else feet = true;
                         }
 
