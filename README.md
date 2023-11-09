@@ -64,7 +64,7 @@ Provides a multitude of general-purpose functionality:
 - Supports toggling and hot-reload on per-module basis
 
 <details>
-  <summary>Cancer-research fundraiser post</summary>
+  <summary>Cancer research fundraiser post</summary>
   <a href="https://www.faz.net/aktuell/gesellschaft/menschen/shitstorm-gegen-brian-krebs-fuehrt-zu-spendenaktion-15516980.html">German news article documenting the entire pr0gramm fundraiser</a>
   <img src="https://images.pr0gramm.com/2019/03/28/37870355e8e15599.png">
 </details>
@@ -84,7 +84,7 @@ Metro effects include:
 - Odds of portal malfunction
 - Global potion effects
 - Monster spawn rate adjustments
-- Zombie pigment aggressiveness
+- Zombie pigmen aggressiveness
 - Daily currency bonus
 
 ## Progression
@@ -94,7 +94,7 @@ Provides simple abstraction for unified database access to player-statistics.
 Aggregation of [BetonQuest](https://github.com/BetonQuest/BetonQuest) scripts authored by [@KingJulian13](https://github.com/KingJulian13) & [@DerLukas01](https://github.com/DerLukas01).
 
 ## Raid
-Minigame based on the ["Raid Area 51"](https://en.wikipedia.org/wiki/Storm_Area_51) meme in September 2019. Defending team is stationed in a military base holding aliens (endermen) hostage. Attacker's goal is to rescue as many aliens as possible, by leashing and returning them to hovering UFOs outside.
+Minigame based on the ["Storm Area 51"](https://en.wikipedia.org/wiki/Storm_Area_51) meme in September 2019. Defending team is stationed in a military base holding aliens (endermen) hostage. Attacker's goal is to rescue as many aliens as possible, by leashing and returning them to hovering UFOs outside.
 <details>
   <summary>Event announcement</summary>
   <img src="https://images.pr0gramm.com/2019/09/19/67097dd4113f89cd.png">
