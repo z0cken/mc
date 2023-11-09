@@ -1,0 +1,62 @@
+runtime: 60
+max-imbalance: 5
+respawn-time: 5
+teams:
+  red:
+    regions:
+      spawn: red-base
+      capture: red-capture
+    spectator:
+      ==: org.bukkit.Location
+      world: world
+      x: 17
+      y: 6.0
+      z: -24
+      pitch: 0.0
+      yaw: 90
+    flag:
+      ==: org.bukkit.Location
+      world: world
+      x: 21
+      y: 6.0
+      z: -24
+      pitch: 0.0
+      yaw: 90
+  blue:
+    regions:
+      spawn: blue-base
+      capture: blue-capture
+    spectator:
+      ==: org.bukkit.Location
+      world: world
+      x: 34
+      y: 6.0
+      z: -24
+      pitch: 0.0
+      yaw: -90
+    flag:
+      ==: org.bukkit.Location
+      world: world
+      x: 30
+      y: 6.0
+      z: -24
+      pitch: 0.0
+      yaw: 90
+kits:
+  0:
+    button:
+      ==: org.bukkit.inventory.ItemStack
+      v: 1631
+      type: IRON_INGOT
+      amount: 1
+    items:
+      0:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: LEATHER_HELMET
+        amount: 1
+      1:
+        ==: org.bukkit.inventory.ItemStack
+        v: 1631
+        type: LEATHER_CHESTPLATE
+        amount: 1

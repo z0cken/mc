@@ -24,6 +24,9 @@ Player controlled chunk-based world protection.
 - Prevents outside entity damage / interaction
 - Grants access to owner's friends
 
+## Capture
+Simple Capture The Flag minigame for the established red/blue teams on pr0gramm.
+
 ## Economy
 Fully-fledged virtual currency management with integrated shop system authored by [@florilu](https://github.com/florilu).
 

@@ -1,0 +1,9 @@
+name: PCS_Capture
+author: Flare
+version: ${project.version}
+main: com.z0cken.mc.capture.PCS_Capture
+depend: [PCS_Core, WorldGuard]
+api-version: 1.13
+commands:
+  capture:
+  kit:

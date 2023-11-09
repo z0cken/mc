@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>capture</module>
         <module>checkpoint</module>
         <module>claim</module>
         <module>core</module>
